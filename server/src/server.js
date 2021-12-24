@@ -7,6 +7,7 @@ import expressWs from 'express-ws';
 import os from 'os';
 
 import './cron/cron';
+import { migrate } from './database/migrations';
 import { jsonEndpoints } from './endpoints';
 import { emailSubscriptionResponder } from './responders/comm-landing-responders';
 import {
@@ -34,7 +35,19 @@ import { getGlobalURLFacts, getLandingURLFacts } from './utils/urls';
 const { baseRoutePath } = getGlobalURLFacts();
 const landingBaseRoutePath = getLandingURLFacts().baseRoutePath;
 
+async function doMigrations() {
+  const ret: boolean = await migrate();
+  return { ret };
+}
+
 if (cluster.isMaster) {
+  (async () => {
+    const didMigrationsSucceed = await doMigrations();
+    if (didMigrationsSucceed.ret === false) {
+      // Force nodemon to exit as well
+      process.exit(2);
+    }
+  })();
   const cpuCount = os.cpus().length;
   for (let i = 0; i < cpuCount; i++) {
     cluster.fork();
