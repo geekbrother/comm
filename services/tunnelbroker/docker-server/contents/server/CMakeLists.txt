@@ -38,6 +38,7 @@ set(_GRPC_CPP_PLUGIN_EXECUTABLE $<TARGET_FILE:gRPC::grpc_cpp_plugin>)
 set(BUILD_TESTING OFF CACHE BOOL "Turn off tests" FORCE)
 set(WITH_GFLAGS OFF CACHE BOOL "Use gflags" FORCE)
 
+find_package(AWSSDK REQUIRED COMPONENTS core dynamodb)
 add_subdirectory(./lib/glog)
 
 file(GLOB TUNNELBROKER_SOURCES "./src/*.cpp")
@@ -54,6 +55,7 @@ add_definitions(
 
 include_directories(
   ./src
+  ./src/DatabaseEntities
   ./_generated
   ./lib/folly
   ./lib/double-conversion
@@ -111,6 +113,7 @@ set(
   ${_GRPC_GRPCPP}
   ${_PROTOBUF_LIBPROTOBUF}
   gRPC::grpc++_reflection
+  ${AWSSDK_LINK_LIBRARIES}
   glog::glog
 )
 
