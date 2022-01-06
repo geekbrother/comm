@@ -22,7 +22,7 @@ div.content {
 }
 
 h2.nav {
-  font-family: 'Anaheim', sans-serif;
+  font-family: 'Inter', 'Anaheim', sans-serif;
   text-align: center;
   margin: 8px auto 12px auto;
   width: 250px;
@@ -177,7 +177,7 @@ td.day > h2 {
   font-size: 32px;
   line-height: 32px;
   z-index: 1;
-  font-family: 'Anaheim', sans-serif;
+  font-family: 'Inter', 'Anaheim', sans-serif;
 }
 td.currentDay > h2 {
   color: #ff944d;
