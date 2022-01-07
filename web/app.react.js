@@ -1,6 +1,7 @@
 // @flow
 
 import '@fontsource/inter';
+import 'basscss/css/basscss.min.css';
 import { config as faConfig } from '@fortawesome/fontawesome-svg-core';
 import { faCalendar, faComments } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
