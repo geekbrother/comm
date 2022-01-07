@@ -4,46 +4,60 @@ package tunnelbroker;
 
 import "google/protobuf/empty.proto";
 
-service TunnelBrokerService {
-  rpc CheckIfPrimaryDeviceOnline(CheckRequest) returns (CheckResponse) {}
-  rpc BecomeNewPrimaryDevice(NewPrimaryRequest) returns (NewPrimaryResponse) {}
-  rpc SendPong (PongRequest) returns (google.protobuf.Empty) {}
+service TunnelbrokerService {
+  rpc SessionSignature(SessionSignatureRequest) returns (SessionSignatureResponse) {}
+  rpc NewSession(NewSessionRequest) returns (NewSessionResponse) {}
+  rpc Send(SendRequest) returns (google.protobuf.Empty) {}
+  rpc Get(GetRequest) returns (stream GetResponse) {}
 }
 
-// for CheckIfPrimaryDeviceOnline
+// Session
 
-enum CheckResponseType {
-  PRIMARY_DOESNT_EXIST = 0;
-  PRIMARY_ONLINE = 1;
-  PRIMARY_OFFLINE = 2;
-  CURRENT_IS_PRIMARY = 3;
+message SessionSignatureRequest {
+  string deviceID = 1;
 }
 
-// TODO: all the requests are the same, maybe there can be a mutual type for all of them
-// leaving this as is for now as there may be some differences
-message CheckRequest {
-  string userId = 1;
-  string deviceToken = 2;
+message SessionSignatureResponse {
+  string toSign = 1;
 }
 
-message CheckResponse {
-  CheckResponseType checkResponseType = 1;
+message NewSessionRequest {
+  string deviceID = 1;
+  bytes publicKey = 2;
+  string signature = 3;
+  string notifyToken = 4;
+  DeviceTypes deviceType = 5;
+  string deviceAppVersion = 6;
+  string deviceOS = 7;
+  // Nested enum devices type
+  enum DeviceTypes {
+    MOBILE = 0;
+    WEB = 1;
+    KEYSERVER = 2;
+  }
 }
 
-// BecomeNewPrimaryDevice
-
-message NewPrimaryRequest {
-  string userId = 1;
-  string deviceToken = 2;
+message NewSessionResponse {
+  string sessionID = 1;
 }
 
-message NewPrimaryResponse {
-  bool success = 1;
+// Send payload to device
+
+message SendRequest {
+  string sessionID = 1;
+  string toDeviceID = 2;
+  bytes payload = 3;
+  repeated string blobHash = 4;
 }
 
-// for SendPong
+// Get messages from devices
 
-message PongRequest {
-  string userId = 1;
-  string deviceToken = 2;
+message GetRequest {
+  string sessionID = 1;
+}
+
+message GetResponse {
+  string fromDeviceID = 1;
+  bytes payload = 2;
+  repeated string blobHashes = 3;
 }
