@@ -166,5 +166,185 @@ TunnelBrokerService::Service::~Service() {
 }
 
 
+static const char* TunnelbrokerService_method_names[] = {
+  "/tunnelbroker.TunnelbrokerService/SessionSignature",
+  "/tunnelbroker.TunnelbrokerService/NewSession",
+  "/tunnelbroker.TunnelbrokerService/Send",
+  "/tunnelbroker.TunnelbrokerService/Get",
+};
+
+std::unique_ptr< TunnelbrokerService::Stub> TunnelbrokerService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
+  (void)options;
+  std::unique_ptr< TunnelbrokerService::Stub> stub(new TunnelbrokerService::Stub(channel, options));
+  return stub;
+}
+
+TunnelbrokerService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
+  : channel_(channel), rpcmethod_SessionSignature_(TunnelbrokerService_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_NewSession_(TunnelbrokerService_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_Send_(TunnelbrokerService_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_Get_(TunnelbrokerService_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
+  {}
+
+::grpc::Status TunnelbrokerService::Stub::SessionSignature(::grpc::ClientContext* context, const ::tunnelbroker::SessionSignatureRequest& request, ::tunnelbroker::SessionSignatureResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::tunnelbroker::SessionSignatureRequest, ::tunnelbroker::SessionSignatureResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_SessionSignature_, context, request, response);
+}
+
+void TunnelbrokerService::Stub::async::SessionSignature(::grpc::ClientContext* context, const ::tunnelbroker::SessionSignatureRequest* request, ::tunnelbroker::SessionSignatureResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::tunnelbroker::SessionSignatureRequest, ::tunnelbroker::SessionSignatureResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_SessionSignature_, context, request, response, std::move(f));
+}
+
+void TunnelbrokerService::Stub::async::SessionSignature(::grpc::ClientContext* context, const ::tunnelbroker::SessionSignatureRequest* request, ::tunnelbroker::SessionSignatureResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_SessionSignature_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::tunnelbroker::SessionSignatureResponse>* TunnelbrokerService::Stub::PrepareAsyncSessionSignatureRaw(::grpc::ClientContext* context, const ::tunnelbroker::SessionSignatureRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::tunnelbroker::SessionSignatureResponse, ::tunnelbroker::SessionSignatureRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_SessionSignature_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::tunnelbroker::SessionSignatureResponse>* TunnelbrokerService::Stub::AsyncSessionSignatureRaw(::grpc::ClientContext* context, const ::tunnelbroker::SessionSignatureRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncSessionSignatureRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status TunnelbrokerService::Stub::NewSession(::grpc::ClientContext* context, const ::tunnelbroker::NewSessionRequest& request, ::tunnelbroker::NewSessionResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::tunnelbroker::NewSessionRequest, ::tunnelbroker::NewSessionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_NewSession_, context, request, response);
+}
+
+void TunnelbrokerService::Stub::async::NewSession(::grpc::ClientContext* context, const ::tunnelbroker::NewSessionRequest* request, ::tunnelbroker::NewSessionResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::tunnelbroker::NewSessionRequest, ::tunnelbroker::NewSessionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_NewSession_, context, request, response, std::move(f));
+}
+
+void TunnelbrokerService::Stub::async::NewSession(::grpc::ClientContext* context, const ::tunnelbroker::NewSessionRequest* request, ::tunnelbroker::NewSessionResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_NewSession_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::tunnelbroker::NewSessionResponse>* TunnelbrokerService::Stub::PrepareAsyncNewSessionRaw(::grpc::ClientContext* context, const ::tunnelbroker::NewSessionRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::tunnelbroker::NewSessionResponse, ::tunnelbroker::NewSessionRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_NewSession_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::tunnelbroker::NewSessionResponse>* TunnelbrokerService::Stub::AsyncNewSessionRaw(::grpc::ClientContext* context, const ::tunnelbroker::NewSessionRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncNewSessionRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status TunnelbrokerService::Stub::Send(::grpc::ClientContext* context, const ::tunnelbroker::SendRequest& request, ::google::protobuf::Empty* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::tunnelbroker::SendRequest, ::google::protobuf::Empty, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_Send_, context, request, response);
+}
+
+void TunnelbrokerService::Stub::async::Send(::grpc::ClientContext* context, const ::tunnelbroker::SendRequest* request, ::google::protobuf::Empty* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::tunnelbroker::SendRequest, ::google::protobuf::Empty, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_Send_, context, request, response, std::move(f));
+}
+
+void TunnelbrokerService::Stub::async::Send(::grpc::ClientContext* context, const ::tunnelbroker::SendRequest* request, ::google::protobuf::Empty* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_Send_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* TunnelbrokerService::Stub::PrepareAsyncSendRaw(::grpc::ClientContext* context, const ::tunnelbroker::SendRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::google::protobuf::Empty, ::tunnelbroker::SendRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_Send_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::google::protobuf::Empty>* TunnelbrokerService::Stub::AsyncSendRaw(::grpc::ClientContext* context, const ::tunnelbroker::SendRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncSendRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::ClientReader< ::tunnelbroker::GetResponse>* TunnelbrokerService::Stub::GetRaw(::grpc::ClientContext* context, const ::tunnelbroker::GetRequest& request) {
+  return ::grpc::internal::ClientReaderFactory< ::tunnelbroker::GetResponse>::Create(channel_.get(), rpcmethod_Get_, context, request);
+}
+
+void TunnelbrokerService::Stub::async::Get(::grpc::ClientContext* context, const ::tunnelbroker::GetRequest* request, ::grpc::ClientReadReactor< ::tunnelbroker::GetResponse>* reactor) {
+  ::grpc::internal::ClientCallbackReaderFactory< ::tunnelbroker::GetResponse>::Create(stub_->channel_.get(), stub_->rpcmethod_Get_, context, request, reactor);
+}
+
+::grpc::ClientAsyncReader< ::tunnelbroker::GetResponse>* TunnelbrokerService::Stub::AsyncGetRaw(::grpc::ClientContext* context, const ::tunnelbroker::GetRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::tunnelbroker::GetResponse>::Create(channel_.get(), cq, rpcmethod_Get_, context, request, true, tag);
+}
+
+::grpc::ClientAsyncReader< ::tunnelbroker::GetResponse>* TunnelbrokerService::Stub::PrepareAsyncGetRaw(::grpc::ClientContext* context, const ::tunnelbroker::GetRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::tunnelbroker::GetResponse>::Create(channel_.get(), cq, rpcmethod_Get_, context, request, false, nullptr);
+}
+
+TunnelbrokerService::Service::Service() {
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      TunnelbrokerService_method_names[0],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< TunnelbrokerService::Service, ::tunnelbroker::SessionSignatureRequest, ::tunnelbroker::SessionSignatureResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](TunnelbrokerService::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::tunnelbroker::SessionSignatureRequest* req,
+             ::tunnelbroker::SessionSignatureResponse* resp) {
+               return service->SessionSignature(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      TunnelbrokerService_method_names[1],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< TunnelbrokerService::Service, ::tunnelbroker::NewSessionRequest, ::tunnelbroker::NewSessionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](TunnelbrokerService::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::tunnelbroker::NewSessionRequest* req,
+             ::tunnelbroker::NewSessionResponse* resp) {
+               return service->NewSession(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      TunnelbrokerService_method_names[2],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< TunnelbrokerService::Service, ::tunnelbroker::SendRequest, ::google::protobuf::Empty, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](TunnelbrokerService::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::tunnelbroker::SendRequest* req,
+             ::google::protobuf::Empty* resp) {
+               return service->Send(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      TunnelbrokerService_method_names[3],
+      ::grpc::internal::RpcMethod::SERVER_STREAMING,
+      new ::grpc::internal::ServerStreamingHandler< TunnelbrokerService::Service, ::tunnelbroker::GetRequest, ::tunnelbroker::GetResponse>(
+          [](TunnelbrokerService::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::tunnelbroker::GetRequest* req,
+             ::grpc::ServerWriter<::tunnelbroker::GetResponse>* writer) {
+               return service->Get(ctx, req, writer);
+             }, this)));
+}
+
+TunnelbrokerService::Service::~Service() {
+}
+
+::grpc::Status TunnelbrokerService::Service::SessionSignature(::grpc::ServerContext* context, const ::tunnelbroker::SessionSignatureRequest* request, ::tunnelbroker::SessionSignatureResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status TunnelbrokerService::Service::NewSession(::grpc::ServerContext* context, const ::tunnelbroker::NewSessionRequest* request, ::tunnelbroker::NewSessionResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status TunnelbrokerService::Service::Send(::grpc::ServerContext* context, const ::tunnelbroker::SendRequest* request, ::google::protobuf::Empty* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status TunnelbrokerService::Service::Get(::grpc::ServerContext* context, const ::tunnelbroker::GetRequest* request, ::grpc::ServerWriter< ::tunnelbroker::GetResponse>* writer) {
+  (void) context;
+  (void) request;
+  (void) writer;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+
 }  // namespace tunnelbroker
 
