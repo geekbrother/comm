@@ -5,45 +5,49 @@ package tunnelbroker;
 import "google/protobuf/empty.proto";
 
 service TunnelBrokerService {
-  rpc CheckIfPrimaryDeviceOnline(CheckRequest) returns (CheckResponse) {}
-  rpc BecomeNewPrimaryDevice(NewPrimaryRequest) returns (NewPrimaryResponse) {}
-  rpc SendPong (PongRequest) returns (google.protobuf.Empty) {}
+  rpc NewSession(NewSessionRequest) returns (NewSessionResponse) {}
+  rpc Send(SendRequest) returns (google.protobuf.Empty) {}
+  rpc Get(GetRequest) returns (stream GetResponse) {}
 }
 
-// for CheckIfPrimaryDeviceOnline
+// Session
 
-enum CheckResponseType {
-  PRIMARY_DOESNT_EXIST = 0;
-  PRIMARY_ONLINE = 1;
-  PRIMARY_OFFLINE = 2;
-  CURRENT_IS_PRIMARY = 3;
+message NewSessionRequest {
+  string deviceID = 1;
+  string notifyToken = 2;
+  enum deviceType {
+    MOBILE = 0;
+    WEB = 1;
+    KEYSERVER = 2;
+  }
+  message deviceInfo {
+    string appVersion = 1;
+    deviceType type = 2;
+    string os = 3;
+  }
 }
 
-// TODO: all the requests are the same, maybe there can be a mutual type for all of them
-// leaving this as is for now as there may be some differences
-message CheckRequest {
-  string userId = 1;
-  string deviceToken = 2;
+message NewSessionResponse {
+  string sessionID = 1;
 }
 
-message CheckResponse {
-  CheckResponseType checkResponseType = 1;
+// Send payload to device
+
+message SendRequest {
+  string sessionID = 1;
+  string toDeviceID = 2;
+  bytes payload = 3;
+  repeated string blobHash = 4;
 }
 
-// BecomeNewPrimaryDevice
+// Get messages from devices
 
-message NewPrimaryRequest {
-  string userId = 1;
-  string deviceToken = 2;
+message GetRequest {
+  string sessionID = 1;
 }
 
-message NewPrimaryResponse {
-  bool success = 1;
-}
-
-// for SendPong
-
-message PongRequest {
-  string userId = 1;
-  string deviceToken = 2;
+message GetResponse {
+  string deviceID = 1;
+  bytes payload = 2;
+  repeated string blobHash = 3;
 }
