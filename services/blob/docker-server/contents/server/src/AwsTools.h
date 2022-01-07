@@ -1,5 +1,7 @@
 #pragma once
 
+#include "AwsS3Bucket.h"
+
 #include <aws/core/Aws.h>
 #include <aws/dynamodb/DynamoDBClient.h>
 #include <aws/s3/S3Client.h>
@@ -15,6 +17,10 @@ const std::string BLOB_TABLE_NAME = "blob-service-blob";
 const std::string REVERSE_INDEX_TABLE_NAME = "blob-service-reverse-index";
 const std::string BLOB_BUCKET_NAME = "commapp-blob";
 
+AwsS3Bucket getBucket(const std::string &bucketName);
+
+std::vector<std::string> listBuckets();
+
 class AwsObjectsFactory {
 public:
   static std::unique_ptr<Aws::DynamoDB::DynamoDBClient> getDynamoDBClient() {
@@ -26,6 +32,8 @@ public:
   static std::unique_ptr<Aws::S3::S3Client> getS3Client() {
     Aws::Client::ClientConfiguration config;
     config.region = AWS_REGION;
+    config.connectTimeoutMs;
+    config.requestTimeoutMs;
     return std::make_unique<Aws::S3::S3Client>(config);
   }
 };
