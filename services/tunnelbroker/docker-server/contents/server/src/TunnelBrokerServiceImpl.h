@@ -17,22 +17,28 @@ namespace network {
 
 class TunnelBrokerServiceImpl final
     : public tunnelbroker::TunnelBrokerService::Service {
-  folly::ConcurrentHashMap<std::string, std::shared_ptr<ping::ClientData>>
-      primaries;
 
 public:
-  grpc::Status CheckIfPrimaryDeviceOnline(
+  TunnelBrokerServiceImpl();
+  virtual ~TunnelBrokerServiceImpl();
+
+  // Create new session method
+  grpc::Status NewSession(
       grpc::ServerContext *context,
-      const tunnelbroker::CheckRequest *request,
-      tunnelbroker::CheckResponse *response) override;
-  grpc::Status BecomeNewPrimaryDevice(
+      const tunnelbroker::NewSessionRequest *request,
+      tunnelbroker::NewSessionResponse *reply) override;
+
+  // Send message to deviceID method
+  grpc::Status Send(
       grpc::ServerContext *context,
-      const tunnelbroker::NewPrimaryRequest *request,
-      tunnelbroker::NewPrimaryResponse *response) override;
-  grpc::Status SendPong(
-      grpc::ServerContext *context,
-      const tunnelbroker::PongRequest *request,
-      google::protobuf::Empty *response) override;
+      const tunnelbroker::SendRequest *request,
+      google::protobuf::Empty *reply) override;
+
+  // Get messages for the deviceID from the queue as stream
+  grpc::Status
+  Get(grpc::ServerContext *context,
+      const tunnelbroker::GetRequest *request,
+      grpc::ServerWriter<tunnelbroker::GetResponse> *stream) override;
 };
 
 } // namespace network
