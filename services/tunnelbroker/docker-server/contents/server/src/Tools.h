@@ -1,17 +1,13 @@
 #pragma once
 
-#include <string>
-
+#include "Constants.h"
+#include "Tools.cpp"
 #include <folly/MPMCQueue.h>
+#include <string>
 
 namespace comm {
 namespace network {
 namespace ping {
-
-enum class ClientState {
-  ONLINE,
-  OFFLINE,
-};
 
 struct ClientData {
   const std::string id;
@@ -24,6 +20,16 @@ struct ClientData {
   ClientData(const std::string id, const std::string deviceToken)
       : id(id), deviceToken(deviceToken) {
   }
+};
+
+enum class ClientState {
+  ONLINE,
+  OFFLINE,
+};
+
+enum class ResponseStatus {
+  SUCCESS,
+  ERROR,
 };
 
 } // namespace ping
