@@ -1,12 +1,26 @@
+#pragma once
+
 #include "TunnelBrokerServiceImpl.h"
+#include "AwsTools.h"
+#include "DatabaseManager.h"
+#include "Tools.h"
 
 #include <folly/stop_watch.h>
 #include <chrono>
-
+#include <iostream>
+#include <memory>
 namespace comm {
 namespace network {
 
 using namespace std::chrono_literals;
+
+TunnelBrokerServiceImpl()::TunnelBrokerServiceImpl()() {
+  Aws::InitAPI({});
+}
+
+TunnelBrokerServiceImpl::~TunnelBrokerServiceImpl() {
+  Aws::ShutdownAPI({});
+}
 
 grpc::Status TunnelBrokerServiceImpl::CheckIfPrimaryDeviceOnline(
     grpc::ServerContext *context,
@@ -97,6 +111,62 @@ grpc::Status TunnelBrokerServiceImpl::SendPong(
     iterator->second->pingResponses.write(true);
   }
 
+  return grpc::Status::OK;
+}
+
+grpc::Status TunnelBrokerServiceImpl::NewSession(
+    grpc::ServerContext *context,
+    const tunnelbroker::NewSessionRequest *request,
+    grpc::ServerWriter<tunnelbroker::NewSessionResponse> *writer) {
+  tunnelbroker::NewSessionRequest request;
+  tunnelbroker::NewSessionResponse response;
+  std::shared_ptr<database::DeviceSessionItem> deviceSessionItem;
+  const std::string deviceId = request->deviceId();
+  const std::string userId = request->userId();
+  const std::string notifyToken = request->notifyToken();
+  const std::string typeOs = request->typeOs();
+  const std::string sessionId = randomString(SESSION_ID_LENGTH);
+  try {
+    // need to add check if the session already exist to the database maanger
+    // and return status error.
+    deviceSessionItem = std::make_shared<database::DeviceSessionItem>(
+        sessionId, deviceId, userId, notifyToken, typeOs);
+    database::DatabaseManager::getInstance().putSessionItem(*deviceSessionItem);
+  } catch (std::runtime_error &e) {
+    std::cout << "Error while processing NewSession request: " << e.what()
+              << std::endl;
+    return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
+  }
+  return grpc::Status::OK;
+}
+
+grpc::Status TunnelBrokerServiceImpl::Send(
+    grpc::ServerContext *context,
+    const tunnelbroker::SendRequest *request,
+    grpc::ServerWriter<tunnelbroker::SendResponse> *writer) {
+  try {
+    // Todo:
+    // Send implementation
+  } catch (std::runtime_error &e) {
+    std::cout << "Error while processing Send request: " << e.what()
+              << std::endl;
+    return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
+  }
+  return grpc::Status::OK;
+}
+
+grpc::Status TunnelBrokerServiceImpl::Get(
+    grpc::ServerContext *context,
+    const tunnelbroker::GetRequest *request,
+    grpc::ServerWriter<tunnelbroker::GetResponse> *stream) {
+  try {
+    // Todo:
+    // Get implementation
+  } catch (std::runtime_error &e) {
+    std::cout << "Error while processing Get request: " << e.what()
+              << std::endl;
+    return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
+  }
   return grpc::Status::OK;
 }
 
