@@ -21,6 +21,10 @@ class TunnelBrokerServiceImpl final
       primaries;
 
 public:
+  TunnelBrokerServiceImpl();
+  virtual ~TunnelBrokerServiceImpl();
+
+  // Testing methods
   grpc::Status CheckIfPrimaryDeviceOnline(
       grpc::ServerContext *context,
       const tunnelbroker::CheckRequest *request,
@@ -33,6 +37,24 @@ public:
       grpc::ServerContext *context,
       const tunnelbroker::PongRequest *request,
       google::protobuf::Empty *response) override;
+
+  // Create new session method
+  grpc::Status NewSession(
+      grpc::ServerContext *context,
+      const tunnelbroker::NewSessionRequest *request,
+      grpc::ServerWriter<tunnelbroker::NewSessionResponse> *writer) override;
+
+  // Send message to deviceID method
+  grpc::Status Send(
+      grpc::ServerContext *context,
+      const tunnelbroker::SendRequest *request,
+      grpc::ServerWriter<tunnelbroker::SendResponse> *writer) override;
+
+  // Get messages for the deviceID from the queue as stream
+  grpc::Status
+  Get(grpc::ServerContext *context,
+      const tunnelbroker::GetRequest *request,
+      grpc::ServerWriter<tunnelbroker::GetResponse> *stream) override;
 };
 
 } // namespace network
