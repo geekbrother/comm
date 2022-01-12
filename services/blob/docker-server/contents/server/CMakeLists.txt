@@ -44,13 +44,30 @@ find_package(Boost 1.40 COMPONENTS program_options REQUIRED)
 find_package(OpenSSL REQUIRED)
 
 file(GLOB GENERATED_CODE "./_generated/*.cc")
+set(DEV_SOURCE_CODE "")
+set(DEV_HEADERS_PATH "")
+if ($ENV{COMM_SERVICES_DEV_MODE} MATCHES 1)
+  file(GLOB DEV_SOURCE_CODE "./dev/*.cpp" "./src/*.dev.cpp" "./src/**/*.dev.cpp")
+  set(DEV_HEADERS_PATH "./dev")
+endif()
+
 file(GLOB SOURCE_CODE "./src/*.cpp" "./src/**/*.cpp")
+list(FILTER SOURCE_CODE EXCLUDE REGEX ".*.dev.cpp$")
+
+foreach (ITEM ${DEV_SOURCE_CODE})
+  string(REPLACE "/" ";" SPLIT_ITEM ${ITEM})
+  list(GET SPLIT_ITEM -1 FILE_FULL_NAME)
+  string(REPLACE ".dev.cpp" ".cpp" FILE_NAME ${FILE_FULL_NAME})
+  list(FILTER SOURCE_CODE EXCLUDE REGEX ".*${FILE_NAME}$")
+  list(APPEND SOURCE_CODE "${ITEM}")
+endforeach()
 
 include_directories(
   ./src
   ./src/DatabaseEntities
   ./_generated
   ${Boost_INCLUDE_DIR}
+  ${DEV_HEADERS_PATH}
 )
 
 set(
