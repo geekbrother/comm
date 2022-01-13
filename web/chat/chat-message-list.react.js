@@ -44,6 +44,7 @@ import type {
   OnMessagePositionWithContainerInfo,
   MessagePositionInfo,
 } from './position-types';
+import RelationshipPrompt from './relationship-prompt/relationship-prompt';
 
 type BaseProps = {
   +setModal: (modal: ?React.Node) => void,
@@ -270,6 +271,9 @@ class ChatMessageList extends React.PureComponent<Props, State> {
         />
       );
     }
+    const relationshipPrompt = this.props.threadInfo ? (
+      <RelationshipPrompt threadInfo={this.props.threadInfo} />
+    ) : null;
 
     const messageContainerStyle = classNames({
       [css.messageContainer]: true,
@@ -278,6 +282,7 @@ class ChatMessageList extends React.PureComponent<Props, State> {
     return connectDropTarget(
       <div className={containerStyle} ref={this.containerRef}>
         <div className={css.outerMessageContainer}>
+          {relationshipPrompt}
           <div className={messageContainerStyle} ref={this.messageContainerRef}>
             {messages}
           </div>
