@@ -314,6 +314,15 @@ After installing Protobuf, you will also need to install gRPC using `brew instal
 
 Please note that the order is crucial here - you have to first install Protobuf and only then gRPC. This is because otherwise gRPC will install Protobuf automatically from its dependency list, but the version of Protobuf will be incorrect.
 
+In order to generate the files, you should do the following:
+
+```
+cd native
+yarn codegen-grpc
+```
+
+The point here is to use the script `./scripts/mark-generated.sh` which adds `@generated` annotation at the beginning of those files. This makes phabricator hide them in revisions.
+
 ## Arcanist
 
 We use Phabricator for code review. To upload a “diff” to Phabricator, you’ll need to use a tool called Arcanist.
