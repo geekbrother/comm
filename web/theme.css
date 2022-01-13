@@ -52,11 +52,8 @@
   --keyserver-selection: var(--violet-dark-60);
   --thread-selection: var(--violet-light-80);
   --selected-thread-bg: var(--shades-black-90);
-<<<<<<< HEAD
   --chat-timestamp-color: var(--shades-black-60);
   --tool-tip-bg: var(--shades-black-80);
   --tool-tip-color: var(--shades-black-60);
   --border-color: var(--shades-black-60);
-=======
->>>>>>> 24e7d19b8 ([web] [7/n] [darktheme] update thread list color to dark)
 }

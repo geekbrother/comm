@@ -4,11 +4,7 @@ div.container {
   top: 0;
   bottom: 0;
   background-color: var(--bg);
-<<<<<<< HEAD
   border-right: 1px solid var(--border-color);
-=======
-  border-right: 2px solid #e4e4e4;
->>>>>>> 24e7d19b8 ([web] [7/n] [darktheme] update thread list color to dark)
   display: flex;
   flex-direction: column;
 }
