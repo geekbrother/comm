@@ -129,6 +129,22 @@ extern RCTBridge *_bridge_reanimated;
       [moduleRegistry getExportedModuleOfClass:[EXSecureStore class]];
   [[CommSecureStoreIOSWrapper sharedInstance] init:secureStore];
 
+  NSString *encryptionKey;
+  @try {
+    encryptionKey =
+        [[CommSecureStoreIOSWrapper sharedInstance] get:@"encryptionKey"];
+  } @catch (NSException *exception) {
+    encryptionKey = [Tools generateSQLCipherEncryptionKey];
+    [[CommSecureStoreIOSWrapper sharedInstance] set:@"encryptionKey"
+                                              value:encryptionKey];
+  }
+  // set sqlite file path
+  comm::SQLiteQueryExecutor::sqliteFilePath =
+      std::string([[Tools getSQLiteFilePath] UTF8String]);
+  // set SQL Cipher encryptionKey
+  comm::SQLiteQueryExecutor::encryptionKey =
+      std::string([encryptionKey UTF8String]);
+
   return YES;
 }
 
@@ -223,10 +239,6 @@ using Runtime = facebook::jsi::Runtime;
           rt,
           facebook::jsi::PropNameID::forAscii(rt, "CommCoreModule"),
           facebook::jsi::Object::createFromHostObject(rt, nativeModule));
-
-      // set sqlite file path
-      comm::SQLiteQueryExecutor::sqliteFilePath =
-          std::string([[Tools getSQLiteFilePath] UTF8String]);
 
       auto reanimatedModule =
           reanimated::createReanimatedModule(bridge.jsCallInvoker);

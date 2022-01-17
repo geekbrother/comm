@@ -18,9 +18,17 @@ public class CommHybrid {
 
     // additional parameters
     String sqliteFilePath = context.getDatabasePath("comm.sqlite").toString();
+    String encryptionKey = CommSecureStore.get("encryptionKey");
+
+    if (encryptionKey == null) {
+      encryptionKey = PlatformSpecificTools.generateSQLCipherEncryptionKey();
+      CommSecureStore.set("encryptionKey", encryptionKey);
+    }
+
     HashMap<String, Object> additionalParameters =
         new HashMap<String, Object>();
     additionalParameters.put("sqliteFilePath", sqliteFilePath);
+    additionalParameters.put("encryptionKey", encryptionKey);
 
     new CommHybrid().initHybrid(contextPointer, holder, additionalParameters);
   }

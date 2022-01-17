@@ -32,7 +32,10 @@ public:
 
     jni::local_ref<jni::JObject> sqliteFilePathObj =
         additionalParameters.get("sqliteFilePath");
+    jni::local_ref<jni::JObject> encryptionKeyObj =
+        additionalParameters.get("encryptionKey");
     comm::SQLiteQueryExecutor::sqliteFilePath = sqliteFilePathObj->toString();
+    comm::SQLiteQueryExecutor::encryptionKey = encryptionKeyObj->toString();
   }
 
   static void registerNatives() {
