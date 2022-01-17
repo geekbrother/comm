@@ -1,4 +1,5 @@
 #import "Tools.h"
+#import "PlatformSpecificTools.h"
 #import <Foundation/Foundation.h>
 #import <stdexcept>
 
@@ -20,6 +21,17 @@
   }
 
   return [documentsUrl URLByAppendingPathComponent:@"comm.sqlite"].path;
+}
+
++ (NSString *)generateSQLCipherEncryptionKey {
+  comm::crypto::OlmBuffer buffer;
+  comm::PlatformSpecificTools::generateSecureRandomBytes(buffer, 32);
+  NSMutableString *randomHexString = [NSMutableString new];
+
+  for (NSInteger i = 0; i < buffer.size(); i++) {
+    [randomHexString appendFormat:@"%02X", buffer[i]];
+  }
+  return randomHexString;
 }
 
 @end
