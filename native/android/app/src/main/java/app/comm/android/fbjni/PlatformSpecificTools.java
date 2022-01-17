@@ -13,4 +13,13 @@ public class PlatformSpecificTools {
     secureRandom.nextBytes(buffer);
     return buffer;
   }
+
+  public static String generateSQLCipherEncryptionKey() {
+    byte[] randomBytes = PlatformSpecificTools.generateSecureRandomBytes(32);
+    String randomHexString = "";
+    for (byte b : randomBytes) {
+      randomHexString += String.format("%02X", b);
+    }
+    return randomHexString;
+  }
 }

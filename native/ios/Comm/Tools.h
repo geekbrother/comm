@@ -4,4 +4,5 @@
 
 @interface Tools : NSObject
 + (NSString *)getSQLiteFilePath;
++ (NSString *)generateSQLCipherEncryptionKey;
 @end
