@@ -30,6 +30,9 @@ class DatabaseManager {
 
 public:
   static DatabaseManager &getInstance();
+  void putSessionItem(const DeviceSessionItem &item);
+  std::shared_ptr<DeviceSessionItem>
+  findSessionItem(const std::string &deviceID);
 };
 
 template <typename T>
