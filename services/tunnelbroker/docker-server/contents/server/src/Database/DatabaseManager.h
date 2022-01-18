@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AwsTools.h"
+#include "Constants.h"
 #include "DatabaseEntitiesTools.h"
 #include "DeviceSessionItem.h"
 #include "Tools.h"
@@ -8,10 +9,11 @@
 #include <aws/core/Aws.h>
 #include <aws/core/utils/Outcome.h>
 #include <aws/dynamodb/model/AttributeDefinition.h>
+#include <aws/dynamodb/model/DescribeTableRequest.h>
+#include <aws/dynamodb/model/DescribeTableResult.h>
 #include <aws/dynamodb/model/GetItemRequest.h>
 #include <aws/dynamodb/model/PutItemRequest.h>
 
-#include <memory>
 #include <string>
 
 namespace comm {
@@ -30,6 +32,10 @@ class DatabaseManager {
 
 public:
   static DatabaseManager &getInstance();
+  bool isAvailable();
+  void putSessionItem(const DeviceSessionItem &item);
+  std::shared_ptr<DeviceSessionItem>
+  findSessionItem(const std::string &deviceID);
 };
 
 template <typename T>
