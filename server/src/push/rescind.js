@@ -173,10 +173,8 @@ function prepareIOSNotification(
   notification.badge = unreadCount;
   notification.topic = getAPNsNotificationTopic(codeVersion);
   notification.payload = {
-    managedAps: {
-      action: 'CLEAR',
-      notificationId: iosID,
-    },
+    backgroundNotifType: 'CLEAR',
+    notificationId: iosID,
   };
   return notification;
 }
