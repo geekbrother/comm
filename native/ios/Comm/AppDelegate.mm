@@ -57,6 +57,8 @@ static void InitializeFlipper(UIApplication *application) {
 #import <RNReanimated/REAEventDispatcher.h>
 #import <RNReanimated/REAModule.h>
 
+NSString *const backgroundNotificationTypeKey = @"backgroundNotifType";
+
 @interface AppDelegate () <
     RCTCxxBridgeDelegate,
     RCTTurboModuleManagerDelegate> {
@@ -158,8 +160,19 @@ extern RCTBridge *_bridge_reanimated;
           fetchCompletionHandler:
               (void (^)(UIBackgroundFetchResult))completionHandler {
   if (notification[@"aps"][@"content-available"] &&
-      notification[@"backgroundNotifType"] &&
-      [notification[@"backgroundNotifType"] isEqualToString:@"PING"]) {
+      notification[backgroundNotificationTypeKey]) {
+    [self handleBackgroundNotification:notification
+                fetchCompletionHandler:completionHandler];
+  } else {
+    [RNNotifications didReceiveRemoteNotification:notification
+                           fetchCompletionHandler:completionHandler];
+  }
+}
+
+- (void)handleBackgroundNotification:(NSDictionary *)notification
+              fetchCompletionHandler:
+                  (void (^)(UIBackgroundFetchResult))completionHandler {
+  if ([notification[backgroundNotificationTypeKey] isEqualToString:@"PING"]) {
     comm::GlobalNetworkSingleton::instance.scheduleOrRun(
         [=](comm::NetworkModule &networkModule) {
           networkModule.sendPong();
