@@ -57,6 +57,8 @@ static void InitializeFlipper(UIApplication *application) {
 #import <RNReanimated/REAEventDispatcher.h>
 #import <RNReanimated/REAModule.h>
 
+#import <UserNotifications/UserNotifications.h>
+
 NSString *const backgroundNotificationTypeKey = @"backgroundNotifType";
 
 @interface AppDelegate () <
@@ -180,6 +182,22 @@ extern RCTBridge *_bridge_reanimated;
             completionHandler(UIBackgroundFetchResultNewData);
           });
         });
+  } else if ([notification[backgroundNotificationTypeKey]
+                 isEqualToString:@"CLEAR"]) {
+    [[UNUserNotificationCenter currentNotificationCenter]
+        getDeliveredNotificationsWithCompletionHandler:^(
+            NSArray<UNNotification *> *notifications) {
+          for (UNNotification *notif in notifications) {
+            if ([notification[@"notificationId"]
+                    isEqual:notif.request.content.userInfo[@"id"]]) {
+              NSArray *identifiers =
+                  [NSArray arrayWithObjects:notif.request.identifier, nil];
+              [[UNUserNotificationCenter currentNotificationCenter]
+                  removeDeliveredNotificationsWithIdentifiers:identifiers];
+            }
+          }
+          completionHandler(UIBackgroundFetchResultNewData);
+        }];
   } else {
     [RNNotifications didReceiveRemoteNotification:notification
                            fetchCompletionHandler:completionHandler];
