@@ -1,12 +1,17 @@
 // @flow
 
+import invariant from 'invariant';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
-import { mostRecentReadThreadSelector } from 'lib/selectors/thread-selectors';
+import {
+  mostRecentReadThreadSelector,
+  unreadCount,
+} from 'lib/selectors/thread-selectors';
 import type { Dispatch } from 'lib/types/redux-types';
 
 import { useSelector } from '../redux/redux-utils';
+import getTitle from '../title/getTitle';
 import { type NavInfo, updateNavInfoActionType } from '../types/nav-types';
 import css from './sidebar.css';
 
@@ -19,6 +24,8 @@ type Props = {
   +dispatch: Dispatch,
   +mostRecentReadThread: ?string,
   +activeThreadCurrentlyUnread: boolean,
+  +viewerID: ?string,
+  +unreadCount: number,
 };
 
 class AppSwitcher extends React.PureComponent<Props> {
@@ -44,6 +51,13 @@ class AppSwitcher extends React.PureComponent<Props> {
   };
 
   render() {
+    const { viewerID, unreadCount: curUnreadCount } = this.props;
+    invariant(viewerID, 'should be set');
+    let chatBadge = null;
+    if (curUnreadCount > 0) {
+      chatBadge = <div className={css.chatBadge}>{curUnreadCount}</div>;
+    }
+
     return (
       <div className={css.container}>
         <ul>
@@ -55,6 +69,7 @@ class AppSwitcher extends React.PureComponent<Props> {
           <li>
             <p>
               <a onClick={this.onClickChat}>Chat</a>
+              {chatBadge}
             </p>
           </li>
         </ul>
@@ -76,8 +91,17 @@ const ConnectedAppSwitcher: React.ComponentType<BaseProps> = React.memo<BaseProp
         !activeChatThreadID ||
         !!state.threadStore.threadInfos[activeChatThreadID]?.currentUser.unread,
     );
+    const viewerID = useSelector(
+      state => state.currentUserInfo && state.currentUserInfo.id,
+    );
+
+    const boundUnreadCount = useSelector(unreadCount);
 
     const dispatch = useDispatch();
+
+    React.useEffect(() => {
+      document.title = getTitle(boundUnreadCount);
+    }, [boundUnreadCount]);
 
     return (
       <AppSwitcher
@@ -85,6 +109,8 @@ const ConnectedAppSwitcher: React.ComponentType<BaseProps> = React.memo<BaseProp
         dispatch={dispatch}
         mostRecentReadThread={mostRecentReadThread}
         activeThreadCurrentlyUnread={activeThreadCurrentlyUnread}
+        viewerID={viewerID}
+        unreadCount={boundUnreadCount}
       />
     );
   },
