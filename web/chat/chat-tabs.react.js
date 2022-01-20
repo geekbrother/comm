@@ -39,7 +39,7 @@ function ChatTabs(props: Props): React.Node {
     <div className={css.container}>
       <div className={css.tabs}>
         <ChatThreadTab
-          title="Focused"
+          title="Focus"
           tabIsActive={activeTab === 'Focused'}
           onClick={onClickHome}
         />
