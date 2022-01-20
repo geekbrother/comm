@@ -4,7 +4,6 @@ namespace comm {
 namespace network {
 
 void AMQPConnect() {
-
   std::cout << "AMQP: Connecting to " << AMQP_URI << std::endl;
 
   // Make a connection and channel
@@ -14,6 +13,11 @@ void AMQPConnect() {
   AmqpChannel = std::make_unique<AMQP::TcpChannel>(&connection);
 
   AmqpChannel->onError([&connection](const char *message) {
+    const std::string strMessage(message);
+    if (strMessage == "connection lost") {
+      std::cout << "connection lost, will try to reconnect" << std::endl;
+      return;
+    }
     throw std::runtime_error("AMQP: Channel error: " + std::string(message));
   });
 
@@ -50,6 +54,12 @@ void AMQPConnect() {
         throw std::runtime_error("AMQP: Queue creation error.");
       });
   BoostIOservice.run();
+}
+
+void AMQPConnectWrapper() {
+  while (true) {
+    AMQPConnect();
+  }
 }
 
 bool AMQPSend(
