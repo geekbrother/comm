@@ -3,28 +3,16 @@
 import invariant from 'invariant';
 import * as React from 'react';
 
-import {
-  type ChatThreadItem,
-  chatListData as chatListDataSelector,
-} from 'lib/selectors/chat-selectors';
 import { threadInfoSelector } from 'lib/selectors/thread-selectors';
-import {
-  threadInBackgroundChatList,
-  threadInHomeChatList,
-  threadInChatList,
-} from 'lib/shared/thread-utils';
+import { threadInChatList } from 'lib/shared/thread-utils';
 import { threadTypes } from 'lib/types/thread-types';
 
 import { useSelector } from '../redux/redux-utils';
-import {
-  useChatThreadItem,
-  activeChatThreadItem as activeChatThreadItemSelector,
-} from '../selectors/chat-selectors';
+import { activeChatThreadItem as activeChatThreadItemSelector } from '../selectors/chat-selectors';
 
 type ChatTabType = 'Focused' | 'Background';
 type ThreadListContextType = {
   +activeTab: ChatTabType,
-  +threadList: $ReadOnlyArray<ChatThreadItem>,
   +setActiveTab: (newActiveTab: ChatTabType) => void,
 };
 
@@ -79,111 +67,12 @@ function ThreadListProvider(props: ThreadListProviderProps): React.Node {
     }
   }, [activeThreadID, shouldChangeTab, activeTopLevelThreadIsFromHomeTab]);
 
-  const activeThreadOriginalTab = React.useMemo(() => {
-    if (activeTopLevelThreadIsInChatList) {
-      return null;
-    }
-    return activeTab;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTopLevelThreadIsInChatList, activeThreadID]);
-
-  const makeSureActiveSidebarIsIncluded = React.useCallback(
-    (threadListData: $ReadOnlyArray<ChatThreadItem>) => {
-      if (
-        !activeChatThreadItem ||
-        activeChatThreadItem.threadInfo.type !== threadTypes.SIDEBAR
-      ) {
-        return threadListData;
-      }
-
-      const sidebarParentIndex = threadListData.findIndex(
-        thread =>
-          thread.threadInfo.id ===
-          activeChatThreadItem.threadInfo.parentThreadID,
-      );
-      if (sidebarParentIndex === -1) {
-        return threadListData;
-      }
-      const parentItem = threadListData[sidebarParentIndex];
-
-      for (const sidebarItem of parentItem.sidebars) {
-        if (sidebarItem.type !== 'sidebar') {
-          continue;
-        } else if (
-          sidebarItem.threadInfo.id === activeChatThreadItem.threadInfo.id
-        ) {
-          return threadListData;
-        }
-      }
-
-      let indexToInsert = parentItem.sidebars.findIndex(
-        sidebar =>
-          sidebar.lastUpdatedTime === undefined ||
-          sidebar.lastUpdatedTime < activeChatThreadItem.lastUpdatedTime,
-      );
-      if (indexToInsert === -1) {
-        indexToInsert = parentItem.sidebars.length;
-      }
-      const activeSidebar = {
-        type: 'sidebar',
-        lastUpdatedTime: activeChatThreadItem.lastUpdatedTime,
-        mostRecentNonLocalMessage:
-          activeChatThreadItem.mostRecentNonLocalMessage,
-        threadInfo: activeChatThreadItem.threadInfo,
-      };
-      const newSidebarItems = [...parentItem.sidebars];
-      newSidebarItems.splice(indexToInsert, 0, activeSidebar);
-
-      const newThreadListData = [...threadListData];
-      newThreadListData[sidebarParentIndex] = {
-        ...parentItem,
-        sidebars: newSidebarItems,
-      };
-      return newThreadListData;
-    },
-    [activeChatThreadItem],
-  );
-
-  const chatListData = useSelector(chatListDataSelector);
-  const activeTopLevelChatThreadItem = useChatThreadItem(
-    activeTopLevelThreadInfo,
-  );
-  const { homeThreadList, backgroundThreadList } = React.useMemo(() => {
-    const home = chatListData.filter(item =>
-      threadInHomeChatList(item.threadInfo),
-    );
-    const background = chatListData.filter(item =>
-      threadInBackgroundChatList(item.threadInfo),
-    );
-    if (activeTopLevelChatThreadItem && !activeTopLevelThreadIsInChatList) {
-      if (activeThreadOriginalTab === 'Focused') {
-        home.unshift(activeTopLevelChatThreadItem);
-      } else {
-        background.unshift(activeTopLevelChatThreadItem);
-      }
-    }
-    return {
-      homeThreadList: makeSureActiveSidebarIsIncluded(home),
-      backgroundThreadList: makeSureActiveSidebarIsIncluded(background),
-    };
-  }, [
-    activeThreadOriginalTab,
-    activeTopLevelChatThreadItem,
-    activeTopLevelThreadIsInChatList,
-    chatListData,
-    makeSureActiveSidebarIsIncluded,
-  ]);
-
-  const currentThreadList =
-    activeTab === 'Focused' ? homeThreadList : backgroundThreadList;
-
   const threadListContext = React.useMemo(
     () => ({
       activeTab,
-      threadList: currentThreadList,
       setActiveTab,
     }),
-    [activeTab, currentThreadList],
+    [activeTab],
   );
 
   return (

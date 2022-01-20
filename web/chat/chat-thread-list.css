@@ -1,3 +1,5 @@
+@import '../theme.css';
+
 div.thread {
   display: flex;
   flex-direction: row;
@@ -182,4 +184,54 @@ svg.clearQuery:hover {
 
 div.spacer {
   height: 6px;
+}
+
+div.emptyItem {
+  padding: 10px;
+  font-size: 16px;
+  text-align: center;
+  white-space: pre-wrap;
+}
+
+div.threadListContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+div.searchContainer {
+  display: flex;
+  align-items: center;
+  margin: 1rem;
+  column-gap: 0.5rem;
+  outline: 2px solid var(--violet-light-60);
+}
+
+div.searchContainer:focus-within {
+  outline: 2px solid var(--violet-dark-60);
+}
+
+input.searchInput {
+  font-size: var(--s-font-14);
+  padding: 0.5rem;
+  flex: 1;
+  border: none;
+  color: var(--violet-dark-60);
+  outline: none;
+}
+
+input.searchInput::placeholder {
+  color: var(--violet-light-100);
+}
+
+button.clearSearch {
+  color: var(--violet-dark-60);
+  transition: ease-in-out 0.25s;
+  border: none;
+  padding: 0 1rem;
+  font-size: var(--xl-font-20);
+  background: none;
+}
+
+button.clearSearchDisabled {
+  opacity: 0;
 }
