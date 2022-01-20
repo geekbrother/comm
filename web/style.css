@@ -84,7 +84,7 @@ div.main-header > h1 {
   font-family: var(--font-logo);
   line-height: var(--line-height-text);
   font-weight: var(--semi-bold);
-  font-size: var(--logo-font);
+  font-size: var(--logo-font-22);
 }
 
 div.main-content-container {
