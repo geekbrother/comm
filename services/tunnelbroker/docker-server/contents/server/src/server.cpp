@@ -33,7 +33,7 @@ void RunServer() {
 } // namespace comm
 
 int main(int argc, char **argv) {
-  std::thread amqpThread(comm::network::AMQPConnect);
+  std::thread amqpThread(comm::network::AMQPConnectWrapper);
   std::thread grpcThread(comm::network::RunServer);
   amqpThread.join();
   grpcThread.join();
