@@ -57,4 +57,5 @@
   --tool-tip-color: var(--shades-black-60);
   --border-color: var(--shades-black-60);
   --spaces-bg: var(--shades-black-90);
+  --unread-bg: var(--error-primary);
 }
