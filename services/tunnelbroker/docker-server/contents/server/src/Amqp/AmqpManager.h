@@ -13,6 +13,7 @@ namespace network {
 static std::unique_ptr<AMQP::TcpChannel> AmqpChannel;
 static std::atomic<bool> AmqpReady;
 
+void AMQPConnectWrapper();
 void AMQPConnect();
 bool AMQPSend(
     std::string toDeviceID,
