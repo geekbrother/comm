@@ -50,4 +50,9 @@
   --chat-confirmation-icon: var(--violet-dark-100);
   --keyserver-selection: var(--violet-dark-60);
   --thread-selection: var(--violet-light-80);
+
+  --relationship-button-green: var(--success-primary);
+  --relationship-button-red: var(--error-primary);
+  --relationship-button-text: var(--color);
+  --relationship-actions-bg: var(--shades-white-70);
 }
