@@ -1,11 +1,11 @@
 #include "CommCoreModule.h"
 #include "DatabaseManager.h"
+#include "GRPCStreamHostObject.h"
 #include "InternalModules/GlobalNetworkSingleton.h"
 #include "InternalModules/NetworkModule.h"
 #include "Logger.h"
 #include "MessageStoreOperations.h"
 #include "ThreadStoreOperations.h"
-
 #include <folly/Optional.h>
 
 #include "../DatabaseManagers/entities/Media.h"
@@ -887,7 +887,8 @@ jsi::Value CommCoreModule::getUserOneTimeKeys(jsi::Runtime &rt) {
 }
 
 jsi::Value CommCoreModule::openSocket(jsi::Runtime &rt) {
-  return jsi::String::createFromUtf8(rt, std::string{"unimplemented"});
+  auto hostObject = std::make_shared<GRPCStreamHostObject>();
+  return jsi::Object::createFromHostObject(rt, hostObject);
 }
 
 CommCoreModule::CommCoreModule(
