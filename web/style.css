@@ -14,9 +14,7 @@ html {
 }
 body {
   font-family: var(--font-stack);
-  background-image: url(../images/background.png);
-  background-size: 3000px 2000px;
-  background-attachment: fixed;
+  background: var(--bg);
   height: 100%;
   overflow: hidden;
   font-size: 1.6rem;
@@ -65,7 +63,7 @@ div.layout {
 }
 
 header.header {
-  background-image: url(../images/background.png);
+  background: var(--bg);
   background-size: 3000px 2000px;
   background-attachment: fixed;
   z-index: 1;
@@ -92,7 +90,6 @@ div.main-content-container {
   grid-area: app;
 }
 div.main-content {
-  background-color: rgba(255, 255, 255, 0.84);
   height: 100%;
 }
 
@@ -231,7 +228,7 @@ div.large-modal-overlay {
   padding-top: 50px;
 }
 div.modal-container {
-  background-image: url(../images/background.png);
+  background: var(--bg);
   background-size: 3000px 2000px;
   max-width: 330px;
   border-radius: 15px;
@@ -573,7 +570,7 @@ div.intro-modal {
   div.splash-bottom,
   div.modal-container,
   div.calendar-filters-container {
-    background-image: url(../images/background@2x.png);
+    background: var(--bg);
   }
 }
 
