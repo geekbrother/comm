@@ -57,4 +57,5 @@
   --tool-tip-color: var(--shades-black-60);
   --border-color: var(--shades-black-60);
   --unread-bg: var(--error-primary);
+  --calendar-chevron: var(--shades-black-60);
 }
