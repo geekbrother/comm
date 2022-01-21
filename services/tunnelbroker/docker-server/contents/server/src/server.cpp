@@ -1,4 +1,5 @@
 #include "AmqpManager.h"
+#include "ConfigManager.h"
 #include "Constants.h"
 #include "TunnelbrokerServiceImpl.h"
 
@@ -36,6 +37,10 @@ void ServerRun() {
 } // namespace comm
 
 int main(int argc, char **argv) {
+  // Load config
+  TunnelBrokerConfig config;
+  config.loadConfig();
+
   boost::thread_group threads;
   threads.create_thread(comm::network::AMQPConnect);
   threads.create_thread(comm::network::ServerRun);
