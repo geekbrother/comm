@@ -58,4 +58,6 @@
   --border-color: var(--shades-black-60);
   --unread-bg: var(--error-primary);
   --calendar-chevron: var(--shades-black-60);
+  --calendar-day-bg: var(--shades-black-60);
+  --calendar-day-selected-color: var(--violet-dark-80);
 }
