@@ -3,7 +3,8 @@
 
 using namespace facebook;
 
-GRPCStreamHostObject::GRPCStreamHostObject() : readyState{0} {
+GRPCStreamHostObject::GRPCStreamHostObject()
+    : readyState{0}, onopen{}, onmessage{}, onclose{} {
 }
 
 std::vector<jsi::PropNameID>
@@ -38,5 +39,20 @@ void GRPCStreamHostObject::set(
 
   if (propName == "readyState" && value.isNumber()) {
     this->readyState = static_cast<int>(value.asNumber());
+  }
+
+  if (propName == "onopen" && value.isObject() &&
+      value.asObject(runtime).isFunction(runtime)) {
+    this->onopen = value.asObject(runtime).asFunction(runtime);
+  }
+
+  if (propName == "onmessage" && value.isObject() &&
+      value.asObject(runtime).isFunction(runtime)) {
+    this->onmessage = value.asObject(runtime).asFunction(runtime);
+  }
+
+  if (propName == "onclose" && value.isObject() &&
+      value.asObject(runtime).isFunction(runtime)) {
+    this->onclose = value.asObject(runtime).asFunction(runtime);
   }
 }
