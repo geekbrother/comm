@@ -3,8 +3,35 @@
 
 using namespace facebook;
 
-GRPCStreamHostObject::GRPCStreamHostObject()
-    : readyState{0}, onopen{}, onmessage{}, onclose{} {
+GRPCStreamHostObject::GRPCStreamHostObject(jsi::Runtime &rt)
+    : readyState{0},
+      onopen{},
+      onmessage{},
+      onclose{},
+      send{jsi::Function::createFromHostFunction(
+          rt,
+          jsi::PropNameID::forUtf8(rt, "send"),
+          0,
+          [](facebook::jsi::Runtime &rt,
+             const facebook::jsi::Value &thisVal,
+             const facebook::jsi::Value *args,
+             size_t count) {
+            return jsi::String::createFromUtf8(
+                rt, std::string{"GRPCStream.send: unimplemented"});
+          })},
+      close{
+
+          jsi::Function::createFromHostFunction(
+              rt,
+              jsi::PropNameID::forUtf8(rt, "close"),
+              0,
+              [](facebook::jsi::Runtime &rt,
+                 const facebook::jsi::Value &thisVal,
+                 const facebook::jsi::Value *args,
+                 size_t count) {
+                return jsi::String::createFromUtf8(
+                    rt, std::string{"GRPCStream.close: unimplemented"});
+              })} {
 }
 
 std::vector<jsi::PropNameID>
@@ -29,31 +56,11 @@ GRPCStreamHostObject::get(jsi::Runtime &runtime, const jsi::PropNameID &name) {
   }
 
   if (propName == "send") {
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        0,
-        [](facebook::jsi::Runtime &rt,
-           const facebook::jsi::Value &thisVal,
-           const facebook::jsi::Value *args,
-           size_t count) {
-          return jsi::String::createFromUtf8(
-              rt, std::string{"GRPCStream.send: unimplemented"});
-        });
+    return this->send;
   }
 
   if (propName == "close") {
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        0,
-        [](facebook::jsi::Runtime &rt,
-           const facebook::jsi::Value &thisVal,
-           const facebook::jsi::Value *args,
-           size_t count) {
-          return jsi::String::createFromUtf8(
-              rt, std::string{"GRPCStream.close: unimplemented"});
-        });
+    return this->close;
   }
 
   if (propName == "onopen") {
