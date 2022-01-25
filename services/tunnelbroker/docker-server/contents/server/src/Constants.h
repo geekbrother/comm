@@ -5,9 +5,6 @@
 namespace comm {
 namespace network {
 
-// Tunnelbroker server Identification
-const std::string TUNNELBROKER_ID = "tunnel1";
-
 // AWS
 const std::string DEVICE_SESSIONS_TABLE_NAME = "tunnelbroker-device-session";
 const std::string DEVICE_SESSIONS_VERIFICATION_MESSAGES_TABLE_NAME =
@@ -24,6 +21,8 @@ const std::string SERVER_LISTEN_ADDRESS = "0.0.0.0:50051";
 
 // AMQP (RabbitMQ)
 const std::string AMQP_FANOUT_EXCHANGE_NAME = "allBrokers";
+// number of the AMQP client threads
+const size_t AMQP_CLIENT_THREADS = 1;
 // message TTL
 const size_t AMQP_MESSAGE_TTL = 300 * 1000; // 5 min
 // queue TTL in case of no consumers (tunnelbroker is down)

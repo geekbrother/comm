@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ConfigManager.h"
+
 #include <amqpcpp.h>
 
 #include <atomic>

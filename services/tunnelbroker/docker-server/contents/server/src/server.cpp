@@ -1,4 +1,5 @@
 #include "AmqpManager.h"
+#include "ConfigManager.h"
 #include "Constants.h"
 #include "TunnelbrokerServiceImpl.h"
 
@@ -33,6 +34,9 @@ void RunServer() {
 } // namespace comm
 
 int main(int argc, char **argv) {
+  TunnelbrokerConfig config;
+  config.loadConfig();
+
   std::thread amqpThread(comm::network::AMQPConnect);
   std::thread grpcThread(comm::network::RunServer);
   amqpThread.join();
