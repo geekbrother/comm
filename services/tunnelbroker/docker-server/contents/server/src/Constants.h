@@ -5,9 +5,6 @@
 namespace comm {
 namespace network {
 
-// Tunnelbroker server Identification
-const std::string TUNNELBROKER_ID = "tunnel1";
-
 // AWS
 const std::string DEVICE_SESSIONS_TABLE_NAME = "tunnelbroker-device-session";
 const std::string DEVICE_SESSIONS_VERIFICATION_MESSAGES_TABLE_NAME =
