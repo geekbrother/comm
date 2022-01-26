@@ -27,8 +27,8 @@ import {
 } from 'lib/utils/action-utils';
 
 import { useSelector } from '../../redux/redux-utils';
-import css from '../../style.css';
 import Modal from '../modal.react';
+import tabCSS from './user-settings-modal.css';
 
 type TabType = 'general' | 'delete';
 type TabProps = {
@@ -41,8 +41,8 @@ class Tab extends React.PureComponent<TabProps> {
   render() {
     const { selected, name, tabType } = this.props;
     const classNamesForTab = classNames({
-      [css['current-tab']]: selected,
-      [css['delete-tab']]: selected && tabType === 'delete',
+      [tabCSS['current-tab']]: selected,
+      [tabCSS['delete-tab']]: selected && tabType === 'delete',
     });
     return (
       <li className={classNamesForTab} onClick={this.onClick}>
@@ -122,13 +122,13 @@ class UserSettingsModal extends React.PureComponent<Props, State> {
     if (this.state.currentTabType === 'general') {
       mainContent = (
         <div>
-          <div className={css['form-text']}>
-            <div className={css['form-title']}>Username</div>
-            <div className={css['form-content']}>{this.username}</div>
+          <div className={tabCSS['form-text']}>
+            <div className={tabCSS['form-title']}>Username</div>
+            <div className={tabCSS['form-content']}>{this.username}</div>
           </div>
           <div>
-            <div className={css['form-title']}>New password</div>
-            <div className={css['form-content']}>
+            <div className={tabCSS['form-title']}>New password</div>
+            <div className={tabCSS['form-content']}>
               <div>
                 <input
                   type="password"
@@ -154,7 +154,7 @@ class UserSettingsModal extends React.PureComponent<Props, State> {
       );
     } else if (this.state.currentTabType === 'delete') {
       mainContent = (
-        <p className={css['italic']}>
+        <p className={tabCSS['italic']}>
           Your account will be permanently deleted. There is no way to reverse
           this.
         </p>
@@ -192,7 +192,7 @@ class UserSettingsModal extends React.PureComponent<Props, State> {
 
     return (
       <Modal name="Edit account" onClose={this.clearModal} size="large">
-        <ul className={css['tab-panel']}>
+        <ul className={tabCSS['tab-panel']}>
           <Tab
             name="General"
             tabType="general"
@@ -208,15 +208,15 @@ class UserSettingsModal extends React.PureComponent<Props, State> {
             key="delete"
           />
         </ul>
-        <div className={css['modal-body']}>
+        <div className={tabCSS['modal-body']}>
           <form method="POST">
             {mainContent}
-            <div className={css['user-settings-current-password']}>
-              <p className={css['confirm-account-password']}>
+            <div className={tabCSS['user-settings-current-password']}>
+              <p className={tabCSS['confirm-account-password']}>
                 Please enter your current password to confirm your identity
               </p>
-              <div className={css['form-title']}>Current password</div>
-              <div className={css['form-content']}>
+              <div className={tabCSS['form-title']}>Current password</div>
+              <div className={tabCSS['form-content']}>
                 <input
                   type="password"
                   placeholder="Current password"
@@ -227,9 +227,9 @@ class UserSettingsModal extends React.PureComponent<Props, State> {
                 />
               </div>
             </div>
-            <div className={css['form-footer']}>
+            <div className={tabCSS['form-footer']}>
               {buttons}
-              <div className={css['modal-form-error']}>
+              <div className={tabCSS['modal-form-error']}>
                 {this.state.errorMessage}
               </div>
             </div>
