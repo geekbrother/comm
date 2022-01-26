@@ -1,4 +1,5 @@
 #include "Client.h"
+#include "Logger.h"
 
 namespace comm {
 namespace network {
@@ -55,10 +56,9 @@ void Client::sendPong() {
   request.set_userid(this->id);
   request.set_devicetoken(this->deviceToken);
 
+  Logger::log("Sending PONG");
   grpc::Status status = stub_->SendPong(&context, request, &response);
-  if (!status.ok()) {
-    throw std::runtime_error(status.error_message());
-  }
+  Logger::log(status.error_message());
 }
 
 grpc::Status Client::send(
