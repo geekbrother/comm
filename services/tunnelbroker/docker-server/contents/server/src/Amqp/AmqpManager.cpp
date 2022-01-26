@@ -1,14 +1,14 @@
 #include "AmqpManager.h"
 #include "Constants.h"
 #include "DeliveryBroker.h"
+#include "Tools.h"
 
 #include <boost/asio/io_service.hpp>
 
 namespace comm {
 namespace network {
 
-void AMQPConnect() {
-
+void AMQPConnectInternal() {
   std::cout << "AMQP: Connecting to " << AMQP_URI << std::endl;
 
   boost::asio::io_service BoostIOservice(AMQP_CLIENT_THREADS);
@@ -17,7 +17,9 @@ void AMQPConnect() {
   AmqpChannel = std::make_unique<AMQP::TcpChannel>(&connection);
 
   AmqpChannel->onError([&connection](const char *message) {
-    throw std::runtime_error("AMQP: Channel error: " + std::string(message));
+    std::cout << "channel error: " << message << ", will try to reconnect"
+              << std::endl;
+    AmqpReady = false;
   });
 
   AMQP::Table arguments;
@@ -61,6 +63,24 @@ void AMQPConnect() {
       });
   BoostIOservice.run();
 };
+
+void AMQPConnect() {
+  while (true) {
+    long long currentTimestamp = getCurrentTimestamp();
+    if (lastConnectionTimestamp &&
+        currentTimestamp - lastConnectionTimestamp <
+            AMQP_SHORTEST_RECONNECTION_ATTEMPT_INTERVAL) {
+      throw std::runtime_error(
+          "AMQP reconnection attempt interval too short, tried to reconnect "
+          "after " +
+          std::to_string(currentTimestamp - lastConnectionTimestamp) +
+          "ms, the shortest allowed interval is " +
+          std::to_string(AMQP_SHORTEST_RECONNECTION_ATTEMPT_INTERVAL) + "ms");
+    }
+    lastConnectionTimestamp = currentTimestamp;
+    AMQPConnectInternal();
+  }
+}
 
 bool AMQPSend(
     std::string toDeviceID,
