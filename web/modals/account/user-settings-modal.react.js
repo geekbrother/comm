@@ -39,20 +39,21 @@ type TabProps = {
 };
 class Tab extends React.PureComponent<TabProps> {
   render() {
+    const { selected, name, tabType } = this.props;
     const classNamesForTab = classNames({
-      [css['current-tab']]: this.props.selected,
-      [css['delete-tab']]:
-        this.props.selected && this.props.tabType === 'delete',
+      [css['current-tab']]: selected,
+      [css['delete-tab']]: selected && tabType === 'delete',
     });
     return (
       <li className={classNamesForTab} onClick={this.onClick}>
-        <a>{this.props.name}</a>
+        <a>{name}</a>
       </li>
     );
   }
 
   onClick = () => {
-    return this.props.onClick(this.props.tabType);
+    const { tabType, onClick } = this.props;
+    return onClick(tabType);
   };
 }
 
@@ -117,6 +118,7 @@ class UserSettingsModal extends React.PureComponent<Props, State> {
   };
 
   render() {
+    const { inputDisabled } = this.props;
     let mainContent = null;
     if (this.state.currentTabType === 'general') {
       mainContent = (
@@ -135,7 +137,7 @@ class UserSettingsModal extends React.PureComponent<Props, State> {
                   value={this.state.newPassword}
                   onChange={this.onChangeNewPassword}
                   ref={this.newPasswordInputRef}
-                  disabled={this.props.inputDisabled}
+                  disabled={inputDisabled}
                 />
               </div>
               <div>
@@ -144,7 +146,7 @@ class UserSettingsModal extends React.PureComponent<Props, State> {
                   placeholder="Confirm new password"
                   value={this.state.confirmNewPassword}
                   onChange={this.onChangeConfirmNewPassword}
-                  disabled={this.props.inputDisabled}
+                  disabled={inputDisabled}
                 />
               </div>
             </div>
@@ -167,7 +169,7 @@ class UserSettingsModal extends React.PureComponent<Props, State> {
           type="submit"
           value="Delete account"
           onClick={this.onDelete}
-          disabled={this.props.inputDisabled}
+          disabled={inputDisabled}
         />
       );
     } else {
@@ -177,13 +179,13 @@ class UserSettingsModal extends React.PureComponent<Props, State> {
             type="submit"
             value="Update account"
             onClick={this.onSubmit}
-            disabled={this.props.inputDisabled}
+            disabled={inputDisabled}
           />
           <input
             type="submit"
             value="Log out"
             onClick={this.onLogOut}
-            disabled={this.props.inputDisabled}
+            disabled={inputDisabled}
           />
         </>
       );
@@ -221,7 +223,7 @@ class UserSettingsModal extends React.PureComponent<Props, State> {
                   placeholder="Current password"
                   value={this.state.currentPassword}
                   onChange={this.onChangeCurrentPassword}
-                  disabled={this.props.inputDisabled}
+                  disabled={inputDisabled}
                   ref={this.currentPasswordInputRef}
                 />
               </div>
