@@ -60,8 +60,7 @@
                                            withOptions:[self options]
                                                  error:&error];
   if (error != nil) {
-    [NSException raise:@"secure store error"
-                format:@"error occured when getting data"];
+    return nil;
   }
   return res;
 }
