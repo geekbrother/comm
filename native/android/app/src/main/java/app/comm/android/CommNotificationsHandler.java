@@ -1,5 +1,8 @@
 package app.comm.android;
 
+import android.app.NotificationManager;
+import android.content.Context;
+import com.google.firebase.messaging.RemoteMessage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingService;
 
 /**
@@ -27,4 +30,13 @@ import io.invertase.firebase.messaging.RNFirebaseMessagingService;
  * There's nothing that makes 1st and 2nd solution impossible, but 3rd one is
  * the easiest in terms of making it safe.
  */
-public class CommNotificationsHandler extends RNFirebaseMessagingService {}
+public class CommNotificationsHandler extends RNFirebaseMessagingService {
+  private NotificationManager notificationManager;
+
+  @Override
+  public void onCreate() {
+    super.onCreate();
+    notificationManager = (NotificationManager)this.getSystemService(
+        Context.NOTIFICATION_SERVICE);
+  }
+}
