@@ -26,4 +26,17 @@ void NetworkModule::sendPong() {
 void NetworkModule::close() {
   this->networkClient.reset();
 }
+
+grpc::Status NetworkModule::send(
+    std::string sessionID,
+    std::string toDeviceID,
+    std::string payload,
+    std::vector<std::string> blobHashes) {
+  if (this->networkClient) {
+    return this->networkClient->send(
+        sessionID, toDeviceID, payload, blobHashes);
+  }
+  return grpc::Status::CANCELLED;
+}
+
 } // namespace comm
