@@ -898,6 +898,11 @@ CommCoreModule::CommCoreModule(
       databaseThread(std::make_unique<WorkerThread>("database")),
       cryptoThread(std::make_unique<WorkerThread>("crypto")) {
   GlobalNetworkSingleton::instance.enableMultithreading();
+  GlobalNetworkSingleton::instance.scheduleOrRun(
+      [=](comm::NetworkModule &networkModule) {
+        networkModule.initializeNetworkModule(
+            "userId-placeholder", "deviceToken-placeholder", "localhost");
+      });
 };
 
 } // namespace comm
