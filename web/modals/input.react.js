@@ -3,13 +3,18 @@
 import * as React from 'react';
 
 type Props = React.ElementConfig<typeof ForwardedInput>;
+import css from './input.css';
 
 function Input(props: Props, ref): React.Node {
   const { label, id, ...rest } = props;
   return (
     <>
-      {label && <label htmlFor={id}>{label}</label>}
-      <input id={id} {...rest} ref={ref} />
+      {label && (
+        <label className={css.label} htmlFor={id}>
+          {label}
+        </label>
+      )}
+      <input className={css.input} id={id} {...rest} ref={ref} />
     </>
   );
 }
