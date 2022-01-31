@@ -11,7 +11,13 @@ type Props = {
 };
 
 function Input(props: Props, ref): React.Node {
-  return <input {...props} ref={ref} />;
+  const { label, id, ...rest } = props;
+  return (
+    <>
+      {label && <label htmlFor={id}>{label}</label>}
+      <input id={id} {...rest} ref={ref} />
+    </>
+  );
 }
 
 const ForwardedInput: React.AbstractComponent<
