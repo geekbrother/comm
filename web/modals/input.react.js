@@ -5,7 +5,13 @@ import * as React from 'react';
 type Props = React.ElementConfig<typeof ForwardedInput>;
 
 function Input(props: Props, ref): React.Node {
-  return <input {...props} ref={ref} />;
+  const { label, id, ...rest } = props;
+  return (
+    <>
+      {label && <label htmlFor={id}>{label}</label>}
+      <input id={id} {...rest} ref={ref} />
+    </>
+  );
 }
 
 const ForwardedInput: React.AbstractComponent<
