@@ -19,6 +19,7 @@ public:
       std::string toDeviceID,
       std::string payload,
       std::vector<std::string> blobHashes);
+  void get(std::string sessionID);
   void close();
 };
 } // namespace comm
