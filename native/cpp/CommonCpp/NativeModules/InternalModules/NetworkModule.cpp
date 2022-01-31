@@ -23,6 +23,13 @@ void NetworkModule::sendPong() {
   this->networkClient->sendPong();
 }
 
+void NetworkModule::get(std::string sessionID) {
+  if (!this->networkClient) {
+    return;
+  }
+  this->networkClient->get(sessionId);
+}
+
 void NetworkModule::close() {
   this->networkClient.reset();
 }
