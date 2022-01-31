@@ -1,6 +1,10 @@
 #include "Tools.h"
+#include "Constants.h"
 
+#include <algorithm>
 #include <chrono>
+#include <iostream>
+#include <regex>
 
 namespace comm {
 namespace network {
@@ -22,6 +26,29 @@ long long getCurrentTimestamp() {
   using namespace std::chrono;
   return duration_cast<milliseconds>(system_clock::now().time_since_epoch())
       .count();
+}
+
+bool validateDeviceId(std::string deviceId) {
+  try {
+    const std::regex regexKs("^ks\:.*");
+    if (std::regex_match(deviceId, regexKs)) {
+      if (deviceId == DEVICEID_DEFAULT_KEYSERVER_ID) {
+        return true;
+      }
+      return false;
+    }
+    const std::regex regexFull(
+        "^(ks|mobile|web)\:.{" + std::to_string(DEVICEID_CHAR_LENGTH) + "}$");
+    if (!std::regex_match(deviceId, regexFull)) {
+      return false;
+    }
+    return true;
+  } catch (const std::exception &e) {
+    std::cout << "Tools: "
+              << "Got an exception at `validateDeviceId`: " << e.what()
+              << std::endl;
+    return false;
+  }
 }
 
 } // namespace network
