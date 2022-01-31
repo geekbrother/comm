@@ -1,9 +1,10 @@
 #include "GRPCStreamHostObject.h"
-#import <jsi/jsi.h>
 
 using namespace facebook;
 
-GRPCStreamHostObject::GRPCStreamHostObject(jsi::Runtime &rt)
+GRPCStreamHostObject::GRPCStreamHostObject(
+    jsi::Runtime &rt,
+    std::shared_ptr<react::CallInvoker> jsInvoker)
     : readyState{0},
       onopen{},
       onmessage{},
@@ -30,6 +31,7 @@ GRPCStreamHostObject::GRPCStreamHostObject(jsi::Runtime &rt)
             return jsi::String::createFromUtf8(
                 rt, std::string{"GRPCStream.close: unimplemented"});
           })} {
+  this->jsInvoker = jsInvoker;
 }
 
 std::vector<jsi::PropNameID>
