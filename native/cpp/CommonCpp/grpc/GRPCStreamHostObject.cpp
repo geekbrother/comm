@@ -100,6 +100,17 @@ void GRPCStreamHostObject::set(
       propName == "onmessage" && value.isObject() &&
       value.asObject(runtime).isFunction(runtime)) {
     this->onmessage = value.asObject(runtime).asFunction(runtime);
+
+    auto jsFunction = value.asObject(runtime).asFunction(runtime);
+    auto onReadDoneCallback = [this, &runtime, &jsFunction](std::string data) {
+      this->jsInvoker->invokeAsync([this, &runtime, &jsFunction, data]() {
+        auto msgObject = jsi::Object(runtime);
+        msgObject.setProperty(
+            runtime, "data", jsi::String::createFromUtf8(runtime, data));
+        jsFunction.call(runtime, msgObject, 1);
+      });
+    };
+
   } else if (
       propName == "onclose" && value.isObject() &&
       value.asObject(runtime).isFunction(runtime)) {
