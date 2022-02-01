@@ -175,6 +175,7 @@ class UserSettingsModal extends React.PureComponent<Props, State> {
           type="submit"
           onClick={this.onDelete}
           disabled={inputDisabled}
+          className={css['delete-button']}
         >
           Delete account
         </Button>

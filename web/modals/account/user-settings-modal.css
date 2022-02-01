@@ -118,7 +118,6 @@ div.form-text > div.form-float-content {
 }
 
 .italic {
-  font-style: italic;
   color: var(--fg);
 }
 
