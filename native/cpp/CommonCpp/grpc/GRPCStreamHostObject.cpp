@@ -114,7 +114,7 @@ GRPCStreamHostObject::get(jsi::Runtime &runtime, const jsi::PropNameID &name) {
   auto propName = name.utf8(runtime);
 
   if (propName == "readyState") {
-    return jsi::Value(this->readyState);
+    return jsi::Value{comm::GlobalNetworkSingleton::instance.getSocketStatus()};
   }
   if (propName == "send") {
     return this->send.asObject(runtime).asFunction(runtime);
@@ -146,10 +146,7 @@ void GRPCStreamHostObject::set(
     const jsi::Value &value) {
   auto propName = name.utf8(runtime);
 
-  if (propName == "readyState" && value.isNumber()) {
-    this->readyState = static_cast<int>(value.asNumber());
-  } else if (
-      propName == "onopen" && value.isObject() &&
+  if (propName == "onopen" && value.isObject() &&
       value.asObject(runtime).isFunction(runtime)) {
     this->onopen = value.asObject(runtime).asFunction(runtime);
   } else if (
