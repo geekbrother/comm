@@ -42,6 +42,7 @@ div.modal-body p.confirm-account-password {
 div.modal-body div.form-footer {
   display: flex;
   justify-content: space-between;
+  padding-top: 8px;
 }
 div.modal-body div.form-footer div.modal-form-error {
   display: none;
@@ -76,6 +77,9 @@ div.modal-body div.form-content {
   display: inline-block;
   font-family: var(--font-stack);
   color: var(--fg);
+}
+div.modal-body div.form-content input {
+  margin-bottom: 4px;
 }
 div.modal-body div.form-subtitle {
   font-size: 12px;
