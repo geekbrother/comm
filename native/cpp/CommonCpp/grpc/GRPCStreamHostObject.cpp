@@ -115,6 +115,23 @@ void GRPCStreamHostObject::set(
       propName == "onmessage" && value.isObject() &&
       value.asObject(runtime).isFunction(runtime)) {
     this->onmessage = value.asObject(runtime).asFunction(runtime);
+
+    auto onReadDoneCallback = [this, &runtime](std::string data) {
+      this->jsInvoker->invokeAsync([this, &runtime, data]() {
+        auto msgObject = jsi::Object(runtime);
+        msgObject.setProperty(
+            runtime, "data", jsi::String::createFromUtf8(runtime, data));
+        this->onmessage.asObject(runtime).asFunction(runtime).call(
+            runtime, msgObject, 1);
+      });
+    };
+
+    comm::GlobalNetworkSingleton::instance.scheduleOrRun(
+        [onReadDoneCallback = std::move(onReadDoneCallback)](
+            comm::NetworkModule &networkModule) {
+          networkModule.setOnReadDoneCallback(onReadDoneCallback);
+        });
+
   } else if (
       propName == "onclose" && value.isObject() &&
       value.asObject(runtime).isFunction(runtime)) {
