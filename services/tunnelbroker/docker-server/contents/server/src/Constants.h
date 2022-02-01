@@ -33,5 +33,9 @@ const std::string AMQP_HEADER_TO_DEVICEID = "toDeviceid";
 const long long AMQP_SHORTEST_RECONNECTION_ATTEMPT_INTERVAL =
     1000 * 60; // 1 min
 
+// DeviceID
+const std::string DEVICEID_DEFAULT_KEYSERVER_ID = "ks:256";
+const size_t DEVICEID_CHAR_LENGTH = 64;
+
 } // namespace network
 } // namespace comm
