@@ -26,6 +26,7 @@ import {
   useServerCall,
 } from 'lib/utils/action-utils';
 
+import Button from '../../components/button.react';
 import { useSelector } from '../../redux/redux-utils';
 import Input from '../input.react';
 import Modal from '../modal.react';
@@ -175,18 +176,22 @@ class UserSettingsModal extends React.PureComponent<Props, State> {
     } else {
       buttons = (
         <>
-          <input
+          <Button
             type="submit"
-            value="Update account"
+            variant="primary"
             onClick={this.onSubmit}
             disabled={inputDisabled}
-          />
-          <input
+          >
+            <p>Update Account</p>
+          </Button>
+          <Button
             type="submit"
-            value="Log out"
+            variant="primary"
             onClick={this.onLogOut}
             disabled={inputDisabled}
-          />
+          >
+            <p>Log out</p>
+          </Button>
         </>
       );
     }
