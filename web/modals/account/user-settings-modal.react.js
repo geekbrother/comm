@@ -121,6 +121,10 @@ class UserSettingsModal extends React.PureComponent<Props, State> {
   render() {
     const { inputDisabled } = this.props;
     let mainContent = null;
+    const errorMessageCls = classNames(css['modal-form-error'], {
+      [css['error-message-visible']]: this.state.errorMessage,
+    });
+
     if (this.state.currentTabType === 'general') {
       mainContent = (
         <div>
@@ -237,9 +241,7 @@ class UserSettingsModal extends React.PureComponent<Props, State> {
             </div>
             <div className={css['form-footer']}>
               {buttons}
-              <div className={css['modal-form-error']}>
-                {this.state.errorMessage}
-              </div>
+              <div className={errorMessageCls}>{this.state.errorMessage}</div>
             </div>
           </form>
         </div>

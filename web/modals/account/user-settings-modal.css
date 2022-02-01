@@ -44,11 +44,16 @@ div.modal-body div.form-footer {
   justify-content: space-between;
 }
 div.modal-body div.form-footer div.modal-form-error {
+  display: none;
   font-size: 12px;
   color: red;
   font-style: italic;
   padding-left: 6px;
   align-self: center;
+}
+div.modal-body div.form-footer div.error-message-visible {
+  display: flex;
+  align-items: center;
 }
 div.modal-body div.form-footer div.modal-form-error ol {
   padding-left: 20px;
