@@ -273,11 +273,67 @@ Flipper has a plugin system that allows teams to integrate additional debugging 
 
 To install it, open Flipper and go to View → Manage Plugins. Type in “redux-debugger“ and install the Flipper plugin with that name.
 
-## idb (Intel x86-64 only)
+## idb
 
-There are issues at the moment (Dec 2021) installing `idb-companion` on Apple silicon Macs. For now, the following `idb` installation steps only work on x86-64 machines.
+Flipper relies on Facebook’s idb tool to debug iOS apps running on your device. Let’s install it.
 
-Flipper relies on Facebook’s idb tool to debug iOS apps running on your device. We’ll need to install it:
+### Apple silicon:
+
+At the moment (Feb 2022), there are a few steps needed to get `idb` working on Apple silicon. First, you’ll need to install gRPC to work with `idb companion`’s Podfile.
+
+```
+brew install grpc
+```
+
+Keep note of the installed version of `libprotoc`:
+
+```
+protoc --version
+# example: libprotoc 3.19.3
+```
+
+Next, pick a place in your filesystem and then run the following command to clone and download this [commit](https://github.com/facebook/idb/commit/776244655c06001953a94f3e38ec8cbd1c0dde9e) from the idb GitHub repository.
+
+```
+git clone https://github.com/facebook/idb/commit/776244655c06001953a94f3e38ec8cbd1c0dde9e
+```
+
+You're going to need to navigate into the cloned repository and edit the Podfile to match the `libprotoc` version determined earlier.
+
+```
+vim Podfile
+```
+
+Your Podfile should look like the following. Replace “v3.19.3“ with the version of `libprotoc` determined earlier.
+
+```
+workspace 'idb_companion'
+
+platform :macos, '10.14'
+
+project 'idb_companion'
+
+target 'idb_companion' do
+  pod 'gRPC-C++'
+  pod 'gRPC-C++/Protobuf'
+  pod 'Protobuf-C++',  :git => 'https://github.com/google/protobuf.git', :tag => 'v3.19.3'
+end
+
+target 'idbGRPC' do
+  pod 'Protobuf-C++',  :git => 'https://github.com/google/protobuf.git', :tag => 'v3.19.3'
+end
+```
+
+Finally, run the following commands to install `idb` on Apple silicon.
+
+```
+pod install
+./idb_build.sh idb_companion build /opt/homebrew
+```
+
+### Intel x86-64:
+
+Run the following commands to install `idb` on an Intel machine.
 
 ```
 brew tap facebook/fb
