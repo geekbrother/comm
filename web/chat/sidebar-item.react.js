@@ -2,7 +2,6 @@
 
 import classNames from 'classnames';
 import * as React from 'react';
-import AlignRightIcon from 'react-entypo-icons/lib/entypo/AlignRight';
 
 import type { SidebarInfo } from 'lib/types/thread-types';
 import { shortAbsoluteDate } from 'lib/utils/date-utils';
@@ -27,7 +26,6 @@ function SidebarItem(props: Props): React.Node {
   return (
     <a className={css.threadButton} onClick={onClick}>
       <div className={css.threadRow}>
-        <AlignRightIcon className={css.sidebarIcon} />
         <div
           className={classNames([css.sidebarTitle, unread ? css.unread : null])}
         >
