@@ -23,14 +23,11 @@ function SidebarItem(props: Props): React.Node {
   const lastActivity = shortAbsoluteDate(lastUpdatedTime, timeZone);
 
   const { unread } = threadInfo.currentUser;
+  const unreadCls = classNames(css.sidebarTitle, { [css.unread]: unread });
   return (
     <a className={css.threadButton} onClick={onClick}>
       <div className={css.threadRow}>
-        <div
-          className={classNames([css.sidebarTitle, unread ? css.unread : null])}
-        >
-          {threadInfo.uiName}
-        </div>
+        <div className={unreadCls}>{threadInfo.uiName}</div>
         <div
           className={classNames([
             css.sidebarLastActivity,

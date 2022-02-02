@@ -71,7 +71,6 @@ div.lastMessage {
   flex: 1;
 }
 div.unread {
-  color: var(--fg);
   font-weight: 600;
 }
 .black {
