@@ -5,45 +5,65 @@ package backup;
 import "google/protobuf/empty.proto";
 
 service BackupService {
-  rpc ResetKey(stream ResetKeyRequest) returns (google.protobuf.Empty) {}
-  rpc SendLog(SendLogRequest) returns (google.protobuf.Empty) {}
-  rpc PullBackupKey(PullBackupKeyRequest) returns (PullBackupKeyResponse) {}
-  rpc PullCompaction(PullCompactionRequest) returns (stream PullCompactionResponse) {}
+  rpc CreateNewBackup(stream CreateNewBackupRequest) returns (stream CreateNewBackupResponse) {}
+  rpc SendLog(stream SendLogRequest) returns (google.protobuf.Empty) {}
+  rpc PullBackupKey(stream PullBackupKeyRequest) returns (stream PullBackupKeyResponse) {}
+  rpc PullCompaction(stream PullCompactionRequest) returns (stream PullCompactionResponse) {}
 }
 
-// ResetKey
+// Helper types
 
-message ResetKeyRequest {
-  string userId = 1;
+message FullAuthenticationRequestData {
+  bytes requestBytes = 1;
+  string userID = 2;
+}
+
+message SimpleAuthenticationRequestData {
+  string backupID = 1;
+  string userID = 2;
+}
+
+// CreateNewBackup
+
+message CreateNewBackupRequest {
   oneof data {
-    bytes newKey = 2;
-    bytes compactionChunk = 3;
+    FullAuthenticationRequestData authenticationData = 1;
+    bytes newEncryptedKey = 2;
+    bytes newCompactionChunk = 3;
+  }
+}
+
+message CreateNewBackupResponse {
+  oneof data {
+    bytes responseBytes = 1;
+    string backupID = 2;
   }
 }
 
 // SendLog
 
 message SendLogRequest {
-  string userId = 1;
-  bytes data = 2;
+  SimpleAuthenticationRequestData authenticationData = 1;
+  bytes logData = 2;
 }
 
 // PullBackupKey
 
 message PullBackupKeyRequest {
-  string userId = 1;
-  bytes pakeKey = 2;
+  FullAuthenticationRequestData authenticationData = 1;
 }
 
 message PullBackupKeyResponse {
-  bytes encryptedBackupKey = 1;
+  oneof data {
+    bytes responseBytes = 1;
+    bytes encryptedBackupIDAndKey = 2;
+  }
 }
 
 // PullCompaction
 
 message PullCompactionRequest {
-  string userId = 1;
-  bytes message = 2;
+  SimpleAuthenticationRequestData authenticationData = 1;
 }
 
 message PullCompactionResponse {
