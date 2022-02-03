@@ -1,4 +1,5 @@
 #include "Tools.h"
+#include "ConfigManager.h"
 #include "Constants.h"
 
 #include <chrono>
@@ -31,7 +32,10 @@ bool validateDeviceId(std::string deviceId) {
   try {
     const std::regex regexKs("^ks:.*");
     if (std::regex_match(deviceId, regexKs)) {
-      return (deviceId == DEVICEID_DEFAULT_KEYSERVER_ID);
+      return (
+          deviceId ==
+          config::ConfigManager::getInstance().getParameter(
+              "keyserver.default_keyserver_id"));
     }
     const std::regex regexFull(
         "^(ks|mobile|web):[a-zA-Z0-9]{" + std::to_string(DEVICEID_CHAR_LENGTH) +

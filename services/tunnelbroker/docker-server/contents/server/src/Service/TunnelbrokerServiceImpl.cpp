@@ -2,7 +2,7 @@
 
 #include "AmqpManager.h"
 #include "AwsTools.h"
-#include "Constants.h"
+#include "ConfigManager.h"
 #include "CryptoTools.h"
 #include "DatabaseManager.h"
 #include "DeliveryBroker.h"
@@ -21,8 +21,12 @@ TunnelBrokerServiceImpl::TunnelBrokerServiceImpl() {
   // List of AWS DynamoDB tables to check if they are created and can be
   // accessed before any AWS API methods
   const std::list<std::string> tablesList = {
-      DEVICE_SESSIONS_TABLE_NAME,
-      DEVICE_SESSIONS_VERIFICATION_MESSAGES_TABLE_NAME};
+      config::ConfigManager::getInstance().getParameter(
+          "dynamodb.sessions_table_name"),
+      config::ConfigManager::getInstance().getParameter(
+          "dynamodb.sessions_verification_table_name"),
+      config::ConfigManager::getInstance().getParameter(
+          "dynamodb.sessions_public_key_table_name")};
   for (const std::string &table : tablesList) {
     if (!database::DatabaseManager::getInstance().isTableAvailable(table)) {
       throw std::runtime_error(

@@ -1,11 +1,10 @@
 #include "PublicKeyItem.h"
-#include "Constants.h"
+#include "ConfigManager.h"
 
 namespace comm {
 namespace network {
 namespace database {
 
-std::string PublicKeyItem::tableName = DEVICE_PUBLIC_KEY_TABLE_NAME;
 const std::string PublicKeyItem::FIELD_DEVICE_ID = "DeviceId";
 const std::string PublicKeyItem::FIELD_PUBLIC_KEY = "PublicKey";
 
@@ -41,7 +40,8 @@ void PublicKeyItem::assignItemFromDatabase(const AttributeValues &itemFromDB) {
 }
 
 std::string PublicKeyItem::getTableName() const {
-  return PublicKeyItem::tableName;
+  return config::ConfigManager::getInstance().getParameter(
+      "dynamodb.sessions_public_key_table_name");
 }
 
 std::string PublicKeyItem::getPrimaryKey() const {
