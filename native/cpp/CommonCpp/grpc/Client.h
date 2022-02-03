@@ -21,6 +21,7 @@ class Client {
   const std::string id;
   const std::string deviceToken;
   std::unique_ptr<ClientGetReadReactor> clientGetReadReactor;
+  std::function<void(SocketStatus)> setReadyState;
 
 public:
   Client(
@@ -45,6 +46,7 @@ public:
   void setOnOpenCallback(std::function<void()> callback);
   void setOnCloseCallback(std::function<void()> callback);
   void closeGetStream();
+  void assignSetReadyStateCallback(std::function<void(SocketStatus)> callback);
 };
 
 } // namespace network
