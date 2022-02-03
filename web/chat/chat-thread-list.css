@@ -122,7 +122,12 @@ svg.sidebarIcon {
 div.sidebar .menu > button svg {
   font-size: 16px;
 }
-
+div.sidebar .menu {
+  display: none;
+}
+div.sidebar:hover .menu {
+  display: block;
+}
 .menu {
   position: relative;
   display: flex;
