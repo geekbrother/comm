@@ -14,18 +14,13 @@ type Props = {
 };
 
 function Button(props: Props): React.Node {
-  const { onClick, children, variant, type, disabled: disabledProp } = props;
+  const { onClick, children, variant, type, disabled = false } = props;
   const btnCls = classnames(css.btn, {
     [css.round]: variant === 'round',
     [css.primary]: variant === 'primary',
     [css.secondary]: variant === 'secondary',
     [css.danger]: variant === 'danger',
   });
-
-  let disabled = false;
-  if (disabledProp) {
-    disabled = disabledProp;
-  }
 
   return (
     <button
