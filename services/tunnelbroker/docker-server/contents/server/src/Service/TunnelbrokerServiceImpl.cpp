@@ -13,6 +13,8 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+#include <random>
+
 namespace comm {
 namespace network {
 
@@ -77,18 +79,21 @@ grpc::Status TunnelBrokerServiceImpl::NewSession(
   }
   const std::string signature = request->signature();
   const std::string publicKey = request->publickey();
-  const boost::uuids::uuid uuid = boost::uuids::random_generator()();
-  const std::string newSessionId = boost::lexical_cast<std::string>(uuid);
-
+  boost::uuids::basic_random_generator<std::random_device>
+      random_uuids_generator;
+  std::string newSessionId;
   try {
-    deviceSessionItem =
-        database::DatabaseManager::getInstance().findSessionItem(newSessionId);
-    if (deviceSessionItem != nullptr) {
-      std::cout << "gRPC: "
-                << "Session unique ID " << newSessionId << " already used"
+    while (true) {
+      newSessionId = boost::lexical_cast<std::string>(random_uuids_generator());
+      deviceSessionItem =
+          database::DatabaseManager::getInstance().findSessionItem(
+              newSessionId);
+      if (deviceSessionItem == nullptr) {
+        break;
+      }
+      std::cout << "gRPC Warning: "
+                << "Session unique ID collision for " << newSessionId
                 << std::endl;
-      return grpc::Status(
-          grpc::StatusCode::INTERNAL, "Session unique ID already used");
     }
     sessionSignItem =
         database::DatabaseManager::getInstance().findSessionSignItem(deviceId);
