@@ -34,6 +34,7 @@ function ChatThreadListItem(props: Props): React.Node {
   const lastActivity = shortAbsoluteDate(item.lastUpdatedTime, timeZone);
 
   const active = useThreadIsActive(threadID);
+
   const containerClassName = React.useMemo(
     () =>
       classNames({
@@ -61,7 +62,7 @@ function ChatThreadListItem(props: Props): React.Node {
       }),
     [unread],
   );
-
+  console.log('active', active, unread);
   const { color } = item.threadInfo;
   const colorSplotchStyle = React.useMemo(
     () => ({ backgroundColor: `#${color}` }),
