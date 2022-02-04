@@ -61,8 +61,8 @@ function ChatThreadListItem(props: Props): React.Node {
       }),
     [unread],
   );
-
   const { color } = item.threadInfo;
+
   const colorSplotchStyle = React.useMemo(
     () => ({ backgroundColor: `#${color}` }),
     [color],
