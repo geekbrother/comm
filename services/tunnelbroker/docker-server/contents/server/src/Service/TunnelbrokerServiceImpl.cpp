@@ -145,6 +145,13 @@ grpc::Status TunnelBrokerServiceImpl::Send(
     google::protobuf::Empty *reply) {
   try {
     const std::string sessionId = request->sessionid();
+    if (!validateSessionId(sessionId)) {
+      std::cout << "gRPC: "
+                << "Format validation failed for " << sessionId << std::endl;
+      return grpc::Status(
+          grpc::StatusCode::INVALID_ARGUMENT,
+          "Format validation failed for sessionID");
+    }
     std::shared_ptr<database::DeviceSessionItem> sessionItem =
         database::DatabaseManager::getInstance().findSessionItem(sessionId);
     if (sessionItem == nullptr) {
@@ -180,6 +187,13 @@ grpc::Status TunnelBrokerServiceImpl::Get(
     grpc::ServerWriter<tunnelbroker::GetResponse> *writer) {
   try {
     const std::string sessionId = request->sessionid();
+    if (!validateSessionId(sessionId)) {
+      std::cout << "gRPC: "
+                << "Format validation failed for " << sessionId << std::endl;
+      return grpc::Status(
+          grpc::StatusCode::INVALID_ARGUMENT,
+          "Format validation failed for sessionID");
+    }
     std::shared_ptr<database::DeviceSessionItem> sessionItem =
         database::DatabaseManager::getInstance().findSessionItem(sessionId);
     if (sessionItem == nullptr) {
