@@ -60,5 +60,16 @@ std::string generateUUID() {
   return boost::uuids::to_string(random_generator());
 }
 
+bool validateSessionId(std::string sessionId) {
+  try {
+    return std::regex_match(sessionId, SESSION_ID_FORMAT_REGEX);
+  } catch (const std::exception &e) {
+    std::cout << "Tools: "
+              << "Got an exception at `validateSessionId`: " << e.what()
+              << std::endl;
+    return false;
+  }
+}
+
 } // namespace network
 } // namespace comm
