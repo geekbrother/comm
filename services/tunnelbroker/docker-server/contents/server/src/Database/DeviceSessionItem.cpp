@@ -5,8 +5,8 @@ namespace comm {
 namespace network {
 namespace database {
 
-const std::string DeviceSessionItem::FIELD_SESSION_ID = "SessionId";
-const std::string DeviceSessionItem::FIELD_DEVICE_ID = "DeviceId";
+const std::string DeviceSessionItem::FIELD_SESSION_ID = "SessionID";
+const std::string DeviceSessionItem::FIELD_DEVICE_ID = "DeviceID";
 const std::string DeviceSessionItem::FIELD_PUBKEY = "PubKey";
 const std::string DeviceSessionItem::FIELD_NOTIFY_TOKEN = "NotifyToken";
 const std::string DeviceSessionItem::FIELD_DEVICE_TYPE = "DeviceType";
@@ -16,15 +16,15 @@ const std::string DeviceSessionItem::FIELD_CHECKPOINT_TIME = "CheckpointTime";
 const std::string DeviceSessionItem::FIELD_EXPIRE = "Expire";
 
 DeviceSessionItem::DeviceSessionItem(
-    const std::string sessionId,
-    const std::string deviceId,
+    const std::string sessionID,
+    const std::string deviceID,
     const std::string pubKey,
     const std::string notifyToken,
     const std::string deviceType,
     const std::string appVersion,
     const std::string deviceOs)
-    : sessionId(sessionId),
-      deviceId(deviceId),
+    : sessionID(sessionID),
+      deviceID(deviceID),
       pubKey(pubKey),
       notifyToken(notifyToken),
       deviceType(deviceType),
@@ -38,16 +38,16 @@ DeviceSessionItem::DeviceSessionItem(const AttributeValues &itemFromDB) {
 }
 
 void DeviceSessionItem::validate() const {
-  if (!this->sessionId.size()) {
-    throw std::runtime_error("Error: SessionId is empty.");
+  if (!this->sessionID.size()) {
+    throw std::runtime_error("Error: SessionID is empty.");
   }
 }
 
 void DeviceSessionItem::assignItemFromDatabase(
     const AttributeValues &itemFromDB) {
   try {
-    this->sessionId = itemFromDB.at(DeviceSessionItem::FIELD_SESSION_ID).GetS();
-    this->deviceId = itemFromDB.at(DeviceSessionItem::FIELD_DEVICE_ID).GetS();
+    this->sessionID = itemFromDB.at(DeviceSessionItem::FIELD_SESSION_ID).GetS();
+    this->deviceID = itemFromDB.at(DeviceSessionItem::FIELD_DEVICE_ID).GetS();
     this->pubKey = itemFromDB.at(DeviceSessionItem::FIELD_PUBKEY).GetS();
     this->notifyToken =
         itemFromDB.at(DeviceSessionItem::FIELD_NOTIFY_TOKEN).GetS();
@@ -76,12 +76,12 @@ std::string DeviceSessionItem::getPrimaryKey() const {
   return DeviceSessionItem::FIELD_SESSION_ID;
 }
 
-std::string DeviceSessionItem::getSessionId() const {
-  return this->sessionId;
+std::string DeviceSessionItem::getSessionID() const {
+  return this->sessionID;
 }
 
-std::string DeviceSessionItem::getDeviceId() const {
-  return this->deviceId;
+std::string DeviceSessionItem::getDeviceID() const {
+  return this->deviceID;
 }
 
 std::string DeviceSessionItem::getPubKey() const {
