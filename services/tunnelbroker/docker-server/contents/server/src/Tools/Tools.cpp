@@ -34,19 +34,19 @@ long long getCurrentTimestamp() {
       .count();
 }
 
-bool validateDeviceId(std::string deviceId) {
+bool validateDeviceID(std::string deviceID) {
   try {
-    static const std::regex deviceIdKeyserverRegexp("^ks:.*");
-    if (std::regex_match(deviceId, deviceIdKeyserverRegexp)) {
+    static const std::regex deviceIDKeyserverRegexp("^ks:.*");
+    if (std::regex_match(deviceID, deviceIDKeyserverRegexp)) {
       return (
-          deviceId ==
+          deviceID ==
           config::ConfigManager::getInstance().getParameter(
               config::ConfigManager::OPTION_DEFAULT_KEYSERVER_ID));
     }
-    return std::regex_match(deviceId, DEVICEID_FORMAT_REGEX);
+    return std::regex_match(deviceID, DEVICEID_FORMAT_REGEX);
   } catch (const std::exception &e) {
     std::cout << "Tools: "
-              << "Got an exception at `validateDeviceId`: " << e.what()
+              << "Got an exception at `validateDeviceID`: " << e.what()
               << std::endl;
     return false;
   }
@@ -60,12 +60,12 @@ std::string generateUUID() {
   return boost::uuids::to_string(random_generator());
 }
 
-bool validateSessionId(std::string sessionId) {
+bool validateSessionID(std::string sessionID) {
   try {
-    return std::regex_match(sessionId, SESSION_ID_FORMAT_REGEX);
+    return std::regex_match(sessionID, SESSION_ID_FORMAT_REGEX);
   } catch (const std::exception &e) {
     std::cout << "Tools: "
-              << "Got an exception at `validateSessionId`: " << e.what()
+              << "Got an exception at `validateSessionID`: " << e.what()
               << std::endl;
     return false;
   }

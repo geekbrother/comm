@@ -8,9 +8,9 @@ namespace network {
 
 std::string generateRandomString(std::size_t length);
 long long getCurrentTimestamp();
-bool validateDeviceId(std::string deviceId);
+bool validateDeviceID(std::string deviceID);
 std::string generateUUID();
-bool validateSessionId(std::string sessionId);
+bool validateSessionID(std::string sessionID);
 
 } // namespace network
 } // namespace comm
