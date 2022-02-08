@@ -81,4 +81,7 @@
   --help-color: var(--shades-black-60);
   --modal-bg: var(--shades-black-90);
   --breadcrumb-color: var(--shades-white-60);
+  --relationship-button-green: var(--success-dark-50);
+  --relationship-button-red: var(--error-primary);
+  --relationship-button-text: var(--fg);
 }
