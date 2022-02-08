@@ -49,11 +49,11 @@ button.joinButton {
   font-weight: var(--semi-bold);
   cursor: pointer;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 5d356340d ([web] re-skin join button)
-button.joinButton {
+<<<<<<<
+  HEAD
+  =======>>>>>>>5d356340d
+  ([web] re-skin join button)
+  button.joinButton {
   display: flex;
   border-radius: 4px;
   justify-content: center;
@@ -77,9 +77,9 @@ p.joinButtonText {
   padding-left: 12px;
 }
 span.explanation {
-  color: #777777;
+  color: var(--permission-color);
   text-align: center;
-  padding-top: 4px;
+  padding-top: 20px;
   padding-bottom: 8px;
 }
 a.multimediaUpload {
