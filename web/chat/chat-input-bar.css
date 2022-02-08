@@ -49,7 +49,6 @@ button.joinButton {
   font-weight: var(--semi-bold);
   cursor: pointer;
 }
-
 button.joinButton {
   display: flex;
   border-radius: 4px;
@@ -74,9 +73,9 @@ p.joinButtonText {
   padding-left: 12px;
 }
 span.explanation {
-  color: #777777;
+  color: var(--permission-color);
   text-align: center;
-  padding-top: 4px;
+  padding-top: 20px;
   padding-bottom: 8px;
 }
 a.multimediaUpload {
