@@ -44,6 +44,7 @@ import type {
   OnMessagePositionWithContainerInfo,
   MessagePositionInfo,
 } from './position-types';
+import ThreadTopBar from './thread-top-bar.react';
 
 type BaseProps = {
   +setModal: (modal: ?React.Node) => void,
@@ -277,6 +278,7 @@ class ChatMessageList extends React.PureComponent<Props, State> {
     });
     return connectDropTarget(
       <div className={containerStyle} ref={this.containerRef}>
+        <ThreadTopBar threadInfo={threadInfo} />
         <div className={css.outerMessageContainer}>
           <div className={messageContainerStyle} ref={this.messageContainerRef}>
             {messages}
