@@ -1,0 +1,37 @@
+// @flow
+import * as React from 'react';
+
+import type { ThreadInfo } from 'lib/types/thread-types';
+
+import SWMansionIcon from '../SWMansionIcon.react';
+import css from './chat-thread-top-bar.css';
+
+type threadTopBarProps = {
+  +threadInfo: ThreadInfo,
+};
+function ThreadTopBar(props: threadTopBarProps): React.Node {
+  const { threadInfo } = props;
+  const threadBackgroundColorStyle = React.useMemo(
+    () => ({
+      backgroundColor: `#${threadInfo.color}`,
+    }),
+    [threadInfo.color],
+  );
+
+  return (
+    <div className={css.topBarContainer}>
+      <div className={css.topBarThreadInfo}>
+        <div
+          className={css.threadColorSquare}
+          style={threadBackgroundColorStyle}
+        />
+        <div className={css.threadTitle}>{threadInfo.uiName}</div>
+      </div>
+      <button className={css.topBarMenu}>
+        <SWMansionIcon icon="menu-vertical" size={20} />
+      </button>
+    </div>
+  );
+}
+
+export default ThreadTopBar;
