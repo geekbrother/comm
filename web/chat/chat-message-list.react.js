@@ -37,6 +37,7 @@ import { useTextMessageRulesFunc } from '../markdown/rules.react';
 import { useSelector } from '../redux/redux-utils';
 import ChatInputBar from './chat-input-bar.react';
 import css from './chat-message-list.css';
+import ThreadTopBar from './chat-thread-top-bar.react';
 import { MessageListContext } from './message-list-types';
 import MessageTimestampTooltip from './message-timestamp-tooltip.react';
 import Message from './message.react';
@@ -277,6 +278,7 @@ class ChatMessageList extends React.PureComponent<Props, State> {
     });
     return connectDropTarget(
       <div className={containerStyle} ref={this.containerRef}>
+        <ThreadTopBar threadInfo={threadInfo} />
         <div className={css.outerMessageContainer}>
           <div className={messageContainerStyle} ref={this.messageContainerRef}>
             {messages}
