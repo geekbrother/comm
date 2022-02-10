@@ -16,9 +16,8 @@ type Props = {
 };
 function SidebarItem(props: Props): React.Node {
   const { threadInfo, lastUpdatedTime } = props.sidebarInfo;
-  const threadID = threadInfo.id;
 
-  const onClick = useOnClickThread(threadID);
+  const onClick = useOnClickThread(threadInfo);
 
   const timeZone = useSelector(state => state.timeZone);
   const lastActivity = shortAbsoluteDate(lastUpdatedTime, timeZone);
