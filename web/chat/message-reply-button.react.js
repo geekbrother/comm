@@ -1,13 +1,12 @@
 // @flow
 
-import { faReply } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import invariant from 'invariant';
 import * as React from 'react';
 
 import { createMessageReply } from 'lib/shared/message-utils';
 
 import type { InputState } from '../input/input-state';
+import SWMansionIcon from '../SWMansionIcon.react';
 import css from './chat-message-list.css';
 import type { OnMessagePositionWithContainerInfo } from './position-types';
 
@@ -30,7 +29,7 @@ function MessageReplyButton(props: Props): React.Node {
   return (
     <div className={css.messageReplyButton}>
       <div className={css.messageActionLinkIcon} onClick={replyClicked}>
-        <FontAwesomeIcon icon={faReply} />
+        <SWMansionIcon icon="reply-arrow" size={18} />
       </div>
     </div>
   );
