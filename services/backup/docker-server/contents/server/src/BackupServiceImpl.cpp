@@ -12,11 +12,12 @@ BackupServiceImpl::BackupServiceImpl() {
 BackupServiceImpl::~BackupServiceImpl() {
   Aws::ShutdownAPI({});
 }
-/*
+
 grpc::Status BackupServiceImpl::CreateNewBackup(
     grpc::ServerContext *context,
-    grpc::ServerReader<backup::CreateNewBackupRequest> *reader,
-    google::protobuf::Empty *response) {
+    grpc::ServerReaderWriter<
+        backup::CreateNewBackupResponse,
+        backup::CreateNewBackupRequest> *stream) {
   return grpc::Status(grpc::StatusCode::UNIMPLEMENTED, "not implemented yet");
 }
 
@@ -42,6 +43,6 @@ grpc::Status BackupServiceImpl::PullCompaction(
         backup::PullCompactionRequest> *stream) {
   return grpc::Status(grpc::StatusCode::UNIMPLEMENTED, "not implemented yet");
 }
-*/
+
 } // namespace network
 } // namespace comm
