@@ -1,6 +1,7 @@
 #pragma once
 
 #include <amqpcpp.h>
+#include <amqpcpp/libuv.h>
 
 #include <atomic>
 #include <memory>
@@ -8,14 +9,22 @@
 
 namespace comm {
 namespace network {
+namespace amqp {
 
-void AMQPConnect();
-void AMQPConnectInternal();
-bool AMQPSend(
-    std::string toDeviceID,
-    std::string fromDeviceID,
-    std::string payload);
-void AMQPAck(uint64_t deliveryTag);
+class AmqpManager {
+  std::unique_ptr<AMQP::TcpChannel> amqpChannel;
+  std::atomic<bool> amqpReady;
+  long long lastConnectionTimestamp;
+  void connectInternal();
 
+public:
+  static AmqpManager &getInstance();
+  void connect();
+  bool
+  send(std::string toDeviceID, std::string fromDeviceID, std::string payload);
+  void ack(uint64_t deliveryTag);
+};
+
+} // namespace amqp
 } // namespace network
 } // namespace comm
