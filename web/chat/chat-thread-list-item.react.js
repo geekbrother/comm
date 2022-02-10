@@ -23,15 +23,28 @@ type Props = {
   +item: ChatThreadItem,
   +setModal: (modal: ?React.Node) => void,
 };
+
+function useLastActiveTime(item: ChatThreadItem): string {
+  const timeZone = useSelector(state => state.timeZone);
+  const lastUpdatedTimes = item.sidebars.map(sidebar => {
+    if (sidebar.type === 'sidebar') {
+      return sidebar.lastUpdatedTime;
+    } else {
+      return 0;
+    }
+  });
+
+  const recentLastTime = Math.max(item.lastUpdatedTime, ...lastUpdatedTimes);
+  return shortAbsoluteDate(recentLastTime, timeZone);
+}
+
 function ChatThreadListItem(props: Props): React.Node {
   const { item, setModal } = props;
   const { threadInfo } = item;
   const threadID = item.threadInfo.id;
   const ancestorThreads = useAncestorThreads(threadInfo);
   const onClick = useOnClickThread(threadID);
-
-  const timeZone = useSelector(state => state.timeZone);
-  const lastActivity = shortAbsoluteDate(item.lastUpdatedTime, timeZone);
+  const lastActivity = useLastActiveTime(item);
 
   const active = useThreadIsActive(threadID);
   const containerClassName = React.useMemo(
