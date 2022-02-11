@@ -30,12 +30,18 @@ void DatabaseManager::innerPutItem(
 
 void DatabaseManager::innerRemoveItem(
     const Item &item,
-    const std::string &key) {
+    const PrimaryKeyValue primaryKeyValue) {
   Aws::DynamoDB::Model::DeleteItemRequest request;
   request.SetTableName(item.getTableName());
+  PrimaryKey pk = item.getPrimaryKey();
   request.AddKey(
-      item.getPrimaryKey().partitionKey,
-      Aws::DynamoDB::Model::AttributeValue(key));
+      pk.partitionKey,
+      Aws::DynamoDB::Model::AttributeValue(primaryKeyValue.partitionKey));
+  if (pk.sortKey != nullptr && primaryKeyValue.sortKey != nullptr) {
+    request.AddKey(
+        *pk.sortKey,
+        Aws::DynamoDB::Model::AttributeValue(*primaryKeyValue.sortKey));
+  }
 
   const Aws::DynamoDB::Model::DeleteItemOutcome &outcome =
       getDynamoDBClient()->DeleteItem(request);
@@ -99,20 +105,8 @@ DatabaseManager::findLastBackupItem(const std::string &userID) {
 }
 
 void DatabaseManager::removeBackupItem(std::shared_ptr<BackupItem> item) {
-  Aws::DynamoDB::Model::DeleteItemRequest request;
-  request.SetTableName(item->getTableName());
-  request.AddKey(
-      BackupItem::FIELD_USER_ID,
-      Aws::DynamoDB::Model::AttributeValue(item->getUserID()));
-  request.AddKey(
-      BackupItem::FIELD_CREATED,
-      Aws::DynamoDB::Model::AttributeValue(std::to_string(item->getCreated())));
-
-  const Aws::DynamoDB::Model::DeleteItemOutcome &outcome =
-      comm::network::getDynamoDBClient()->DeleteItem(request);
-  if (!outcome.IsSuccess()) {
-    throw std::runtime_error(outcome.GetError().GetMessage());
-  }
+  this->innerRemoveItem(
+      *item, PrimaryKeyValue(item->getUserID(), std::to_string(item->getCreated())));
 }
 
 void DatabaseManager::putLogItem(const LogItem &item) {
@@ -166,20 +160,8 @@ DatabaseManager::findLogItemsForBackup(const std::string &backupID) {
 }
 
 void DatabaseManager::removeLogItem(std::shared_ptr<LogItem> item) {
-  Aws::DynamoDB::Model::DeleteItemRequest request;
-  request.SetTableName(item->getTableName());
-  request.AddKey(
-      LogItem::FIELD_BACKUP_ID,
-      Aws::DynamoDB::Model::AttributeValue(item->getBackupID()));
-  request.AddKey(
-      LogItem::FIELD_LOG_ID,
-      Aws::DynamoDB::Model::AttributeValue(item->getLogID()));
-
-  const Aws::DynamoDB::Model::DeleteItemOutcome &outcome =
-      getDynamoDBClient()->DeleteItem(request);
-  if (!outcome.IsSuccess()) {
-    throw std::runtime_error(outcome.GetError().GetMessage());
-  }
+  this->innerRemoveItem(
+      *item, PrimaryKeyValue(item->getBackupID(), item->getLogID()));
 }
 
 } // namespace database
