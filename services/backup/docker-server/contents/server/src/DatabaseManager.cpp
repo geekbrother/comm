@@ -34,7 +34,8 @@ void DatabaseManager::innerRemoveItem(
   Aws::DynamoDB::Model::DeleteItemRequest request;
   request.SetTableName(item.getTableName());
   request.AddKey(
-      item.getPrimaryKey(), Aws::DynamoDB::Model::AttributeValue(key));
+      item.getPrimaryKey().partitionKey,
+      Aws::DynamoDB::Model::AttributeValue(key));
 
   const Aws::DynamoDB::Model::DeleteItemOutcome &outcome =
       getDynamoDBClient()->DeleteItem(request);
@@ -75,7 +76,8 @@ DatabaseManager::findLastBackupItem(const std::string &userID) {
 
   Aws::DynamoDB::Model::QueryRequest req;
   req.SetTableName(BackupItem::tableName);
-  req.SetKeyConditionExpression(item->getPrimaryKey() + " = :valueToMatch");
+  req.SetKeyConditionExpression(
+      item->getPrimaryKey().partitionKey + " = :valueToMatch");
 
   AttributeValues attributeValues;
   attributeValues.emplace(":valueToMatch", userID);
@@ -141,7 +143,8 @@ DatabaseManager::findLogItemsForBackup(const std::string &backupID) {
 
   Aws::DynamoDB::Model::QueryRequest req;
   req.SetTableName(LogItem::tableName);
-  req.SetKeyConditionExpression(item->getPrimaryKey() + " = :valueToMatch");
+  req.SetKeyConditionExpression(
+      item->getPrimaryKey().partitionKey + " = :valueToMatch");
 
   AttributeValues attributeValues;
   attributeValues.emplace(":valueToMatch", backupID);
