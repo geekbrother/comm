@@ -97,4 +97,6 @@
   --disconnected-bar-connecting-color: var(--shades-black-100);
   --permission-color: var(--shades-white-60);
   --unread-btn-bg: var(--shades-black-80);
+  --thread-top-bar-color: var(--shades-white-100);
+  --thread-top-bar-menu-color: var(--shades-white-70);
 }
