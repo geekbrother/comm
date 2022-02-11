@@ -4,15 +4,17 @@ use digest::Digest;
 use opaque_ke::ciphersuite::CipherSuite;
 use opaque_ke::errors::{InternalPakeError, ProtocolError};
 use opaque_ke::hash::Hash;
+use opaque_ke::keypair::Key;
 use opaque_ke::slow_hash::SlowHash;
 use opaque_ke::{
   ClientLogin, ClientLoginFinishParameters, ClientLoginFinishResult, ClientLoginStartParameters,
   ClientLoginStartResult, ClientRegistration, ClientRegistrationFinishParameters,
-  ClientRegistrationFinishResult, ClientRegistrationStartResult, CredentialResponse,
-  RegistrationResponse,
+  ClientRegistrationFinishResult, ClientRegistrationStartResult, CredentialFinalization,
+  CredentialRequest, CredentialResponse, RegistrationRequest, RegistrationResponse,
+  RegistrationUpload, ServerLogin, ServerLoginFinishResult, ServerLoginStartParameters,
+  ServerLoginStartResult, ServerRegistration, ServerRegistrationStartResult,
 };
 use rand::rngs::OsRng;
-use std::ops::Deref;
 
 struct Cipher;
 
@@ -57,6 +59,14 @@ mod ffi {
     private: Vec<u8>,
   }
 
+  struct PasswordFile {
+    file: Vec<u8>,
+  }
+
+  struct SessionKey {
+    key: Vec<u8>,
+  }
+
   extern "Rust" {
     fn client_register_cxx(password: String) -> Result<MessageState>;
     fn client_register_finish_cxx(
@@ -69,6 +79,23 @@ mod ffi {
       server_message: Vec<u8>,
     ) -> Result<MessageSession>;
     fn server_kp() -> ServerKeyPair;
+    fn server_register_cxx(
+      registration_request: Vec<u8>,
+      server_public_key: Vec<u8>,
+    ) -> Result<MessageState>;
+    fn server_register_finish_cxx(
+      server_register_state: Vec<u8>,
+      client_message: Vec<u8>,
+    ) -> Result<PasswordFile>;
+    fn server_login_cxx(
+      password_file: Vec<u8>,
+      server_private_key: Vec<u8>,
+      login_request: Vec<u8>,
+    ) -> Result<MessageState>;
+    fn server_login_finish_cxx(
+      server_login_state: Vec<u8>,
+      client_message: Vec<u8>,
+    ) -> Result<SessionKey>;
   }
 }
 
@@ -165,12 +192,115 @@ fn client_login_finish(
 fn server_kp() -> ffi::ServerKeyPair {
   let mut rng = OsRng;
   let keypair = Cipher::generate_random_keypair(&mut rng);
-  let public_key = keypair.public().deref().to_vec();
-  let private_key = keypair.private().deref().to_vec();
+  let public_key = keypair.public().to_vec();
+  let private_key = keypair.private().to_vec();
   ffi::ServerKeyPair {
     public: public_key,
     private: private_key,
   }
+}
+
+fn server_register_cxx(
+  registration_request: Vec<u8>,
+  server_public_key: Vec<u8>,
+) -> Result<ffi::MessageState, ProtocolError> {
+  let registration_request = RegistrationRequest::<Cipher>::deserialize(&registration_request)?;
+  let server_public_key = Key::from_bytes(&server_public_key)?;
+
+  let s = server_register(registration_request, &server_public_key)?;
+
+  let message_bytes = s.message.serialize();
+  let state_bytes = s.state.serialize();
+
+  Ok(ffi::MessageState {
+    message: message_bytes,
+    state: state_bytes,
+  })
+}
+
+fn server_register_finish_cxx(
+  server_register_state: Vec<u8>,
+  client_message: Vec<u8>,
+) -> Result<ffi::PasswordFile, ProtocolError> {
+  let server_register_state = ServerRegistration::<Cipher>::deserialize(&server_register_state)?;
+  let client_message = RegistrationUpload::<Cipher>::deserialize(&client_message)?;
+
+  let s = server_register_finish(server_register_state, client_message)?;
+
+  let password_file_bytes = s.serialize();
+
+  Ok(ffi::PasswordFile {
+    file: password_file_bytes,
+  })
+}
+
+fn server_login_cxx(
+  password_file: Vec<u8>,
+  server_private_key: Vec<u8>,
+  login_request: Vec<u8>,
+) -> Result<ffi::MessageState, ProtocolError> {
+  let password_file = ServerRegistration::<Cipher>::deserialize(&password_file)?;
+  let server_private_key = Key::from_bytes(&server_private_key)?;
+  let login_request = CredentialRequest::<Cipher>::deserialize(&login_request)?;
+
+  let s = server_login(password_file, &server_private_key, login_request)?;
+
+  let message_bytes = s.message.serialize()?;
+  let state_bytes = s.state.serialize()?;
+
+  Ok(ffi::MessageState {
+    message: message_bytes,
+    state: state_bytes,
+  })
+}
+
+fn server_login_finish_cxx(
+  server_login_state: Vec<u8>,
+  client_message: Vec<u8>,
+) -> Result<ffi::SessionKey, ProtocolError> {
+  let server_login_state = ServerLogin::<Cipher>::deserialize(&server_login_state)?;
+  let client_message = CredentialFinalization::<Cipher>::deserialize(&client_message)?;
+
+  let s = server_login_finish(server_login_state, client_message)?;
+
+  Ok(ffi::SessionKey { key: s.session_key })
+}
+
+fn server_register(
+  registration_request: RegistrationRequest<Cipher>,
+  server_public_key: &Key,
+) -> Result<ServerRegistrationStartResult<Cipher>, ProtocolError> {
+  let mut server_rng = OsRng;
+  ServerRegistration::<Cipher>::start(&mut server_rng, registration_request, server_public_key)
+}
+
+fn server_register_finish(
+  server_register_state: ServerRegistration<Cipher>,
+  client_message: RegistrationUpload<Cipher>,
+) -> Result<ServerRegistration<Cipher>, ProtocolError> {
+  server_register_state.finish(client_message)
+}
+
+fn server_login(
+  password_file: ServerRegistration<Cipher>,
+  server_private_key: &Key,
+  login_request: CredentialRequest<Cipher>,
+) -> Result<ServerLoginStartResult<Cipher>, ProtocolError> {
+  let mut server_rng = OsRng;
+  ServerLogin::start(
+    &mut server_rng,
+    password_file,
+    server_private_key,
+    login_request,
+    ServerLoginStartParameters::default(),
+  )
+}
+
+fn server_login_finish(
+  server_login_state: ServerLogin<Cipher>,
+  client_message: CredentialFinalization<Cipher>,
+) -> Result<ServerLoginFinishResult<Cipher>, ProtocolError> {
+  server_login_state.finish(client_message)
 }
 
 #[cfg(test)]
@@ -388,5 +518,389 @@ mod tests {
     let keys = server_kp();
     assert_eq!(keys.public.len(), 32);
     assert_eq!(keys.private.len(), 32);
+  }
+
+  #[test]
+  fn test_server_register_cxx_ok() {
+    let password = "hunter2";
+    let mut client_rng = OsRng;
+    let client_registration_start_result =
+      ClientRegistration::<Cipher>::start(&mut client_rng, password.as_bytes()).unwrap();
+    let mut rng = OsRng;
+    let server_kp = Cipher::generate_random_keypair(&mut rng);
+    assert!(server_register_cxx(
+      client_registration_start_result.message.serialize(),
+      server_kp.public().to_vec()
+    )
+    .is_ok())
+  }
+
+  #[test]
+  fn test_server_register_cxx_err_request_deserialization_failed() {
+    let mut rng = OsRng;
+    let server_kp = Cipher::generate_random_keypair(&mut rng);
+    assert!(server_register_cxx(vec![], server_kp.public().to_vec()).is_err())
+  }
+
+  #[test]
+  fn test_server_register_cxx_err_key_deserialization_failed() {
+    let password = "hunter2";
+    let mut client_rng = OsRng;
+    let client_registration_start_result =
+      ClientRegistration::<Cipher>::start(&mut client_rng, password.as_bytes()).unwrap();
+    assert!(
+      server_register_cxx(client_registration_start_result.message.serialize(), vec![]).is_err()
+    )
+  }
+
+  #[test]
+  fn test_server_register_finish_cxx_ok() {
+    let mut client_rng = OsRng;
+    let mut server_rng = OsRng;
+    let client_registration_start_result =
+      ClientRegistration::<Cipher>::start(&mut client_rng, b"hunter2").unwrap();
+    let server_kp = Cipher::generate_random_keypair(&mut server_rng);
+    let server_registration_start_result = ServerRegistration::<Cipher>::start(
+      &mut server_rng,
+      client_registration_start_result.message,
+      server_kp.public(),
+    )
+    .unwrap();
+    let client_registration_finish_result = client_registration_start_result
+      .state
+      .finish(
+        &mut client_rng,
+        server_registration_start_result.message,
+        ClientRegistrationFinishParameters::default(),
+      )
+      .unwrap();
+    assert!(server_register_finish_cxx(
+      server_registration_start_result.state.serialize(),
+      client_registration_finish_result.message.serialize()
+    )
+    .is_ok());
+  }
+
+  #[test]
+  fn test_server_register_finish_cxx_err_state_deserialization_failed() {
+    let mut client_rng = OsRng;
+    let mut server_rng = OsRng;
+    let client_registration_start_result =
+      ClientRegistration::<Cipher>::start(&mut client_rng, b"hunter2").unwrap();
+    let server_kp = Cipher::generate_random_keypair(&mut server_rng);
+    let server_registration_start_result = ServerRegistration::<Cipher>::start(
+      &mut server_rng,
+      client_registration_start_result.message,
+      server_kp.public(),
+    )
+    .unwrap();
+    let client_registration_finish_result = client_registration_start_result
+      .state
+      .finish(
+        &mut client_rng,
+        server_registration_start_result.message,
+        ClientRegistrationFinishParameters::default(),
+      )
+      .unwrap();
+    assert!(server_register_finish_cxx(
+      vec![],
+      client_registration_finish_result.message.serialize()
+    )
+    .is_err());
+  }
+
+  #[test]
+  fn test_server_register_finish_cxx_err_message_deserialization_failed() {
+    let mut client_rng = OsRng;
+    let mut server_rng = OsRng;
+    let client_registration_start_result =
+      ClientRegistration::<Cipher>::start(&mut client_rng, b"hunter2").unwrap();
+    let server_kp = Cipher::generate_random_keypair(&mut server_rng);
+    let server_registration_start_result = ServerRegistration::<Cipher>::start(
+      &mut server_rng,
+      client_registration_start_result.message,
+      server_kp.public(),
+    )
+    .unwrap();
+    assert!(
+      server_register_finish_cxx(server_registration_start_result.state.serialize(), vec![])
+        .is_err()
+    );
+  }
+
+  #[test]
+  fn test_server_login_cxx_ok() {
+    let mut client_rng = OsRng;
+    let mut server_rng = OsRng;
+    let client_registration_start_result =
+      ClientRegistration::<Cipher>::start(&mut client_rng, b"hunter2").unwrap();
+    let server_kp = Cipher::generate_random_keypair(&mut server_rng);
+    let server_registration_start_result = ServerRegistration::<Cipher>::start(
+      &mut server_rng,
+      client_registration_start_result.message,
+      server_kp.public(),
+    )
+    .unwrap();
+    let client_registration_finish_result = client_registration_start_result
+      .state
+      .finish(
+        &mut client_rng,
+        server_registration_start_result.message,
+        ClientRegistrationFinishParameters::default(),
+      )
+      .unwrap();
+    let p_file = server_registration_start_result
+      .state
+      .finish(client_registration_finish_result.message)
+      .unwrap();
+    let client_login_start_result = ClientLogin::<Cipher>::start(
+      &mut client_rng,
+      b"hunter2",
+      ClientLoginStartParameters::default(),
+    )
+    .unwrap();
+    assert!(server_login_cxx(
+      p_file.serialize(),
+      server_kp.private().to_vec(),
+      client_login_start_result.message.serialize().unwrap()
+    )
+    .is_ok());
+  }
+
+  #[test]
+  fn test_server_login_cxx_err_password_file_deserialization_failed() {
+    let mut client_rng = OsRng;
+    let mut server_rng = OsRng;
+    let server_kp = Cipher::generate_random_keypair(&mut server_rng);
+    let client_login_start_result = ClientLogin::<Cipher>::start(
+      &mut client_rng,
+      b"hunter2",
+      ClientLoginStartParameters::default(),
+    )
+    .unwrap();
+    assert!(server_login_cxx(
+      vec![],
+      server_kp.private().to_vec(),
+      client_login_start_result.message.serialize().unwrap()
+    )
+    .is_err());
+  }
+
+  #[test]
+  fn test_server_login_cxx_err_private_key_deserialization_failed() {
+    let mut client_rng = OsRng;
+    let mut server_rng = OsRng;
+    let client_registration_start_result =
+      ClientRegistration::<Cipher>::start(&mut client_rng, b"hunter2").unwrap();
+    let server_kp = Cipher::generate_random_keypair(&mut server_rng);
+    let server_registration_start_result = ServerRegistration::<Cipher>::start(
+      &mut server_rng,
+      client_registration_start_result.message,
+      server_kp.public(),
+    )
+    .unwrap();
+    let client_registration_finish_result = client_registration_start_result
+      .state
+      .finish(
+        &mut client_rng,
+        server_registration_start_result.message,
+        ClientRegistrationFinishParameters::default(),
+      )
+      .unwrap();
+    let p_file = server_registration_start_result
+      .state
+      .finish(client_registration_finish_result.message)
+      .unwrap();
+    let client_login_start_result = ClientLogin::<Cipher>::start(
+      &mut client_rng,
+      b"hunter2",
+      ClientLoginStartParameters::default(),
+    )
+    .unwrap();
+    assert!(server_login_cxx(
+      p_file.serialize(),
+      vec![],
+      client_login_start_result.message.serialize().unwrap()
+    )
+    .is_err());
+  }
+
+  #[test]
+  fn test_server_login_cxx_err_login_request_deserialization_failed() {
+    let mut client_rng = OsRng;
+    let mut server_rng = OsRng;
+    let client_registration_start_result =
+      ClientRegistration::<Cipher>::start(&mut client_rng, b"hunter2").unwrap();
+    let server_kp = Cipher::generate_random_keypair(&mut server_rng);
+    let server_registration_start_result = ServerRegistration::<Cipher>::start(
+      &mut server_rng,
+      client_registration_start_result.message,
+      server_kp.public(),
+    )
+    .unwrap();
+    let client_registration_finish_result = client_registration_start_result
+      .state
+      .finish(
+        &mut client_rng,
+        server_registration_start_result.message,
+        ClientRegistrationFinishParameters::default(),
+      )
+      .unwrap();
+    let p_file = server_registration_start_result
+      .state
+      .finish(client_registration_finish_result.message)
+      .unwrap();
+    assert!(server_login_cxx(p_file.serialize(), server_kp.private().to_vec(), vec![]).is_err());
+  }
+
+  #[test]
+  fn test_server_login_finish_cxx_ok() {
+    let mut client_rng = OsRng;
+    let mut server_rng = OsRng;
+    let client_registration_start_result =
+      ClientRegistration::<Cipher>::start(&mut client_rng, b"hunter2").unwrap();
+    let server_kp = Cipher::generate_random_keypair(&mut server_rng);
+    let server_registration_start_result = ServerRegistration::<Cipher>::start(
+      &mut server_rng,
+      client_registration_start_result.message,
+      server_kp.public(),
+    )
+    .unwrap();
+    let client_registration_finish_result = client_registration_start_result
+      .state
+      .finish(
+        &mut client_rng,
+        server_registration_start_result.message,
+        ClientRegistrationFinishParameters::default(),
+      )
+      .unwrap();
+    let p_file = server_registration_start_result
+      .state
+      .finish(client_registration_finish_result.message)
+      .unwrap();
+    let client_login_start_result = ClientLogin::<Cipher>::start(
+      &mut client_rng,
+      b"hunter2",
+      ClientLoginStartParameters::default(),
+    )
+    .unwrap();
+    let server_login_start_result = ServerLogin::start(
+      &mut server_rng,
+      p_file,
+      &server_kp.private(),
+      client_login_start_result.message,
+      ServerLoginStartParameters::default(),
+    )
+    .unwrap();
+    let client_login_finish_result = client_login_start_result
+      .state
+      .finish(
+        server_login_start_result.message,
+        ClientLoginFinishParameters::default(),
+      )
+      .unwrap();
+    assert!(server_login_finish_cxx(
+      server_login_start_result.state.serialize().unwrap(),
+      client_login_finish_result.message.serialize().unwrap()
+    )
+    .is_ok());
+  }
+
+  #[test]
+  fn test_server_login_finish_cxx_err_state_deserialization_failed() {
+    let mut client_rng = OsRng;
+    let mut server_rng = OsRng;
+    let client_registration_start_result =
+      ClientRegistration::<Cipher>::start(&mut client_rng, b"hunter2").unwrap();
+    let server_kp = Cipher::generate_random_keypair(&mut server_rng);
+    let server_registration_start_result = ServerRegistration::<Cipher>::start(
+      &mut server_rng,
+      client_registration_start_result.message,
+      server_kp.public(),
+    )
+    .unwrap();
+    let client_registration_finish_result = client_registration_start_result
+      .state
+      .finish(
+        &mut client_rng,
+        server_registration_start_result.message,
+        ClientRegistrationFinishParameters::default(),
+      )
+      .unwrap();
+    let p_file = server_registration_start_result
+      .state
+      .finish(client_registration_finish_result.message)
+      .unwrap();
+    let client_login_start_result = ClientLogin::<Cipher>::start(
+      &mut client_rng,
+      b"hunter2",
+      ClientLoginStartParameters::default(),
+    )
+    .unwrap();
+    let server_login_start_result = ServerLogin::start(
+      &mut server_rng,
+      p_file,
+      &server_kp.private(),
+      client_login_start_result.message,
+      ServerLoginStartParameters::default(),
+    )
+    .unwrap();
+    let client_login_finish_result = client_login_start_result
+      .state
+      .finish(
+        server_login_start_result.message,
+        ClientLoginFinishParameters::default(),
+      )
+      .unwrap();
+    assert!(server_login_finish_cxx(
+      vec![],
+      client_login_finish_result.message.serialize().unwrap()
+    )
+    .is_err());
+  }
+
+  #[test]
+  fn test_server_login_finish_cxx_err_message_deserialization_failed() {
+    let mut client_rng = OsRng;
+    let mut server_rng = OsRng;
+    let client_registration_start_result =
+      ClientRegistration::<Cipher>::start(&mut client_rng, b"hunter2").unwrap();
+    let server_kp = Cipher::generate_random_keypair(&mut server_rng);
+    let server_registration_start_result = ServerRegistration::<Cipher>::start(
+      &mut server_rng,
+      client_registration_start_result.message,
+      server_kp.public(),
+    )
+    .unwrap();
+    let client_registration_finish_result = client_registration_start_result
+      .state
+      .finish(
+        &mut client_rng,
+        server_registration_start_result.message,
+        ClientRegistrationFinishParameters::default(),
+      )
+      .unwrap();
+    let p_file = server_registration_start_result
+      .state
+      .finish(client_registration_finish_result.message)
+      .unwrap();
+    let client_login_start_result = ClientLogin::<Cipher>::start(
+      &mut client_rng,
+      b"hunter2",
+      ClientLoginStartParameters::default(),
+    )
+    .unwrap();
+    let server_login_start_result = ServerLogin::start(
+      &mut server_rng,
+      p_file,
+      &server_kp.private(),
+      client_login_start_result.message,
+      ServerLoginStartParameters::default(),
+    )
+    .unwrap();
+    assert!(
+      server_login_finish_cxx(server_login_start_result.state.serialize().unwrap(), vec![])
+        .is_err()
+    );
   }
 }
