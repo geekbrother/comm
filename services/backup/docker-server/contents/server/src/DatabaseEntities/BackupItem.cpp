@@ -75,8 +75,8 @@ std::string BackupItem::getTableName() const {
   return BackupItem::tableName;
 }
 
-std::string BackupItem::getPrimaryKey() const {
-  return BackupItem::FIELD_USER_ID;
+PrimaryKey BackupItem::getPrimaryKey() const {
+  return PrimaryKey(BackupItem::FIELD_USER_ID, BackupItem::FIELD_CREATED);
 }
 
 std::string BackupItem::getUserID() const {
