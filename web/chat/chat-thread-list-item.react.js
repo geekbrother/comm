@@ -25,13 +25,17 @@ type Props = {
 };
 function ChatThreadListItem(props: Props): React.Node {
   const { item, setModal } = props;
-  const { threadInfo } = item;
+  const { threadInfo, lastUpdatedTimeIncludingSidebars } = item;
+
   const threadID = item.threadInfo.id;
   const ancestorThreads = useAncestorThreads(threadInfo);
   const onClick = useOnClickThread(threadID);
 
   const timeZone = useSelector(state => state.timeZone);
-  const lastActivity = shortAbsoluteDate(item.lastUpdatedTime, timeZone);
+  const lastActivity = shortAbsoluteDate(
+    lastUpdatedTimeIncludingSidebars,
+    timeZone,
+  );
 
   const active = useThreadIsActive(threadID);
   const containerClassName = React.useMemo(
