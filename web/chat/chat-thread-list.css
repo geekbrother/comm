@@ -160,6 +160,7 @@ div.sidebar:hover .menu {
 .menu {
   position: relative;
   display: flex;
+  padding: 5px;
   justify-content: flex-end;
 }
 .menu > button {
