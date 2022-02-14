@@ -5,6 +5,7 @@ import {
   faBell,
   faCog,
   faCommentAlt,
+  faSignOutAlt,
   faPlusCircle,
   faUserFriends,
 } from '@fortawesome/free-solid-svg-icons';
@@ -12,7 +13,7 @@ import classNames from 'classnames';
 import * as React from 'react';
 
 import { childThreadInfos } from 'lib/selectors/thread-selectors';
-import { threadHasPermission } from 'lib/shared/thread-utils';
+import { threadHasPermission, viewerIsMember } from 'lib/shared/thread-utils';
 import {
   type ThreadInfo,
   threadTypes,
@@ -105,6 +106,27 @@ function ThreadMenu(props: ThreadMenuProps): React.Node {
     );
   }, [canCreateSubchannels]);
 
+  const leaveThreadItem = React.useMemo(() => {
+    const canLeaveThread = threadHasPermission(
+      threadInfo,
+      threadPermissions.LEAVE_THREAD,
+    );
+    if (!viewerIsMember(threadInfo) || !canLeaveThread) {
+      return null;
+    }
+    return (
+      <React.Fragment>
+        <hr key="separator" className={css.separator} />
+        <ThreadMenuItem
+          key="leave"
+          text="Leave Thread"
+          icon={faSignOutAlt}
+          dangerous
+        />
+      </React.Fragment>
+    );
+  }, [threadInfo]);
+
   const menuItems = React.useMemo(() => {
     const items = [
       settingsItem,
@@ -113,6 +135,7 @@ function ThreadMenu(props: ThreadMenuProps): React.Node {
       sidebarItem,
       viewSubchannelsItem,
       createSubchannelsItem,
+      leaveThreadItem,
     ];
     return items.filter(Boolean);
   }, [
@@ -122,6 +145,7 @@ function ThreadMenu(props: ThreadMenuProps): React.Node {
     sidebarItem,
     viewSubchannelsItem,
     createSubchannelsItem,
+    leaveThreadItem,
   ]);
 
   const menuActionListClasses = classNames(css.topBarMenuActionList, {
