@@ -4,13 +4,20 @@ import {
   faArrowRight,
   faBell,
   faCog,
+  faCommentAlt,
+  faPlusCircle,
   faUserFriends,
 } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
 import * as React from 'react';
 
 import { childThreadInfos } from 'lib/selectors/thread-selectors';
-import { type ThreadInfo, threadTypes } from 'lib/types/thread-types';
+import { threadHasPermission } from 'lib/shared/thread-utils';
+import {
+  type ThreadInfo,
+  threadTypes,
+  threadPermissions,
+} from 'lib/types/thread-types';
 
 import { useSelector } from '../redux/redux-utils';
 import SWMansionIcon from '../SWMansionIcon.react';
@@ -66,10 +73,63 @@ function ThreadMenu(props: ThreadMenuProps): React.Node {
     );
   }, [hasSidebars]);
 
+  const canCreateSubchannels = React.useMemo(
+    () => threadHasPermission(threadInfo, threadPermissions.CREATE_SUBCHANNELS),
+    [threadInfo],
+  );
+
+  const hasSubchannels = React.useMemo(() => {
+    const subchannels =
+      childThreads?.filter(
+        childThreadInfo => childThreadInfo.type !== threadTypes.SIDEBAR,
+      ) ?? [];
+    return subchannels.length > 0;
+  }, [childThreads]);
+
+  const viewSubchannelsItem = React.useMemo(() => {
+    if (!hasSubchannels && !canCreateSubchannels) {
+      return null;
+    }
+    return (
+      <ThreadMenuItem
+        key="subchannels"
+        text="Subchannels"
+        icon={faCommentAlt}
+      />
+    );
+  }, [canCreateSubchannels, hasSubchannels]);
+
+  const createSubchannelsItem = React.useMemo(() => {
+    if (!canCreateSubchannels) {
+      return null;
+    }
+    return (
+      <ThreadMenuItem
+        key="newSubchannel"
+        text="Create new subchannel"
+        icon={faPlusCircle}
+      />
+    );
+  }, [canCreateSubchannels]);
+
   const menuItems = React.useMemo(() => {
-    const items = [settingsItem, notificatiosItem, membersItem, sidebarItem];
+    const items = [
+      settingsItem,
+      notificatiosItem,
+      membersItem,
+      sidebarItem,
+      viewSubchannelsItem,
+      createSubchannelsItem,
+    ];
     return items.filter(Boolean);
-  }, [notificatiosItem, settingsItem, membersItem, sidebarItem]);
+  }, [
+    notificatiosItem,
+    settingsItem,
+    membersItem,
+    sidebarItem,
+    viewSubchannelsItem,
+    createSubchannelsItem,
+  ]);
 
   const menuActionListClasses = classNames(css.topBarMenuActionList, {
     [css.disabled]: !isOpen,
