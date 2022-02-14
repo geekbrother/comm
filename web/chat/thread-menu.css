@@ -20,3 +20,34 @@ div.topBarMenuActionList {
 div.disabled {
   display: none;
 }
+
+button.topBarMenuAction {
+  z-index: 1;
+  background-color: transparent;
+  padding: 15px;
+  color: var(--thread-menu-color);
+  background-color: var(--thread-menu-bg);
+  font-size: var(--m-font-16);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  column-gap: 8px;
+  align-items: center;
+}
+
+button.topBarMenuAction:hover {
+  color: var(--thread-menu-color-hover);
+}
+
+div.topBarMenuActionIcon {
+  display: flex;
+  justify-content: center;
+  width: 20px;
+}
+
+button.topBarMenuActionDangerous {
+  color: var(--thread-menu-color-dangerous);
+}
+button.topBarMenuActionDangerous:hover {
+  color: var(--thread-menu-color-dangerous-hover);
+}
