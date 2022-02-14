@@ -1,11 +1,13 @@
 // @flow
 
+import { faBell, faCog } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
 import * as React from 'react';
 
 import { type ThreadInfo } from 'lib/types/thread-types';
 
 import SWMansionIcon from '../SWMansionIcon.react';
+import ThreadMenuItem from './thread-menu-item.react';
 import css from './thread-menu.css';
 
 type ThreadMenuProps = {
@@ -18,7 +20,21 @@ function ThreadMenu(props: ThreadMenuProps): React.Node {
   // eslint-disable-next-line no-unused-vars
   const { threadInfo } = props;
 
-  const menuItems = [];
+  const settingsItem = React.useMemo(
+    () => <ThreadMenuItem key="settings" text="Settings" icon={faCog} />,
+    [],
+  );
+
+  const notificatiosItem = React.useMemo(
+    () => (
+      <ThreadMenuItem key="notifications" text="Notifications" icon={faBell} />
+    ),
+    [],
+  );
+  const menuItems = React.useMemo(() => {
+    const items = [settingsItem, notificatiosItem];
+    return items.filter(Boolean);
+  }, [notificatiosItem, settingsItem]);
 
   const menuActionListClasses = classNames(css.topBarMenuActionList, {
     [css.disabled]: !isOpen,
