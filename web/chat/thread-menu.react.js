@@ -1,11 +1,18 @@
 // @flow
 
-import { faBell, faCog } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowRight,
+  faBell,
+  faCog,
+  faUserFriends,
+} from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
 import * as React from 'react';
 
-import { type ThreadInfo } from 'lib/types/thread-types';
+import { childThreadInfos } from 'lib/selectors/thread-selectors';
+import { type ThreadInfo, threadTypes } from 'lib/types/thread-types';
 
+import { useSelector } from '../redux/redux-utils';
 import SWMansionIcon from '../SWMansionIcon.react';
 import ThreadMenuItem from './thread-menu-item.react';
 import css from './thread-menu.css';
@@ -17,7 +24,6 @@ type ThreadMenuProps = {
 function ThreadMenu(props: ThreadMenuProps): React.Node {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  // eslint-disable-next-line no-unused-vars
   const { threadInfo } = props;
 
   const settingsItem = React.useMemo(
@@ -31,10 +37,35 @@ function ThreadMenu(props: ThreadMenuProps): React.Node {
     ),
     [],
   );
+
+  const childThreads = useSelector(
+    state => childThreadInfos(state)[threadInfo.id],
+  );
+
+  const membersItem = React.useMemo(() => {
+    if (threadInfo.type === threadTypes.PERSONAL) {
+      return null;
+    }
+    return <ThreadMenuItem key="members" text="Members" icon={faUserFriends} />;
+  }, [threadInfo.type]);
+
+  const sidebarItem = React.useMemo(() => {
+    const sidebars =
+      childThreads?.filter(
+        childThreadInfo => childThreadInfo.type === threadTypes.SIDEBAR,
+      ) ?? [];
+    if (sidebars.length === 0) {
+      return null;
+    }
+    return (
+      <ThreadMenuItem key="sidebars" text="Sidebars" icon={faArrowRight} />
+    );
+  }, [childThreads]);
+
   const menuItems = React.useMemo(() => {
-    const items = [settingsItem, notificatiosItem];
+    const items = [settingsItem, notificatiosItem, membersItem, sidebarItem];
     return items.filter(Boolean);
-  }, [notificatiosItem, settingsItem]);
+  }, [notificatiosItem, settingsItem, membersItem, sidebarItem]);
 
   const menuActionListClasses = classNames(css.topBarMenuActionList, {
     [css.disabled]: !isOpen,
