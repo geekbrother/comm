@@ -100,4 +100,5 @@
   --thread-ancestor-keyserver-border: var(--shades-black-70);
   --thread-ancestor-color-light: var(--shades-white-70);
   --thread-ancestor-color-dark: var(--shades-black-100);
+  --thread-menu-bg: var(--shades-black-90);
 }
