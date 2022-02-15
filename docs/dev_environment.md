@@ -556,14 +556,15 @@ The second config file contains some details that the keyserver needs in order t
 
 ```
 cd server
-vim secrets/olm_config.json
+yarn script dist/scripts/generate-olm-config.json
 ```
 
 The Olm config file should look like this:
 
 ```json
 {
-  "privateKey": "privateKey"
+  "picklingKey": "<random-string>",
+  "pickledAccount": "<random-string>"
 }
 ```
 
