@@ -4,12 +4,13 @@ import classNames from 'classnames';
 import invariant from 'invariant';
 import * as React from 'react';
 
+import { useModalContext } from './modal-provider.react';
 import css from './modal.css';
 
 export type ModalSize = 'small' | 'large';
 type Props = {
   +name: string,
-  +onClose: () => void,
+  +clearModal: () => void,
   +children?: React.Node,
   +size?: ModalSize,
   +fixedHeight?: boolean,
@@ -27,7 +28,7 @@ class Modal extends React.PureComponent<Props> {
   }
 
   render(): React.Node {
-    const { size, children, onClose, fixedHeight, name } = this.props;
+    const { size, children, clearModal, fixedHeight, name } = this.props;
 
     const overlayClasses = classNames(
       css['modal-overlay'],
@@ -52,7 +53,7 @@ class Modal extends React.PureComponent<Props> {
         <div className={modalContainerClasses}>
           <div className={modalClasses}>
             <div className={css['modal-header']}>
-              <span className={css['modal-close']} onClick={onClose}>
+              <span className={css['modal-close']} onClick={clearModal}>
                 ×
               </span>
               <h2>{name}</h2>
@@ -72,7 +73,7 @@ class Modal extends React.PureComponent<Props> {
     event: SyntheticEvent<HTMLDivElement>,
   ) => void = event => {
     if (event.target === this.overlay) {
-      this.props.onClose();
+      this.props.clearModal();
     }
   };
 
@@ -80,9 +81,25 @@ class Modal extends React.PureComponent<Props> {
     event: SyntheticKeyboardEvent<HTMLDivElement>,
   ) => void = event => {
     if (event.keyCode === 27) {
-      this.props.onClose();
+      this.props.clearModal();
     }
   };
 }
 
-export default Modal;
+const ConnectedModal = (props: Props): React.Node => {
+  const { name, size, children, fixedHeight } = props;
+  const modalContext = useModalContext();
+
+  return (
+    <Modal
+      name={name}
+      clearModal={modalContext.clearModal}
+      fixedHeight={fixedHeight}
+      size={size}
+    >
+      {children}
+    </Modal>
+  );
+};
+
+export default ConnectedModal;
