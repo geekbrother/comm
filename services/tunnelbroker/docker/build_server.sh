@@ -20,4 +20,9 @@ rm -rf cmake/build
 mkdir -p cmake/build
 
 ./generate.sh
-./build.sh
+
+echo "building the server (MAKEFLAGS=$MAKEFLAGS)..."
+pushd cmake/build
+cmake ../..
+make
+popd # cmake/build

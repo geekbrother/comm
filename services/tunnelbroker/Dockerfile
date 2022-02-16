@@ -5,6 +5,9 @@ ENV SHELL=/bin/bash
 RUN apk update
 RUN apk add curl-dev openssl-dev zlib-dev
 
+ARG MAKE_JOBS=4
+ENV MAKEFLAGS="-j${MAKE_JOBS}"
+
 RUN mkdir /transferred/scripts
 WORKDIR /transferred/scripts
 
