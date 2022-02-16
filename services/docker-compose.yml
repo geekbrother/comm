@@ -3,15 +3,9 @@ services:
   base:
     build: base-image
     image: commapp/services-base:1.0
-  # tunnelbroker
-  tunnelbroker-base:
-    build:
-      dockerfile: services/tunnelbroker/docker-base/Dockerfile
-      context: ../
-    image: commapp/tunnelbroker-base:2.0
   tunnelbroker-server:
     build:
-      dockerfile: services/tunnelbroker/docker-server/Dockerfile
+      dockerfile: services/tunnelbroker/Dockerfile
       context: ../
       args:
         - COMM_TEST_SERVICES=${COMM_TEST_SERVICES}
