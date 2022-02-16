@@ -1,16 +1,14 @@
 // @flow
 
+import { config as faConfig } from '@fortawesome/fontawesome-svg-core';
 import '@fontsource/inter';
 import '@fontsource/inter/500.css';
 import '@fontsource/inter/600.css';
-
 import '@fontsource/ibm-plex-sans';
 import '@fontsource/ibm-plex-sans/500.css';
 import '@fontsource/ibm-plex-sans/600.css';
-
 import 'basscss/css/basscss.min.css';
 import './theme.css';
-import { config as faConfig } from '@fortawesome/fontawesome-svg-core';
 import _isEqual from 'lodash/fp/isEqual';
 import * as React from 'react';
 import { DndProvider } from 'react-dnd';
@@ -35,6 +33,7 @@ import Calendar from './calendar/calendar.react';
 import Chat from './chat/chat.react';
 import InputStateContainer from './input/input-state-container.react';
 import LoadingIndicator from './loading-indicator.react';
+import { ModalProvider, useModalContext } from './modals/modal-provider.react';
 import DisconnectedBar from './redux/disconnected-bar';
 import DisconnectedBarVisibilityHandler from './redux/disconnected-bar-visibility-handler';
 import FocusHandler from './redux/focus-handler.react';
@@ -83,6 +82,7 @@ type Props = {
   +activeThreadCurrentlyUnread: boolean,
   // Redux dispatch functions
   +dispatch: Dispatch,
+  +setModal: (?React.Node) => void,
 };
 type State = {
   +modal: ?React.Node,
@@ -199,46 +199,56 @@ const updateCalendarQueryLoadingStatusSelector = createLoadingStatusSelector(
   updateCalendarQueryActionTypes,
 );
 
-const ConnectedApp: React.ComponentType<BaseProps> = React.memo<BaseProps>(
-  function ConnectedApp(props) {
-    const activeChatThreadID = useSelector(
-      state => state.navInfo.activeChatThreadID,
-    );
-    const navInfo = useSelector(state => state.navInfo);
+function ConnectedApp(props) {
+  const activeChatThreadID = useSelector(
+    state => state.navInfo.activeChatThreadID,
+  );
+  const navInfo = useSelector(state => state.navInfo);
 
-    const fetchEntriesLoadingStatus = useSelector(
-      fetchEntriesLoadingStatusSelector,
-    );
-    const updateCalendarQueryLoadingStatus = useSelector(
-      updateCalendarQueryLoadingStatusSelector,
-    );
-    const entriesLoadingStatus = combineLoadingStatuses(
-      fetchEntriesLoadingStatus,
-      updateCalendarQueryLoadingStatus,
-    );
+  const fetchEntriesLoadingStatus = useSelector(
+    fetchEntriesLoadingStatusSelector,
+  );
+  const updateCalendarQueryLoadingStatus = useSelector(
+    updateCalendarQueryLoadingStatusSelector,
+  );
+  const entriesLoadingStatus = combineLoadingStatuses(
+    fetchEntriesLoadingStatus,
+    updateCalendarQueryLoadingStatus,
+  );
 
-    const loggedIn = useSelector(isLoggedIn);
-    const mostRecentReadThread = useSelector(mostRecentReadThreadSelector);
-    const activeThreadCurrentlyUnread = useSelector(
-      state =>
-        !activeChatThreadID ||
-        !!state.threadStore.threadInfos[activeChatThreadID]?.currentUser.unread,
-    );
+  const loggedIn = useSelector(isLoggedIn);
+  const mostRecentReadThread = useSelector(mostRecentReadThreadSelector);
+  const activeThreadCurrentlyUnread = useSelector(
+    state =>
+      !activeChatThreadID ||
+      !!state.threadStore.threadInfos[activeChatThreadID]?.currentUser.unread,
+  );
 
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
+  const modalContext = useModalContext();
 
+  return (
+    <App
+      {...props}
+      navInfo={navInfo}
+      entriesLoadingStatus={entriesLoadingStatus}
+      loggedIn={loggedIn}
+      mostRecentReadThread={mostRecentReadThread}
+      activeThreadCurrentlyUnread={activeThreadCurrentlyUnread}
+      dispatch={dispatch}
+      setModal={modalContext.setModal}
+    />
+  );
+}
+
+const AppWithProvider: React.ComponentType<BaseProps> = React.memo<BaseProps>(
+  function AppWithProvider(props) {
     return (
-      <App
-        {...props}
-        navInfo={navInfo}
-        entriesLoadingStatus={entriesLoadingStatus}
-        loggedIn={loggedIn}
-        mostRecentReadThread={mostRecentReadThread}
-        activeThreadCurrentlyUnread={activeThreadCurrentlyUnread}
-        dispatch={dispatch}
-      />
+      <ModalProvider>
+        <ConnectedApp {...props} />
+      </ModalProvider>
     );
   },
 );
 
-export default ConnectedApp;
+export default AppWithProvider;
