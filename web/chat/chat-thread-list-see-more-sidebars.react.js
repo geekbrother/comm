@@ -6,22 +6,21 @@ import * as React from 'react';
 import type { ThreadInfo } from 'lib/types/thread-types';
 
 import SidebarListModal from '../modals/chat/sidebar-list-modal.react';
+import { useModalContext } from '../modals/modal-provider.react';
 import css from './chat-thread-list.css';
 
 type Props = {
   +threadInfo: ThreadInfo,
   +unread: boolean,
   +showingSidebarsInline: boolean,
-  +setModal: (modal: ?React.Node) => void,
 };
 function ChatThreadListSeeMoreSidebars(props: Props): React.Node {
-  const { unread, showingSidebarsInline, setModal, threadInfo } = props;
+  const { unread, showingSidebarsInline, threadInfo } = props;
+  const modalContext = useModalContext();
+
   const onClick = React.useCallback(
-    () =>
-      setModal(
-        <SidebarListModal setModal={setModal} threadInfo={threadInfo} />,
-      ),
-    [setModal, threadInfo],
+    () => modalContext.setModal(<SidebarListModal threadInfo={threadInfo} />),
+    [modalContext, threadInfo],
   );
   const buttonText = showingSidebarsInline ? 'See more...' : 'See sidebars...';
   return (
