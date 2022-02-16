@@ -77,9 +77,10 @@ div.button_container {
   }
 
   .request_access,
-  .button_container,
+  div.button_container,
   button.request_access {
     display: none;
+    background: red;
   }
 
   .github_icon,
