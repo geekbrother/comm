@@ -13,6 +13,7 @@
 #include <aws/dynamodb/model/DescribeTableResult.h>
 #include <aws/dynamodb/model/GetItemRequest.h>
 #include <aws/dynamodb/model/PutItemRequest.h>
+#include <aws/dynamodb/model/QueryRequest.h>
 
 #include <memory>
 #include <string>
@@ -50,6 +51,8 @@ public:
 
   void putMessageItem(const MessageItem &item);
   std::shared_ptr<MessageItem> findMessageItem(const std::string &messageID);
+  std::vector<std::shared_ptr<MessageItem>>
+  findMessageItemsByReceiever(const std::string &toDeviceID);
   void removeMessageItem(const std::string &messageID);
 };
 

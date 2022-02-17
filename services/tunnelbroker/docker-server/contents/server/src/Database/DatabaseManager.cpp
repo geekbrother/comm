@@ -193,6 +193,34 @@ DatabaseManager::findMessageItem(const std::string &messageID) {
   return std::move(this->innerFindItem<MessageItem>(request));
 }
 
+std::vector<std::shared_ptr<MessageItem>>
+DatabaseManager::findMessageItemsByReceiever(const std::string &toDeviceID) {
+  std::vector<std::shared_ptr<MessageItem>> result;
+
+  Aws::DynamoDB::Model::QueryRequest req;
+  req.SetTableName(MessageItem().getTableName());
+  req.SetKeyConditionExpression(
+      MessageItem::FIELD_TO_DEVICE_ID + " = :valueToMatch");
+
+  AttributeValues attributeValues;
+  attributeValues.emplace(":valueToMatch", toDeviceID);
+
+  req.SetExpressionAttributeValues(attributeValues);
+  req.SetIndexName("toDeviceID-index");
+
+  const Aws::DynamoDB::Model::QueryOutcome &outcome =
+      getDynamoDBClient()->Query(req);
+  if (!outcome.IsSuccess()) {
+    throw std::runtime_error(outcome.GetError().GetMessage());
+  }
+  const Aws::Vector<AttributeValues> &items = outcome.GetResult().GetItems();
+  for (auto &item : items) {
+    result.push_back(std::make_shared<MessageItem>(item));
+  }
+
+  return result;
+}
+
 void DatabaseManager::removeMessageItem(const std::string &messageID) {
   this->innerRemoveItem(*(createItemByType<MessageItem>()), messageID);
 }
