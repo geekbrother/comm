@@ -1,5 +1,9 @@
 #include "BackupServiceImpl.h"
 
+#include "PakeAuthenticationHandler.h"
+#include "ReactorBase.h"
+#include "WalletAuthenticationHandler.h"
+
 #include <aws/core/Aws.h>
 
 namespace comm {
@@ -13,35 +17,78 @@ BackupServiceImpl::~BackupServiceImpl() {
   Aws::ShutdownAPI({});
 }
 
-grpc::Status BackupServiceImpl::CreateNewBackup(
-    grpc::ServerContext *context,
-    grpc::ServerReaderWriter<
-        backup::CreateNewBackupResponse,
-        backup::CreateNewBackupRequest> *stream) {
-  return grpc::Status(grpc::StatusCode::UNIMPLEMENTED, "not implemented yet");
+grpc::ServerBidiReactor<
+    backup::CreateNewBackupRequest,
+    backup::CreateNewBackupResponse> *
+BackupServiceImpl::CreateNewBackup(grpc::CallbackServerContext *context) {
+  class CreateNewBackupReactor : public ReactorBase<
+                                     backup::CreateNewBackupRequest,
+                                     backup::CreateNewBackupResponse> {
+  public:
+    backup::CreateNewBackupResponse
+    handleRequest(backup::CreateNewBackupRequest request) override {
+      throw EndConnectionError();
+      // TODO handle request
+      // backup::CreateNewBackupResponse response;
+      // return response;
+    }
+  };
+
+  return new CreateNewBackupReactor();
 }
 
-grpc::Status BackupServiceImpl::SendLog(
-    grpc::ServerContext *context,
-    grpc::ServerReader<backup::SendLogRequest> *reader,
-    google::protobuf::Empty *response) {
-  return grpc::Status(grpc::StatusCode::UNIMPLEMENTED, "not implemented yet");
+grpc::ServerBidiReactor<backup::SendLogRequest, google::protobuf::Empty> *
+BackupServiceImpl::SendLog(grpc::CallbackServerContext *context) {
+  class SendLogReactor
+      : public ReactorBase<backup::SendLogRequest, google::protobuf::Empty> {
+  public:
+    google::protobuf::Empty
+    handleRequest(backup::SendLogRequest request) override {
+      throw EndConnectionError();
+      // TODO handle request
+      return google::protobuf::Empty();
+    }
+  };
+
+  return new SendLogReactor();
 }
 
-grpc::Status BackupServiceImpl::RecoverBackupKey(
-    grpc::ServerContext *context,
-    grpc::ServerReaderWriter<
-        backup::RecoverBackupKeyResponse,
-        backup::RecoverBackupKeyRequest> *stream) {
-  return grpc::Status(grpc::StatusCode::UNIMPLEMENTED, "not implemented yet");
+grpc::ServerBidiReactor<
+    backup::RecoverBackupKeyRequest,
+    backup::RecoverBackupKeyResponse> *
+BackupServiceImpl::RecoverBackupKey(grpc::CallbackServerContext *context) {
+  class RecoverBackupKeyReactor : public ReactorBase<
+                                      backup::RecoverBackupKeyRequest,
+                                      backup::RecoverBackupKeyResponse> {
+  public:
+    backup::RecoverBackupKeyResponse
+    handleRequest(backup::RecoverBackupKeyRequest request) override {
+      throw EndConnectionError();
+      // TODO handle request
+      // backup::RecoverBackupKeyResponse response;
+      // return response;
+    }
+  };
+
+  return new RecoverBackupKeyReactor();
 }
 
-grpc::Status BackupServiceImpl::PullBackup(
-    grpc::ServerContext *context,
-    grpc::ServerReaderWriter<
-        backup::PullBackupResponse,
-        backup::PullBackupRequest> *stream) {
-  return grpc::Status(grpc::StatusCode::UNIMPLEMENTED, "not implemented yet");
+grpc::ServerBidiReactor<backup::PullBackupRequest, backup::PullBackupResponse> *
+BackupServiceImpl::PullBackup(grpc::CallbackServerContext *context) {
+  class PullBackupReactor : public ReactorBase<
+                                backup::PullBackupRequest,
+                                backup::PullBackupResponse> {
+  public:
+    backup::PullBackupResponse
+    handleRequest(backup::PullBackupRequest request) override {
+      throw EndConnectionError();
+      // TODO handle request
+      // backup::PullBackupResponse response;
+      // return response;
+    }
+  };
+
+  return new PullBackupReactor();
 }
 
 } // namespace network
