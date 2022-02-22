@@ -11,7 +11,7 @@ import {
 import * as React from 'react';
 
 import { childThreadInfos } from 'lib/selectors/thread-selectors';
-import { threadHasPermission } from 'lib/shared/thread-utils';
+import { threadHasPermission, threadIsChannel } from 'lib/shared/thread-utils';
 import {
   type ThreadInfo,
   threadTypes,
@@ -64,9 +64,7 @@ function ThreadMenu(props: ThreadMenuProps): React.Node {
   );
 
   const hasSubchannels = React.useMemo(() => {
-    return childThreads?.some(
-      childThreadInfo => childThreadInfo.type !== threadTypes.SIDEBAR,
-    );
+    return !!childThreads?.some(threadIsChannel);
   }, [childThreads]);
 
   const viewSubchannelsItem = React.useMemo(() => {
