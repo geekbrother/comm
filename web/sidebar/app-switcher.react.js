@@ -32,6 +32,7 @@ function AppSwitcher(): React.Node {
   );
 
   const boundUnreadCount = useSelector(unreadCount);
+  const isCalendarEnabled = useSelector(state => state.enabledApps.calendar);
 
   React.useEffect(() => {
     document.title = getTitle(boundUnreadCount);
@@ -71,6 +72,19 @@ function AppSwitcher(): React.Node {
     ],
   );
 
+  const onClickApps = React.useCallback(
+    (event: SyntheticEvent<HTMLAnchorElement>) => {
+      event.preventDefault();
+      dispatch({
+        type: updateNavInfoActionType,
+        payload: {
+          tab: 'apps',
+        },
+      });
+    },
+    [dispatch],
+  );
+
   invariant(viewerID, 'should be set');
   let chatBadge = null;
   if (boundUnreadCount > 0) {
@@ -83,6 +97,23 @@ function AppSwitcher(): React.Node {
   const chatNavClasses = classNames({
     [css['current-tab']]: navInfo.tab === 'chat',
   });
+  const appsNavClasses = classNames({
+    [css['current-tab']]: navInfo.tab === 'apps',
+  });
+
+  const calendarLink = React.useMemo(() => {
+    if (!isCalendarEnabled) {
+      return null;
+    }
+    return (
+      <li>
+        <p className={calendarNavClasses}>
+          <SWMansionIcon icon="calendar" size={24} />
+          <a onClick={onClickCalendar}>Calendar</a>
+        </p>
+      </li>
+    );
+  }, [calendarNavClasses, isCalendarEnabled, onClickCalendar]);
 
   return (
     <div className={css.container}>
@@ -96,10 +127,11 @@ function AppSwitcher(): React.Node {
             <a onClick={onClickChat}>Chat</a>
           </p>
         </li>
+        {calendarLink}
         <li>
-          <p className={calendarNavClasses}>
-            <SWMansionIcon icon="calendar" size={24} />
-            <a onClick={onClickCalendar}>Calendar</a>
+          <p className={appsNavClasses}>
+            <SWMansionIcon icon="wrench" size={24} />
+            <a onClick={onClickApps}>Apps</a>
           </p>
         </li>
       </ul>
