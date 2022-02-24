@@ -7,6 +7,7 @@ namespace comm {
 namespace network {
 
 struct DeliveryBrokerMessage {
+  std::string messageID;
   uint64_t deliveryTag;
   std::string fromDeviceID;
   std::string payload;
