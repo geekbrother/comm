@@ -7,6 +7,9 @@
 #include "DatabaseManager.h"
 #include "DeliveryBroker.h"
 #include "Tools.h"
+
+#include <unordered_map>
+
 namespace comm {
 namespace network {
 
@@ -152,7 +155,9 @@ grpc::Status TunnelBrokerServiceImpl::Send(
           "No such session found. SessionID: " + sessionID);
     }
     const std::string clientDeviceID = sessionItem->getDeviceID();
+    const std::string messageID = generateUUID();
     if (!AmqpManager::getInstance().send(
+            messageID,
             request->todeviceid(),
             clientDeviceID,
             std::string(request->payload()))) {
@@ -194,10 +199,10 @@ grpc::Status TunnelBrokerServiceImpl::Get(
           "No such session found. SessionID: " + sessionID);
     }
     const std::string clientDeviceID = sessionItem->getDeviceID();
-    std::vector<DeliveryBrokerMessage> messagesToDeliver;
+    std::unordered_map<std::string, DeliveryBrokerMessage> messagesToDeliver;
     while (1) {
       messagesToDeliver = DeliveryBroker::getInstance().get(clientDeviceID);
-      for (auto const &message : messagesToDeliver) {
+      for (const auto &[messageID, message] : messagesToDeliver) {
         tunnelbroker::GetResponse response;
         response.set_fromdeviceid(message.fromDeviceID);
         response.set_payload(message.payload);
@@ -206,9 +211,10 @@ grpc::Status TunnelBrokerServiceImpl::Get(
               "gRPC: 'Get' writer error on sending data to the client");
         }
         comm::network::AmqpManager::getInstance().ack(message.deliveryTag);
+        DeliveryBroker::getInstance().remove(clientDeviceID, messageID);
       }
       if (!DeliveryBroker::getInstance().isEmpty(clientDeviceID)) {
-        DeliveryBroker::getInstance().remove(clientDeviceID);
+        DeliveryBroker::getInstance().erase(clientDeviceID);
       }
       DeliveryBroker::getInstance().wait(clientDeviceID);
     }
