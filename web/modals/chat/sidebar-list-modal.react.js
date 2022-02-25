@@ -15,11 +15,16 @@ import SidebarItem from '../../chat/sidebar-item.react';
 import { useSelector } from '../../redux/redux-utils';
 import globalCSS from '../../style.css';
 import { MagnifyingGlass } from '../../vectors.react';
+import { useModalContext } from '../modal-provider.react';
 import Modal from '../modal.react';
 
-type Props = {
-  +setModal: (modal: ?React.Node) => void,
+type BaseProps = {
   +threadInfo: ThreadInfo,
+};
+
+type Props = {
+  ...BaseProps,
+  +setModal: (modal: ?React.Node) => void,
 };
 function SidebarListModal(props: Props): React.Node {
   const { setModal, threadInfo } = props;
@@ -141,5 +146,9 @@ function SidebarListModal(props: Props): React.Node {
     </Modal>
   );
 }
+function ConnectedSidebarListModal(props: BaseProps): React.Node {
+  const modalContext = useModalContext();
 
-export default SidebarListModal;
+  return <SidebarListModal {...props} setModal={modalContext.setModal} />;
+}
+export default ConnectedSidebarListModal;

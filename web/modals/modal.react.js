@@ -85,4 +85,8 @@ class Modal extends React.PureComponent<Props> {
   };
 }
 
-export default Modal;
+function ConnectedModal(props: Props): React.Node {
+  return <Modal {...props}>{props.children}</Modal>;
+}
+
+export default ConnectedModal;
