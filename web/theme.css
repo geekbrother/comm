@@ -109,4 +109,5 @@
   --thread-menu-color-dangerous: var(--error-primary);
   --thread-menu-color-dangerous-hover: var(--error-light-50);
   --account-settings-label: var(--shades-black-60);
+  --account-button-color: var(--violet-dark-100);
 }
