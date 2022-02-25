@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 
+import { useModalContext } from '../../modals/modal-provider.react';
 import css from '../../style.css';
 import Modal from '../modal.react';
 
@@ -24,4 +25,10 @@ class InvalidUploadModal extends React.PureComponent<Props> {
   };
 }
 
-export default InvalidUploadModal;
+function ConnectedInvalidUploadModal(): React.Node {
+  const modalContext = useModalContext();
+
+  return <InvalidUploadModal setModal={modalContext.setModal} />;
+}
+
+export default ConnectedInvalidUploadModal;

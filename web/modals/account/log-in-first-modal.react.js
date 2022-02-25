@@ -2,12 +2,16 @@
 
 import * as React from 'react';
 
+import { useModalContext } from '../../modals/modal-provider.react';
 import css from '../../style.css';
 import Modal from '../modal.react';
 import LogInModal from './log-in-modal.react';
 
-type Props = {
+type BaseProps = {
   +inOrderTo: string,
+};
+type Props = {
+  ...BaseProps,
   +setModal: (modal: ?React.Node) => void,
 };
 class LogInFirstModal extends React.PureComponent<Props> {
@@ -37,8 +41,14 @@ class LogInFirstModal extends React.PureComponent<Props> {
 
   onClickLogIn: (event: SyntheticEvent<HTMLAnchorElement>) => void = event => {
     event.preventDefault();
-    this.props.setModal(<LogInModal setModal={this.props.setModal} />);
+    this.props.setModal(<LogInModal />);
   };
 }
 
-export default LogInFirstModal;
+function ConnectedLoginFirstModal(props: BaseProps): React.Node {
+  const modalContext = useModalContext();
+
+  return <LogInFirstModal {...props} setModal={modalContext.setModal} />;
+}
+
+export default ConnectedLoginFirstModal;
