@@ -108,4 +108,5 @@
   --thread-menu-color-hover: var(--shades-white-100);
   --thread-menu-color-dangerous: var(--error-primary);
   --thread-menu-color-dangerous-hover: var(--error-light-50);
+  --account-settings-label: var(--shades-black-60);
 }
