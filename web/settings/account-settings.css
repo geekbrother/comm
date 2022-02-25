@@ -8,3 +8,33 @@
   font-weight: var(--semi-bold);
   line-height: var(--line-height-display);
 }
+
+.content {
+  margin-top: 55px;
+}
+
+.content ul {
+  list-style-type: none;
+}
+
+.content li {
+  color: var(--account-settings-label);
+  border-bottom: 1px solid var(--border-color);
+  padding: 16px;
+  margin-bottom: 8px;
+}
+
+.logoutContainer {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--fg);
+}
+
+.logoutLabel {
+  color: var(--account-settings-label);
+}
+
+.username {
+  color: var(--fg);
+}
