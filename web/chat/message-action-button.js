@@ -18,7 +18,11 @@ import type {
   PositionInfo,
 } from './position-types';
 import { tooltipPositions, type TooltipPosition } from './tooltip-utils';
-import { TooltipMenu, type TooltipStyle, TooltipButton } from './tooltip.react';
+import {
+  TooltipMenu,
+  type TooltipStyle,
+  TooltipTextItem,
+} from './tooltip.react';
 
 const ellipsisIconExcessVerticalWhitespace = 10;
 
@@ -105,10 +109,7 @@ function MessageActionButton(props: MessageActionTooltipProps): React.Node {
         layoutPosition="relative"
         getStyle={getMessageActionTooltipStyle}
       >
-        <TooltipButton
-          text={sidebarTooltipButtonText}
-          onClick={onSidebarButtonClick}
-        />
+        <TooltipTextItem text={sidebarTooltipButtonText} />
       </TooltipMenu>
     );
   }
@@ -118,7 +119,8 @@ function MessageActionButton(props: MessageActionTooltipProps): React.Node {
       <div
         className={css.messageActionLinkIcon}
         onMouseLeave={hideTooltip}
-        onClick={toggleTooltip}
+        onClick={onSidebarButtonClick}
+        onMouseEnter={toggleTooltip}
       >
         <SWMansionIcon icon="message-circle-lines" size={18} />
         {tooltipMenu}
