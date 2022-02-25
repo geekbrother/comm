@@ -22,6 +22,20 @@
   border-bottom: 1px solid var(--border-color);
   padding: 16px;
   margin-bottom: 8px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.logoutContainer {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--fg);
+}
+
+.logoutLabel {
+  color: var(--account-settings-label);
 }
 
 .logoutContainer {
@@ -37,5 +51,14 @@
 
 .username {
   color: var(--fg);
-  word-break: break-word;
+}
+
+.button {
+  color: var(--account-button-color);
+  background-color: transparent;
+  font-size: var(--m-font-16);
+  border: none;
+  cursor: pointer;
+  line-height: var(--line-height-text);
+  white-space: nowrap;
 }
