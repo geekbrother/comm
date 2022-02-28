@@ -3,7 +3,7 @@
 #import "CommSecureStoreIOSWrapper.h"
 
 @interface CommSecureStoreIOSWrapper ()
-@property(nonatomic, assign) EXSecureStore *secureStore;
+@property(nonatomic, strong) EXSecureStore *secureStore;
 @property(nonatomic, strong) NSDictionary *options;
 @end
 
@@ -30,8 +30,17 @@
   return shared;
 }
 
-- (void)init:(EXSecureStore *)secureStore {
-  _secureStore = secureStore;
+- (void)initialize {
+  if ([self secureStore] != nil) {
+    return;
+  }
+
+  EXModuleRegistryProvider *moduleRegistryProvider =
+      [[EXModuleRegistryProvider alloc] init];
+  EXSecureStore *secureStore =
+      (EXSecureStore *)[[moduleRegistryProvider moduleRegistry]
+          getExportedModuleOfClass:EXSecureStore.class];
+  self.secureStore = secureStore;
 }
 
 - (void)set:(NSString *)key value:(NSString *)value {
