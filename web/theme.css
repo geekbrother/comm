@@ -101,4 +101,7 @@
   --thread-ancestor-color-dark: var(--shades-black-100);
   --text-message-default-background: var(--shades-black-80);
   --message-action-tooltip-bg: var(--shades-black-90);
+  --app-list-icon-read-only-color: var(--shades-black-60);
+  --app-list-icon-enabled-color: var(--success-primary);
+  --app-list-icon-disabled-color: var(--shades-white-80);
 }
