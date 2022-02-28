@@ -1,6 +1,7 @@
 #pragma once
 
 #import <EXSecureStore/EXSecureStore.h>
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 #import <Foundation/Foundation.h>
 
