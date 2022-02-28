@@ -3,7 +3,7 @@
 #import "CommSecureStoreIOSWrapper.h"
 
 @interface CommSecureStoreIOSWrapper ()
-@property(nonatomic, assign) EXSecureStore *secureStore;
+@property(nonatomic, strong) EXSecureStore *secureStore;
 @property(nonatomic, strong) NSDictionary *options;
 @end
 

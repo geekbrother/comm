@@ -63,10 +63,17 @@ NSString *const backgroundNotificationTypeKey = @"backgroundNotifType";
 @end
 
 @interface CommSecureStoreIOSWrapper ()
+@property(nonatomic, strong) EXSecureStore *secureStore;
 - (void)init:(EXSecureStore *)secureStore;
 @end
 
 @implementation AppDelegate
+
+- (BOOL)application:(UIApplication *)application
+    willFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+  [self attemptDatabaseInitialization];
+  return YES;
+}
 
 - (BOOL)application:(UIApplication *)application
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -103,17 +110,6 @@ NSString *const backgroundNotificationTypeKey = @"backgroundNotifType";
   rootView.loadingViewFadeDelay = 0;
   rootView.loadingViewFadeDuration = 0.001;
 
-  EXModuleRegistryProvider *moduleRegistryProvider =
-      [[EXModuleRegistryProvider alloc] init];
-  EXSecureStore *secureStore =
-      (EXSecureStore *)[[moduleRegistryProvider moduleRegistry]
-          getExportedModuleOfClass:EXSecureStore.class];
-  [[CommSecureStoreIOSWrapper sharedInstance] init:secureStore];
-
-  // initialize SQLiteQueryExecutor
-  std::string sqliteFilePath =
-      std::string([[Tools getSQLiteFilePath] UTF8String]);
-  comm::SQLiteQueryExecutor::initialize(sqliteFilePath);
   return YES;
 }
 
@@ -241,6 +237,21 @@ using Runtime = facebook::jsi::Runtime;
       facebook::react::RCTJSIExecutorRuntimeInstaller(installer),
       JSIExecutor::defaultTimeoutInvoker,
       makeRuntimeConfig(3072));
+}
+
+- (void)attemptDatabaseInitialization {
+  if ([[CommSecureStoreIOSWrapper sharedInstance] secureStore] == nil) {
+    EXModuleRegistryProvider *moduleRegistryProvider =
+        [[EXModuleRegistryProvider alloc] init];
+    EXSecureStore *secureStore =
+        (EXSecureStore *)[[moduleRegistryProvider moduleRegistry]
+            getExportedModuleOfClass:EXSecureStore.class];
+    [[CommSecureStoreIOSWrapper sharedInstance] init:secureStore];
+  }
+
+  std::string sqliteFilePath =
+      std::string([[Tools getSQLiteFilePath] UTF8String]);
+  comm::SQLiteQueryExecutor::initialize(sqliteFilePath);
 }
 
 // Copied from
