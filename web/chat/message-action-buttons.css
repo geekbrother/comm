@@ -1,8 +1,11 @@
-div.messageActionButton {
+div.messageActionButtonsContainer {
+  display: flex;
+  flex-direction: row;
   font-size: 16px;
 }
 div.messageActionLinkIcon {
-  padding: 2px 3px;
+  margin-left: 3px;
+  margin-right: 3px;
   position: relative;
 }
 div.messageActionExtraAreaTop:before {
