@@ -1,7 +1,13 @@
-div.messageActionButtonsContainer {
+div.messageActionButtons {
+  font-size: 16px;
+}
+div.messageActionButtonsViewer {
   display: flex;
   flex-direction: row;
-  font-size: 16px;
+}
+div.messageActionButtonsNonViewer {
+  display: flex;
+  flex-direction: row-reverse;
 }
 div.messageActionLinkIcon {
   margin-left: 3px;
