@@ -51,3 +51,19 @@
   line-height: var(--line-height-text);
   white-space: nowrap;
 }
+
+.passwordContainer {
+  display: flex;
+}
+
+.password {
+  align-items: center;
+  padding-right: 16px;
+}
+
+.editPasswordButton {
+  color: var(--account-settings-label);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
