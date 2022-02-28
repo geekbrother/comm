@@ -170,12 +170,20 @@ function MessageActionButtons(props: MessageActionButtonsProps): React.Node {
     );
   }
 
-  return (
+  const { isViewer } = messageInfo.creator;
+  const messageActionButtons = isViewer ? (
     <div className={css.messageActionButtonsContainer}>
       {sidebarButton}
       {replyButton}
     </div>
+  ) : (
+    <div className={css.messageActionButtonsContainer}>
+      {replyButton}
+      {sidebarButton}
+    </div>
   );
+
+  return messageActionButtons;
 }
 
 function getMessageActionTooltipStyle(
