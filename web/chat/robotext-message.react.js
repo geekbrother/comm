@@ -16,7 +16,7 @@ import { linkRules } from '../markdown/rules.react';
 import { useSelector } from '../redux/redux-utils';
 import { updateNavInfoActionType } from '../types/nav-types';
 import { InlineSidebar } from './inline-sidebar.react';
-import MessageActionTooltip from './message-action-buttons';
+import MessageActionButtons from './message-action-buttons';
 import type {
   MessagePositionInfo,
   OnMessagePositionWithContainerInfo,
@@ -66,12 +66,10 @@ class RobotextMessage extends React.PureComponent<Props> {
       sidebarExistsOrCanBeCreated
     ) {
       messageActionTooltip = (
-        <MessageActionTooltip
+        <MessageActionButtons
           threadInfo={threadInfo}
           item={item}
-          containerPosition={
-            this.props.mouseOverMessagePosition.containerPosition
-          }
+          mouseOverMessagePosition={this.props.mouseOverMessagePosition}
           availableTooltipPositions={availableTooltipPositionsForRobotext}
         />
       );
