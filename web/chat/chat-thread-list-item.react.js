@@ -112,22 +112,26 @@ function ChatThreadListItem(props: Props): React.Node {
     }
   });
 
-  const ancestorPath = ancestorThreads.map((thread, idx) => {
-    const isNotLast = idx !== ancestorThreads.length - 1;
-    const chevron = isNotLast && (
-      <span className={css.breadCrumb}>
-        <SWMansionIcon icon="chevron-right-small" size={16} />
-      </span>
-    );
+  let ancestorPath;
+  if (ancestorThreads.length < 1) {
+    ancestorPath = threadInfo.uiName;
+  } else {
+    ancestorPath = ancestorThreads.map((thread, idx) => {
+      const isNotLast = idx !== ancestorThreads.length - 1;
+      const chevron = isNotLast && (
+        <span className={css.breadCrumb}>
+          <SWMansionIcon icon="chevron-right-small" size={16} />
+        </span>
+      );
 
-    return (
-      <React.Fragment key={thread.id}>
-        <span className={css.breadCrumb}>{thread.uiName}</span>
-        {chevron}
-      </React.Fragment>
-    );
-  });
-
+      return (
+        <React.Fragment key={thread.id}>
+          <span className={css.breadCrumb}>{thread.uiName}</span>
+          {chevron}
+        </React.Fragment>
+      );
+    });
+  }
   return (
     <>
       <div className={containerClassName}>
