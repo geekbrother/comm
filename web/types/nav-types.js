@@ -5,9 +5,10 @@ import type { ThreadInfo } from 'lib/types/thread-types';
 
 export type NavInfo = {
   ...$Exact<BaseNavInfo>,
-  +tab: 'calendar' | 'chat',
+  +tab: 'calendar' | 'chat' | 'settings',
   +activeChatThreadID: ?string,
   +pendingThread?: ThreadInfo,
+  +settingsSection?: 'account',
 };
 
 export const updateNavInfoActionType = 'UPDATE_NAV_INFO';
