@@ -58,6 +58,10 @@ function canonicalURLFromReduxState(
       if (activeChatThreadID) {
         newURL += `thread/${activeChatThreadID}/`;
       }
+    } else if (navInfo.tab === 'settings') {
+      if (navInfo.settingsSection) {
+        newURL += `${navInfo.settingsSection}/`;
+      }
     }
   }
 
@@ -97,11 +101,27 @@ function navInfoFromURL(
     activeChatThreadID = navInfo.activeChatThreadID;
   }
 
-  return {
-    tab: urlInfo.chat ? 'chat' : 'calendar',
+  let tab = 'chat';
+  if (urlInfo.calendar) {
+    tab = 'calendar';
+  } else if (urlInfo.settings) {
+    tab = 'settings';
+  }
+
+  const newNavInfo = {
+    tab,
     startDate: startDateForYearAndMonth(year, month),
     endDate: endDateForYearAndMonth(year, month),
     activeChatThreadID,
+  };
+
+  if (!urlInfo.settings) {
+    return newNavInfo;
+  }
+
+  return {
+    ...newNavInfo,
+    settingsSection: urlInfo.settings,
   };
 }
 
