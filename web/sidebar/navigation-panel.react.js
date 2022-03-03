@@ -1,103 +1,41 @@
 // @flow
 
 import classNames from 'classnames';
-import invariant from 'invariant';
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
-
-import {
-  mostRecentReadThreadSelector,
-  unreadCount,
-} from 'lib/selectors/thread-selectors';
 
 import { useSelector } from '../redux/redux-utils';
-import SWMansionIcon from '../SWMansionIcon.react';
-import { updateNavInfoActionType } from '../types/nav-types';
+import type { NavigationTab } from '../types/nav-types';
 import css from './left-layout-aside.css';
 
-function NavigationPanel(): React.Node {
-  const activeChatThreadID = useSelector(
-    state => state.navInfo.activeChatThreadID,
-  );
+type Props = {
+  +navigationItems: $ReadOnlyArray<{
+    +tab: NavigationTab,
+    +link: React.Node,
+  }>,
+};
+
+function NavigationPanel(props: Props): React.Node {
+  const { navigationItems } = props;
   const navInfo = useSelector(state => state.navInfo);
-  const mostRecentReadThread = useSelector(mostRecentReadThreadSelector);
-  const activeThreadCurrentlyUnread = useSelector(
-    state =>
-      !activeChatThreadID ||
-      !!state.threadStore.threadInfos[activeChatThreadID]?.currentUser.unread,
+
+  const items = React.useMemo(
+    () =>
+      navigationItems.map(item => (
+        <li
+          key={item.tab}
+          className={classNames({
+            [css['current-tab']]: navInfo.tab === item.tab,
+          })}
+        >
+          {item.link}
+        </li>
+      )),
+    [navInfo.tab, navigationItems],
   );
-  const viewerID = useSelector(
-    state => state.currentUserInfo && state.currentUserInfo.id,
-  );
-
-  const dispatch = useDispatch();
-
-  const onClickCalendar = React.useCallback(
-    (event: SyntheticEvent<HTMLAnchorElement>) => {
-      event.preventDefault();
-      dispatch({
-        type: updateNavInfoActionType,
-        payload: { tab: 'calendar' },
-      });
-    },
-    [dispatch],
-  );
-
-  const onClickChat = React.useCallback(
-    (event: SyntheticEvent<HTMLAnchorElement>) => {
-      event.preventDefault();
-      dispatch({
-        type: updateNavInfoActionType,
-        payload: {
-          tab: 'chat',
-          activeChatThreadID: activeThreadCurrentlyUnread
-            ? mostRecentReadThread
-            : activeChatThreadID,
-        },
-      });
-    },
-    [
-      dispatch,
-      activeThreadCurrentlyUnread,
-      mostRecentReadThread,
-      activeChatThreadID,
-    ],
-  );
-
-  const boundUnreadCount = useSelector(unreadCount);
-
-  invariant(viewerID, 'should be set');
-  let chatBadge = null;
-  if (boundUnreadCount > 0) {
-    chatBadge = <div className={css.chatBadge}>{boundUnreadCount}</div>;
-  }
-
-  const calendarNavClasses = classNames({
-    [css['current-tab']]: navInfo.tab === 'calendar',
-  });
-  const chatNavClasses = classNames({
-    [css['current-tab']]: navInfo.tab === 'chat',
-  });
 
   return (
     <div className={css.navigationPanelContainer}>
-      <ul>
-        <li>
-          <p className={chatNavClasses}>
-            <span className={css.chatIconWrapper}>
-              <SWMansionIcon icon="message-square" size={24} />
-              {chatBadge}
-            </span>
-            <a onClick={onClickChat}>Chat</a>
-          </p>
-        </li>
-        <li>
-          <p className={calendarNavClasses}>
-            <SWMansionIcon icon="calendar" size={24} />
-            <a onClick={onClickCalendar}>Calendar</a>
-          </p>
-        </li>
-      </ul>
+      <ul>{items}</ul>
     </div>
   );
 }
