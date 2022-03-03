@@ -2,6 +2,7 @@ button.topBarMenuButton {
   background-color: transparent;
   border: none;
   cursor: pointer;
+  height: 24px;
   color: var(--thread-top-bar-menu-color);
 }
 
