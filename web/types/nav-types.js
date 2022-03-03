@@ -3,9 +3,11 @@
 import type { BaseNavInfo } from 'lib/types/nav-types';
 import type { ThreadInfo } from 'lib/types/thread-types';
 
+export type NavigationTab = 'calendar' | 'chat' | 'settings';
+
 export type NavInfo = {
   ...$Exact<BaseNavInfo>,
-  +tab: 'calendar' | 'chat' | 'settings',
+  +tab: NavigationTab,
   +activeChatThreadID: ?string,
   +pendingThread?: ThreadInfo,
   +settingsSection?: 'account',
