@@ -25,7 +25,10 @@ import {
   createLoadingStatusSelector,
   combineLoadingStatuses,
 } from 'lib/selectors/loading-selectors';
-import { mostRecentReadThreadSelector } from 'lib/selectors/thread-selectors';
+import {
+  mostRecentReadThreadSelector,
+  unreadCount,
+} from 'lib/selectors/thread-selectors';
 import { isLoggedIn } from 'lib/selectors/user-selectors';
 import type { LoadingStatus } from 'lib/types/loading-types';
 import type { Dispatch } from 'lib/types/redux-types';
@@ -46,6 +49,7 @@ import LeftLayoutAside from './sidebar/left-layout-aside.react';
 import Splash from './splash/splash.react';
 import './typography.css';
 import css from './style.css';
+import getTitle from './title/getTitle';
 import { type NavInfo, updateNavInfoActionType } from './types/nav-types';
 import { canonicalURLFromReduxState, navInfoFromURL } from './url-utils';
 
@@ -211,6 +215,11 @@ const ConnectedApp: React.ComponentType<BaseProps> = React.memo<BaseProps>(
         !activeChatThreadID ||
         !!state.threadStore.threadInfos[activeChatThreadID]?.currentUser.unread,
     );
+
+    const boundUnreadCount = useSelector(unreadCount);
+    React.useEffect(() => {
+      document.title = getTitle(boundUnreadCount);
+    }, [boundUnreadCount]);
 
     const dispatch = useDispatch();
     const modalContext = useModalContext();

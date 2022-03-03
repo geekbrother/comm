@@ -12,7 +12,6 @@ import {
 
 import { useSelector } from '../redux/redux-utils';
 import SWMansionIcon from '../SWMansionIcon.react';
-import getTitle from '../title/getTitle';
 import { updateNavInfoActionType } from '../types/nav-types';
 import css from './left-layout-aside.css';
 
@@ -30,12 +29,6 @@ function AppSwitcher(): React.Node {
   const viewerID = useSelector(
     state => state.currentUserInfo && state.currentUserInfo.id,
   );
-
-  const boundUnreadCount = useSelector(unreadCount);
-
-  React.useEffect(() => {
-    document.title = getTitle(boundUnreadCount);
-  }, [boundUnreadCount]);
 
   const dispatch = useDispatch();
 
@@ -70,6 +63,8 @@ function AppSwitcher(): React.Node {
       activeChatThreadID,
     ],
   );
+
+  const boundUnreadCount = useSelector(unreadCount);
 
   invariant(viewerID, 'should be set');
   let chatBadge = null;
