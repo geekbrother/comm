@@ -49,7 +49,6 @@ button.topBarMenuActionDangerous {
 button.topBarMenuActionDangerous:hover {
   color: var(--thread-menu-color-dangerous-hover);
 }
-
 hr.separator {
   height: 1px;
   background: var(--thread-menu-separator-color);
