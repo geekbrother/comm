@@ -23,6 +23,7 @@ import {
   threadPermissions,
 } from 'lib/types/thread-types';
 
+import SidebarListModal from '../modals/chat/sidebar-list-modal.react';
 import { useModalContext } from '../modals/modal-provider.react';
 import ThreadSettingsModal from '../modals/threads/thread-settings-modal.react';
 import { useSelector } from '../redux/redux-utils';
@@ -76,9 +77,14 @@ function ThreadMenu(props: ThreadMenuProps): React.Node {
       return null;
     }
     return (
-      <ThreadMenuItem key="sidebars" text="Sidebars" icon={faArrowRight} />
+      <ThreadMenuItem
+        key="sidebars"
+        text="Sidebars"
+        icon={faArrowRight}
+        onClick={() => setModal(<SidebarListModal threadInfo={threadInfo} />)}
+      />
     );
-  }, [hasSidebars]);
+  }, [hasSidebars, setModal, threadInfo]);
 
   const canCreateSubchannels = React.useMemo(
     () => threadHasPermission(threadInfo, threadPermissions.CREATE_SUBCHANNELS),
@@ -142,7 +148,6 @@ function ThreadMenu(props: ThreadMenuProps): React.Node {
     // TODO: Enable menu items when the modals are implemented
     const SHOW_NOTIFICATIONS = false;
     const SHOW_MEMBERS = false;
-    const SHOW_SIDEBAR = false;
     const SHOW_VIEW_SUBCHANNELS = false;
     const SHOW_CREATE_SUBCHANNELS = false;
     const SHOW_LEAVE_THREAD = false;
@@ -151,7 +156,7 @@ function ThreadMenu(props: ThreadMenuProps): React.Node {
       settingsItem,
       SHOW_NOTIFICATIONS && notificationsItem,
       SHOW_MEMBERS && membersItem,
-      SHOW_SIDEBAR && sidebarItem,
+      sidebarItem,
       SHOW_VIEW_SUBCHANNELS && viewSubchannelsItem,
       SHOW_CREATE_SUBCHANNELS && createSubchannelsItem,
       SHOW_LEAVE_THREAD && leaveThreadItem && separator,
