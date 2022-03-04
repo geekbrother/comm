@@ -182,12 +182,16 @@ function ThreadMenu(props: ThreadMenuProps): React.Node {
   }
 
   return (
-    <div>
+    <>
       <button className={css.topBarMenuButton} onClick={switchMenuCallback}>
-        <SWMansionIcon icon="menu-vertical" size={20} />
+        <SWMansionIcon
+          style={{ display: 'block' }}
+          icon="menu-vertical"
+          size={24}
+        />
       </button>
       {menuActionList}
-    </div>
+    </>
   );
 }
 
