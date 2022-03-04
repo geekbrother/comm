@@ -3,7 +3,7 @@
 set -e
 
 if [ "$#" -gt 1 ]; then
-		echo "usage: $0 [TAG]" >&2
+		echo "usage: $0 [TAG]"
 		exit 1
 fi
 
