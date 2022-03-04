@@ -172,6 +172,8 @@ function ThreadMenu(props: ThreadMenuProps): React.Node {
     setIsOpen(isMenuOpen => !isMenuOpen);
   }, []);
 
+  const style = React.useMemo(() => ({ display: 'block' }), []);
+
   if (menuItems.length === 0) {
     return null;
   }
@@ -184,12 +186,12 @@ function ThreadMenu(props: ThreadMenuProps): React.Node {
   }
 
   return (
-    <div>
+    <>
       <button className={css.topBarMenuButton} onClick={switchMenuCallback}>
-        <SWMansionIcon icon="menu-vertical" size={20} />
+        <SWMansionIcon style={style} icon="menu-vertical" size={24} />
       </button>
       {menuActionList}
-    </div>
+    </>
   );
 }
 
