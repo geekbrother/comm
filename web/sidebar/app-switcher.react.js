@@ -88,7 +88,7 @@ function AppSwitcher(): React.Node {
   invariant(viewerID, 'should be set');
   let chatBadge = null;
   if (boundUnreadCount > 0) {
-    chatBadge = <div className={css.chatBadge}>{boundUnreadCount}</div>;
+    chatBadge = <span className={css.chatBadge}>{boundUnreadCount}</span>;
   }
 
   const chatNavClasses = classNames({
