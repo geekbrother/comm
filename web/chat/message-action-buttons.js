@@ -20,6 +20,7 @@ import type {
   ItemAndContainerPositionInfo,
   MessagePositionInfo,
   OnMessagePositionWithContainerInfo,
+  PositionInfo,
 } from './position-types';
 import { tooltipPositions, type TooltipPosition } from './tooltip-utils';
 import {
@@ -70,25 +71,7 @@ function MessageActionButtons(props: MessageActionButtonsProps): React.Node {
         return;
       }
       const rect = event.currentTarget.getBoundingClientRect();
-      const { top, bottom, left, right, width, height } = rect;
-
-      const iconPosition: ItemAndContainerPositionInfo = {
-        containerPosition,
-        itemPosition: {
-          top:
-            top -
-            containerPosition.top +
-            messageActionIconExcessVerticalWhitespace,
-          bottom:
-            bottom -
-            containerPosition.top -
-            messageActionIconExcessVerticalWhitespace,
-          left: left - containerPosition.left,
-          right: right - containerPosition.left,
-          width,
-          height: height - messageActionIconExcessVerticalWhitespace * 2,
-        },
-      };
+      const iconPosition = getIconPosition(rect, containerPosition);
       setPointingTo(iconPosition);
     },
     [containerPosition, tooltipVisible],
@@ -253,6 +236,28 @@ function getMessageActionTooltipStyle(
 
   invariant(className, `${tooltipPosition} is not valid for message tooltip`);
   return { className };
+}
+
+function getIconPosition(
+  rect: ClientRect,
+  containerPosition: PositionInfo,
+): ItemAndContainerPositionInfo {
+  const { top, bottom, left, right, width, height } = rect;
+  return {
+    containerPosition,
+    itemPosition: {
+      top:
+        top - containerPosition.top + messageActionIconExcessVerticalWhitespace,
+      bottom:
+        bottom -
+        containerPosition.top -
+        messageActionIconExcessVerticalWhitespace,
+      left: left - containerPosition.left,
+      right: right - containerPosition.left,
+      width,
+      height: height - messageActionIconExcessVerticalWhitespace * 2,
+    },
+  };
 }
 
 export default MessageActionButtons;
