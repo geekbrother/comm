@@ -33,6 +33,8 @@ const messageActionIconExcessVerticalWhitespace = 10;
 const openSidebarText = 'Go to sidebar';
 const createSidebarText = 'Create sidebar';
 
+type MessageActions = 'sidebar' | 'reply';
+
 type MessageActionButtonsProps = {
   +threadInfo: ThreadInfo,
   +item: ChatMessageInfoItem,
@@ -58,6 +60,7 @@ function MessageActionButtons(props: MessageActionButtonsProps): React.Node {
   const { containerPosition } = mouseOverMessagePosition;
 
   const [tooltipVisible, setTooltipVisible] = React.useState(false);
+  const [activeTooltip, setActiveTooltip] = React.useState<?MessageActions>();
   const [pointingTo, setPointingTo] = React.useState();
 
   const toggleTooltip = React.useCallback(
@@ -102,6 +105,23 @@ function MessageActionButtons(props: MessageActionButtonsProps): React.Node {
     messageInfo,
     threadInfo,
   );
+
+  const toggleSidebarTooltip = React.useCallback(
+    (event: SyntheticEvent<HTMLDivElement>) => {
+      setActiveTooltip('sidebar');
+      toggleTooltip(event);
+    },
+    [toggleTooltip],
+  );
+
+  const toggleReplyTooltip = React.useCallback(
+    (event: SyntheticEvent<HTMLDivElement>) => {
+      setActiveTooltip('reply');
+      toggleTooltip(event);
+    },
+    [toggleTooltip],
+  );
+
   const onSidebarButtonClick = React.useCallback(
     (event: SyntheticEvent<HTMLButtonElement>) => {
       if (threadCreatedFromMessage) {
@@ -121,9 +141,14 @@ function MessageActionButtons(props: MessageActionButtonsProps): React.Node {
     setMouseOverMessagePosition({ type: 'off', item: item });
   }, [item, setMouseOverMessagePosition]);
 
-  const sidebarTooltipButtonText = threadCreatedFromMessage
-    ? openSidebarText
-    : createSidebarText;
+  let tooltipText = '';
+  if (activeTooltip === 'reply') {
+    tooltipText = 'Reply';
+  } else if (activeTooltip === 'sidebar') {
+    tooltipText = threadCreatedFromMessage
+      ? openSidebarText
+      : createSidebarText;
+  }
 
   let tooltipMenu = null;
   if (pointingTo && tooltipVisible) {
@@ -134,7 +159,7 @@ function MessageActionButtons(props: MessageActionButtonsProps): React.Node {
         layoutPosition="relative"
         getStyle={getMessageActionTooltipStyle}
       >
-        <TooltipTextItem text={sidebarTooltipButtonText} />
+        <TooltipTextItem text={tooltipText} />
       </TooltipMenu>
     );
   }
@@ -147,11 +172,18 @@ function MessageActionButtons(props: MessageActionButtonsProps): React.Node {
       'mouseOverMessagePosition must be set if replyButton exists',
     );
     replyButton = (
-      <MessageReplyButton
-        messagePositionInfo={mouseOverMessagePosition}
-        onReplyClick={onReplyButtonClick}
-        inputState={inputState}
-      />
+      <div
+        className={css.messageActionLinkIcon}
+        onMouseLeave={hideTooltip}
+        onMouseEnter={toggleReplyTooltip}
+      >
+        <MessageReplyButton
+          messagePositionInfo={mouseOverMessagePosition}
+          onReplyClick={onReplyButtonClick}
+          inputState={inputState}
+        />
+        {activeTooltip === 'reply' ? tooltipMenu : null}
+      </div>
     );
   }
 
@@ -167,10 +199,10 @@ function MessageActionButtons(props: MessageActionButtonsProps): React.Node {
         className={css.messageActionLinkIcon}
         onMouseLeave={hideTooltip}
         onClick={onSidebarButtonClick}
-        onMouseEnter={toggleTooltip}
+        onMouseEnter={toggleSidebarTooltip}
       >
         <SWMansionIcon icon="message-circle-lines" size={18} />
-        {tooltipMenu}
+        {activeTooltip === 'sidebar' ? tooltipMenu : null}
       </div>
     );
   }
