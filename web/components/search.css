@@ -3,24 +3,31 @@ div.searchContainer {
   display: flex;
   align-items: center;
   margin: 1rem;
+  border-radius: 16px;
+}
+
+div.searchIcon {
+  display: flex;
+  margin: 0 11px;
 }
 
 input.searchInput {
-  background-color: var(--text-input-bg);
-  font-size: var(--s-font-14);
-  padding: 1rem;
+  background-color: transparent;
+  font-size: var(--m-font-16);
+  line-height: 1.5;
+  padding: 12px 0;
   flex: 1;
   border: none;
-  color: var(--text-input-color);
+  color: var(--search-input-color);
   outline: none;
 }
 
 input.searchInput::placeholder {
-  color: var(--text-input-placeholder);
+  color: var(--search-input-placeholder);
 }
 
 button.clearSearch {
-  color: var(--text-input-color);
+  color: var(--search-clear-color);
   transition: ease-in-out 0.15s;
   border: none;
   padding: 0 1rem;
