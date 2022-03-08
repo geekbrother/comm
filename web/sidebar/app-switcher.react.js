@@ -92,10 +92,12 @@ function AppSwitcher(): React.Node {
   }
 
   const chatNavClasses = classNames({
-    [css['current-tab']]: navInfo.tab === 'chat',
+    [css.appTab]: true,
+    [css.activeTab]: navInfo.tab === 'chat',
   });
   const appsNavClasses = classNames({
-    [css['current-tab']]: navInfo.tab === 'apps',
+    [css.appTab]: true,
+    [css.activeTab]: navInfo.tab === 'apps',
   });
 
   const calendarLink = React.useMemo(() => {
@@ -103,38 +105,31 @@ function AppSwitcher(): React.Node {
       return null;
     }
     const calendarNavClasses = classNames({
-      [css['current-tab']]: navInfo.tab === 'calendar',
+      [css.appTab]: true,
+      [css.activeTab]: navInfo.tab === 'calendar',
     });
     return (
-      <li>
-        <p className={calendarNavClasses}>
-          <SWMansionIcon icon="calendar" size={24} />
-          <a onClick={onClickCalendar}>Calendar</a>
-        </p>
-      </li>
+      <div onClick={onClickCalendar} className={calendarNavClasses}>
+        <SWMansionIcon icon="calendar" size={24} />
+        <p>Calendar</p>
+      </div>
     );
   }, [isCalendarEnabled, navInfo.tab, onClickCalendar]);
 
   return (
     <div className={css.appSwitcherContainer}>
-      <ul>
-        <li>
-          <p className={chatNavClasses}>
-            <span className={css.chatIconWrapper}>
-              <SWMansionIcon icon="message-square" size={24} />
-              {chatBadge}
-            </span>
-            <a onClick={onClickChat}>Chat</a>
-          </p>
-        </li>
-        {calendarLink}
-        <li>
-          <p className={appsNavClasses}>
-            <SWMansionIcon icon="wrench" size={24} />
-            <a onClick={onClickApps}>Apps</a>
-          </p>
-        </li>
-      </ul>
+      <div onClick={onClickChat} className={chatNavClasses}>
+        <span className={css.chatIconWrapper}>
+          <SWMansionIcon icon="message-square" size={24} />
+          {chatBadge}
+        </span>
+        <p>Chat</p>
+      </div>
+      {calendarLink}
+      <div onClick={onClickApps} className={appsNavClasses}>
+        <SWMansionIcon icon="wrench" size={24} />
+        <p>Apps</p>
+      </div>
     </div>
   );
 }
