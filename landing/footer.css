@@ -54,7 +54,21 @@ footer.wrapper {
     var(--largest-font-size)
   );
   font-weight: 400;
-  color: #cccccc;
+  color: #808080;
+  transition: 300ms;
+  transition-property: color;
+}
+.navigation svg {
+  color: #808080;
+  transition: 300ms;
+  transition-property: color;
+}
+
+.navigation a:hover,
+.navigation a:hover svg {
+  color: #ffffff;
+  transition: 300ms;
+  transition-property: color;
 }
 
 a.logo {
