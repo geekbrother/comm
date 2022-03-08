@@ -1,39 +1,39 @@
 .container {
   grid-area: sBar;
   background: var(--bg);
-  color: var(--color);
+  color: var(--fg);
   border-right: 1px solid var(--border-color);
   display: flex;
 }
 
 .appSwitcherContainer {
   width: 160px;
+  margin-top: 12px;
 }
 
-.container ul {
-  list-style-type: none;
-  padding-top: 24px;
-  padding-left: 28px;
-}
-
-.container ul li {
-  cursor: pointer;
-  padding-bottom: 24px;
-  line-height: 0;
-}
-
-.container p {
+div.appTab {
   display: flex;
-  align-content: center;
+  flex-direction: row;
+  padding: 12px 0 12px 28px;
+  cursor: pointer;
 }
-
-.container ul a {
-  color: var(--color-disabled);
-}
-
-.container svg {
-  color: var(--color-disabled);
+div.appTab svg {
   padding-right: 12px;
+  color: var(--color-disabled);
+  stroke: var(--color-disabled);
+  fill: var(--color-disabled);
+}
+div.appTab p {
+  color: var(--color-disabled);
+}
+
+div.appTab:hover p,
+div.appTab:hover svg,
+div.activeTab p,
+div.activeTab svg {
+  color: var(--fg);
+  stroke: var(--fg);
+  fill: var(--fg);
 }
 
 .chatIconWrapper {
@@ -55,14 +55,4 @@ div.chatBadge {
   border-radius: 13px;
   font-size: 8px;
   line-height: 1.25;
-}
-
-p.current-tab svg {
-  color: var(--fg);
-}
-
-p.current-tab a,
-p.current-tab svg {
-  fill: var(--fg);
-  color: var(--fg);
 }
