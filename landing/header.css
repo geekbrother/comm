@@ -44,21 +44,15 @@ div.button_container {
   justify-content: flex-end;
 }
 
-.social_icons {
+.social_icons_container {
   grid-area: sIcons;
   display: flex;
   justify-self: flex-end;
 }
 
-.github_icon {
+.social_icon {
   padding-left: 14px;
   font-size: 20px;
-  grid-area: gIcon;
-}
-
-.twitter_icon {
-  font-size: 20px;
-  grid-area: tIcon;
 }
 
 @media screen and (max-width: 1099px) {
@@ -82,8 +76,7 @@ div.button_container {
     display: none;
   }
 
-  .github_icon,
-  .twitter_icon {
+  .social_icon {
     display: block;
   }
 }
