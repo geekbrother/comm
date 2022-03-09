@@ -1,17 +1,28 @@
 // @flow
 
+import {
+  faPlusCircle,
+  faMinusCircle,
+  faSignOutAlt,
+} from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
 import * as React from 'react';
 import { useState } from 'react';
 
-import { memberIsAdmin, memberHasAdminPowers } from 'lib/shared/thread-utils';
+import {
+  memberIsAdmin,
+  memberHasAdminPowers,
+  threadHasPermission,
+} from 'lib/shared/thread-utils';
 import { stringForUser } from 'lib/shared/user-utils';
 import {
   type RelativeMemberInfo,
   type ThreadInfo,
+  threadPermissions,
 } from 'lib/types/thread-types';
 
 import Label from '../../../components/label.react';
+import MenuItem from '../../../components/menu-item.react';
 import Menu from '../../../components/menu.react';
 import SWMansionIcon from '../../../SWMansionIcon.react';
 import css from './members-modal.css';
@@ -30,7 +41,54 @@ function ThreadMember(props: Props): React.Node {
     onMenuChange(isMenuOpen);
   }, [isMenuOpen, onMenuChange]);
 
-  const menuItems = [];
+  const menuItems = React.useMemo(() => {
+    const { role } = memberInfo;
+    if (!role) {
+      return [];
+    }
+
+    const canRemoveMembers = threadHasPermission(
+      threadInfo,
+      threadPermissions.REMOVE_MEMBERS,
+    );
+    const canChangeRoles = threadHasPermission(
+      threadInfo,
+      threadPermissions.CHANGE_ROLE,
+    );
+
+    const actions = [];
+
+    if (canChangeRoles && memberInfo.username) {
+      actions.push(
+        memberIsAdmin(memberInfo, threadInfo) ? (
+          <MenuItem
+            key="remove_admin"
+            text="Remove admin"
+            icon={faMinusCircle}
+          />
+        ) : (
+          <MenuItem key="make_admin" text="Make admin" icon={faPlusCircle} />
+        ),
+      );
+    }
+
+    if (
+      canRemoveMembers &&
+      !memberInfo.isViewer &&
+      (canChangeRoles || threadInfo.roles[role]?.isDefault)
+    ) {
+      actions.push(
+        <MenuItem
+          key="remove_user"
+          text="Remove user"
+          icon={faSignOutAlt}
+          dangerous
+        />,
+      );
+    }
+
+    return actions;
+  }, [memberInfo, threadInfo]);
 
   const userSettingsIcon = React.useMemo(
     () => <SWMansionIcon icon="edit" size={17} />,
