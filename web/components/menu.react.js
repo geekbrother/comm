@@ -1,18 +1,31 @@
 // @flow
 
+import classnames from 'classnames';
 import * as React from 'react';
 
 import css from './menu.css';
 
+type MenuPosition = 'left' | 'right' | 'bottom';
+type MenuSize = 'small' | 'medium';
+
 type MenuProps = {
   icon: React.Node,
   children: $ReadOnlyArray<React.Node>,
+  position?: MenuPosition,
+  size?: MenuSize,
+  light?: boolean,
 };
 
 function Menu(props: MenuProps): React.Node {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const { icon, children } = props;
+  const {
+    icon,
+    children,
+    position = 'bottom',
+    size = 'medium',
+    light = false,
+  } = props;
 
   const closeMenuCallback = React.useCallback(() => {
     document.removeEventListener('click', closeMenuCallback);
@@ -39,7 +52,19 @@ function Menu(props: MenuProps): React.Node {
 
   let menuActionList = null;
   if (isOpen) {
-    menuActionList = <div className={css.menuActionList}>{children}</div>;
+    const menuActionListClasses = classnames(css.menuActionList, {
+      [css.menuActionListBottom]: position === 'bottom',
+      [css.menuActionListLeft]: position === 'left',
+      [css.menuActionListMedium]: size === 'medium',
+      [css.menuActionListSmall]: size === 'small',
+      [css.menuActionListLight]: light,
+    });
+
+    menuActionList = (
+      <div className={css.menuActionListContainer}>
+        <div className={menuActionListClasses}>{children}</div>
+      </div>
+    );
   }
 
   return (
