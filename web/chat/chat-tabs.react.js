@@ -5,6 +5,7 @@ import * as React from 'react';
 
 import { unreadBackgroundCount } from 'lib/selectors/thread-selectors';
 
+import Tabs from '../components/tabs.react';
 import { useSelector } from '../redux/redux-utils';
 import css from './chat-tabs.css';
 import ChatThreadList from './chat-thread-list.react';
@@ -24,33 +25,45 @@ function ChatTabs(): React.Node {
   );
   const { activeTab, setActiveTab } = threadListContext;
 
-  const onClickHome = React.useCallback(() => setActiveTab('Focus'), [
-    setActiveTab,
-  ]);
-  const onClickBackground = React.useCallback(
-    () => setActiveTab('Background'),
+  const setActiveChatTab = React.useCallback(
+    (newTab: string) => {
+      invariant(
+        newTab === 'Background' || newTab === 'Focus',
+        'newTab must be Background or Focus',
+      );
+      setActiveTab(newTab);
+    },
     [setActiveTab],
+  );
+
+  const chatThreadList = React.useMemo(
+    () => (
+      <div className={css.threadList}>
+        <ChatThreadList />
+      </div>
+    ),
+    [],
+  );
+
+  const tabs = React.useMemo(
+    () => [
+      {
+        id: 'Focus',
+        header: <ChatThreadTab title="Focus" icon="Filled" />,
+        content: chatThreadList,
+      },
+      {
+        id: 'Background',
+        header: <ChatThreadTab title={backgroundTitle} icon="bell-disabled" />,
+        content: chatThreadList,
+      },
+    ],
+    [backgroundTitle, chatThreadList],
   );
 
   return (
     <div className={css.container}>
-      <div className={css.tabs}>
-        <ChatThreadTab
-          title="Focus"
-          tabIsActive={activeTab === 'Focus'}
-          onClick={onClickHome}
-          icon="Filled"
-        />
-        <ChatThreadTab
-          title={backgroundTitle}
-          tabIsActive={activeTab === 'Background'}
-          onClick={onClickBackground}
-          icon="bell-disabled"
-        />
-      </div>
-      <div className={css.threadList}>
-        <ChatThreadList />
-      </div>
+      <Tabs tabs={tabs} activeTab={activeTab} setTab={setActiveChatTab}></Tabs>
     </div>
   );
 }
