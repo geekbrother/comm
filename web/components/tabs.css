@@ -1,0 +1,32 @@
+div.tabsContainer {
+  color: var(--fg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+div.tabsHeaderContainer {
+  display: flex;
+}
+
+div.tabHeader {
+  flex: 1;
+  cursor: pointer;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+div.activeTabHeader {
+  cursor: default;
+  color: var(--tabs-header-active-color);
+  border-bottom: 2px solid var(--tabs-header-active-border);
+}
+div.backgroundTabHeader {
+  color: var(--tabs-header-background-color);
+  border-bottom: 2px solid var(--tabs-header-background-border);
+}
+
+div.backgroundTabHeader:hover {
+  color: var(--tabs-header-background-color-hover);
+  border-bottom: 2px solid var(--tabs-header-background-border-hover);
+}
