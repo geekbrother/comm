@@ -1,6 +1,6 @@
 // @flow
 
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import classNames from 'classnames';
 import * as React from 'react';
@@ -19,7 +19,7 @@ function ClearSearchButton(props: ClearSearchButtonProps): React.Node {
   });
   return (
     <button className={searchClassNames} onClick={onClick}>
-      <FontAwesomeIcon icon={faTimes} />
+      <FontAwesomeIcon icon={faTimesCircle} />
     </button>
   );
 }

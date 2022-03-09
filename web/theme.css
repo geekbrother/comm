@@ -111,4 +111,7 @@
   --app-list-icon-read-only-color: var(--shades-black-60);
   --app-list-icon-enabled-color: var(--success-primary);
   --app-list-icon-disabled-color: var(--shades-white-80);
+  --search-clear-color: var(--shades-black-60);
+  --search-input-color: var(--shades-white-100);
+  --search-input-placeholder: var(--shades-black-60);
 }
