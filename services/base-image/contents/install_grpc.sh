@@ -11,6 +11,7 @@ fi
 
 pushd /usr/lib
 git clone --recurse-submodules -b v1.39.1 https://github.com/grpc/grpc
+
 pushd grpc
 mkdir -p cmake/build
 pushd cmake/build
@@ -21,10 +22,14 @@ make
 make install
 popd # cmake/build
 
+# Explicitly install abseil-cpp because of https://github.com/grpc/grpc/issues/25949
+# This should be removed after upgrading to v1.41
 pushd third_party/abseil-cpp/
 mkdir -p cmake/build
 pushd cmake/build
-cmake ../..
+cmake \
+		-DCMAKE_POSITION_INDEPENDENT_CODE=TRUE \
+		../..
 make
 make install
 popd # cmake/build
