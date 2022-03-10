@@ -11,7 +11,6 @@ RUN apt-get update && apt-get install -y \
 ARG MAKE_JOBS=4
 ENV MAKEFLAGS="-j${MAKE_JOBS}"
 
-RUN mkdir /transferred/scripts
 WORKDIR /transferred/scripts
 
 # Install SDKs
