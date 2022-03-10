@@ -18,9 +18,6 @@ message(STATUS "Using protobuf ${Protobuf_VERSION}")
 set(_PROTOBUF_LIBPROTOBUF protobuf::libprotobuf)
 set(_PROTOBUF_PROTOC $<TARGET_FILE:protobuf::protoc>)
 
-# gRPC building parameters
-set(gRPC_SSL_PROVIDER "package" CACHE STRING "SSL library provider")
-
 # Find gRPC installation
 # Looks for gRPCConfig.cmake file installed by gRPC's cmake installation.
 find_package(gRPC CONFIG REQUIRED)

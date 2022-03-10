@@ -18,9 +18,6 @@ message(STATUS "Using protobuf ${Protobuf_VERSION}")
 set(_PROTOBUF_LIBPROTOBUF protobuf::libprotobuf)
 set(_PROTOBUF_PROTOC $<TARGET_FILE:protobuf::protoc>)
 
-# gRPC building parameters
-set(gRPC_SSL_PROVIDER "package" CACHE STRING "SSL library provider")
-
 if ($ENV{COMM_TEST_SERVICES} MATCHES 1)
   add_compile_definitions(COMM_TEST_SERVICES)
 endif()
