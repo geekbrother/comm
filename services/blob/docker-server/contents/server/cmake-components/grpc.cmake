@@ -6,9 +6,6 @@ message(STATUS "Using protobuf ${Protobuf_VERSION}")
 set(_PROTOBUF_LIBPROTOBUF protobuf::libprotobuf)
 set(_PROTOBUF_PROTOC $<TARGET_FILE:protobuf::protoc>)
 
-# gRPC
-set(gRPC_SSL_PROVIDER "package" CACHE STRING "SSL library provider")
-
 # Find gRPC installation
 find_package(gRPC CONFIG REQUIRED)
 message(STATUS "Using gRPC ${gRPC_VERSION}")

@@ -13,6 +13,8 @@ mkdir -p cmake/build
 pushd cmake/build
 cmake \
 	-DgRPC_INSTALL=ON \
+  -DgRPC_SSL_PROVIDER=package \
+  -DgRPC_ZLIB_PROVIDER=package \
 	-DgRPC_BUILD_TESTS=OFF \
 	-DgRPC_BUILD_CSHARP_EXT=OFF \
 	-DgRPC_BUILD_GRPC_CPP_PLUGIN=ON \
