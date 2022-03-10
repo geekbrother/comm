@@ -11,9 +11,18 @@ git clone --recurse-submodules -b v1.39.1 https://github.com/grpc/grpc
 pushd grpc
 mkdir -p cmake/build
 pushd cmake/build
-cmake -DgRPC_INSTALL=ON \
-      -DgRPC_BUILD_TESTS=OFF \
-      ../..
+cmake \
+	-DgRPC_INSTALL=ON \
+	-DgRPC_BUILD_TESTS=OFF \
+	-DgRPC_BUILD_CSHARP_EXT=OFF \
+	-DgRPC_BUILD_GRPC_CPP_PLUGIN=ON \
+	-DgRPC_BUILD_GRPC_CSHARP_PLUGIN=OFF \
+	-DgRPC_BUILD_GRPC_NODE_PLUGIN=OFF \
+	-DgRPC_BUILD_GRPC_OBJECTIVE_C_PLUGIN=OFF \
+	-DgRPC_BUILD_GRPC_PHP_PLUGIN=OFF \
+	-DgRPC_BUILD_GRPC_PYTHON_PLUGIN=OFF \
+	-DgRPC_BUILD_GRPC_RUBY_PLUGIN=OFF \
+	../..
 make
 make install
 popd # cmake/build

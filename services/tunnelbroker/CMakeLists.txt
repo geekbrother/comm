@@ -22,13 +22,7 @@ set(_REFLECTION gRPC::grpc++_reflection)
 set(_PROTOBUF_PROTOC $<TARGET_FILE:protobuf::protoc>)
 
 # gRPC building parameters
-set(gRPC_BUILD_CSHARP_EXT OFF)
 set(gRPC_SSL_PROVIDER "package" CACHE STRING "SSL library provider")
-# Disable unused plugins
-set(gRPC_BUILD_GRPC_PHP_PLUGIN OFF)
-set(gRPC_BUILD_GRPC_RUBY_PLUGIN OFF)
-set(gRPC_BUILD_GRPC_PYTHON_PLUGIN OFF)
-set(gRPC_BUILD_GRPC_CSHARP_PLUGIN OFF)
 
 # Find gRPC installation
 # Looks for gRPCConfig.cmake file installed by gRPC's cmake installation.
