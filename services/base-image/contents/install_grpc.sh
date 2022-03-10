@@ -4,13 +4,8 @@ set -e
 
 echo "installing grpc..."
 
-if [[ -d /usr/lib/grpc ]]
-then
-    echo "grpc already exists, skipping installation(if the installation seems to be broken, remove this container/image and recreate it)..."
-    exit 0;
-fi
+cd /tmp
 
-pushd /usr/lib
 git clone --recurse-submodules -b v1.39.1 https://github.com/grpc/grpc
 
 pushd grpc
@@ -37,4 +32,5 @@ popd # cmake/build
 popd # third_party/abseil-cpp/
 
 popd # grpc
-popd # /usr/lib
+
+rm -rf grpc
