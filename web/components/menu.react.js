@@ -1,18 +1,35 @@
 // @flow
 
+import classnames from 'classnames';
 import * as React from 'react';
 
+import { useRenderInMenuPortal } from '../menu-portal-provider.react';
 import css from './menu.css';
 
+type MenuVariant = 'thread-actions' | 'member-actions';
+
 type MenuProps = {
-  icon: React.Node,
-  children: $ReadOnlyArray<React.Node>,
+  +icon: React.Node,
+  +children: $ReadOnlyArray<React.Node>,
+  +variant?: MenuVariant,
+  +onChange?: boolean => void,
 };
 
 function Menu(props: MenuProps): React.Node {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [buttonPosition, setButtonPosition] = React.useState(null);
 
-  const { icon, children } = props;
+  const buttonRef = React.useRef();
+  const renderInMenuPortal = useRenderInMenuPortal();
+  const { icon, children, variant = 'thread-actions', onChange } = props;
+
+  const updatePosition = React.useCallback(() => {
+    if (buttonRef.current) {
+      setButtonPosition(buttonRef.current.getBoundingClientRect());
+    }
+  }, []);
+
+  React.useEffect(updatePosition, [updatePosition]);
 
   const closeMenuCallback = React.useCallback(() => {
     document.removeEventListener('click', closeMenuCallback);
@@ -22,6 +39,20 @@ function Menu(props: MenuProps): React.Node {
   }, [isOpen]);
 
   React.useEffect(() => {
+    if (onChange) {
+      onChange(isOpen);
+    }
+  }, [isOpen, onChange]);
+
+  React.useEffect(() => {
+    if (!window) {
+      return undefined;
+    }
+
+    window.addEventListener('resize', updatePosition);
+    return () => window.removeEventListener('resize', updatePosition);
+  });
+  React.useEffect(() => {
     if (!document || !isOpen) {
       return undefined;
     }
@@ -30,8 +61,9 @@ function Menu(props: MenuProps): React.Node {
   }, [closeMenuCallback, isOpen]);
 
   const switchMenuCallback = React.useCallback(() => {
+    updatePosition();
     setIsOpen(isMenuOpen => !isMenuOpen);
-  }, []);
+  }, [updatePosition]);
 
   if (children.length === 0) {
     return null;
@@ -39,16 +71,35 @@ function Menu(props: MenuProps): React.Node {
 
   let menuActionList = null;
   if (isOpen) {
-    menuActionList = <div className={css.menuActionList}>{children}</div>;
+    const menuActionListClasses = classnames(css.menuActionList, {
+      [css.menuActionListThreadActions]: variant === 'thread-actions',
+      [css.menuActionListMemberActions]: variant === 'member-actions',
+    });
+
+    const actionListStyle = buttonPosition
+      ? {
+          top: buttonPosition.top,
+          left: buttonPosition.left,
+        }
+      : {};
+    menuActionList = renderInMenuPortal(
+      <div style={actionListStyle} className={css.menuActionListContainer}>
+        <div className={menuActionListClasses}>{children}</div>
+      </div>,
+    );
   }
 
   return (
-    <div>
-      <button className={css.menuButton} onClick={switchMenuCallback}>
+    <>
+      <button
+        ref={buttonRef}
+        className={css.menuButton}
+        onClick={switchMenuCallback}
+      >
         {icon}
       </button>
       {menuActionList}
-    </div>
+    </>
   );
 }
 
