@@ -2,6 +2,7 @@
 
 import appURLFacts from '../../facts/app_url';
 import landingURLFacts from '../../facts/landing_url';
+import newAppURLFacts from '../../facts/new_app_url';
 import baseURLFacts from '../../facts/url';
 
 type GlobalURLFacts = {
@@ -26,8 +27,17 @@ function getAppURLFacts(): AppURLFacts {
   return appURLFacts;
 }
 
+function getNewAppURLFacts(): AppURLFacts {
+  return newAppURLFacts;
+}
+
 function getLandingURLFacts(): LandingURLFacts {
   return landingURLFacts;
 }
 
-export { getGlobalURLFacts, getAppURLFacts, getLandingURLFacts };
+export {
+  getGlobalURLFacts,
+  getAppURLFacts,
+  getNewAppURLFacts,
+  getLandingURLFacts,
+};

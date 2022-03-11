@@ -30,9 +30,14 @@ import {
   multimediaUploadResponder,
   uploadDownloadResponder,
 } from './uploads/uploads';
-import { getGlobalURLFacts, getLandingURLFacts } from './utils/urls';
+import {
+  getGlobalURLFacts,
+  getLandingURLFacts,
+  getNewAppURLFacts,
+} from './utils/urls';
 
 const { baseRoutePath } = getGlobalURLFacts();
+const { basePath } = getNewAppURLFacts();
 const landingBaseRoutePath = getLandingURLFacts().baseRoutePath;
 
 if (cluster.isMaster) {
@@ -95,6 +100,10 @@ if (cluster.isMaster) {
       `/${endpoint}`,
       jsonHandler(responder, expectCookieInvalidation),
     );
+    router.post(
+      `${basePath}${endpoint}`,
+      jsonHandler(responder, expectCookieInvalidation),
+    );
   }
 
   router.post('/commlanding/subscribe_email', emailSubscriptionResponder);
@@ -120,6 +129,7 @@ if (cluster.isMaster) {
   // $FlowFixMe express-ws has side effects that can't be typed
   router.ws('/ws', onConnection);
   router.get(`${landingBaseRoutePath}*`, landingHandler);
+  router.get(`${basePath}*`, htmlHandler(websiteResponder));
   router.get('*', htmlHandler(websiteResponder));
 
   router.post(

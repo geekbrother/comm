@@ -41,13 +41,9 @@ import {
 import { setNewSession } from '../session/cookies';
 import { Viewer } from '../session/viewer';
 import { streamJSON, waitForStream } from '../utils/json-stream';
-import { getAppURLFacts } from '../utils/urls';
+import { getAppURLFacts, getNewAppURLFacts } from '../utils/urls';
 
-const { basePath, baseDomain } = getAppURLFacts();
 const { renderToNodeStream } = ReactDOMServer;
-
-const baseURL = basePath.replace(/\/$/, '');
-const baseHref = baseDomain + baseURL;
 
 const access = promisify(fs.access);
 const googleFontsURL =
@@ -116,6 +112,13 @@ async function websiteResponder(
   req: $Request,
   res: $Response,
 ): Promise<void> {
+  const newBasePath = getNewAppURLFacts().basePath;
+  const { basePath, baseDomain } = req.url.startsWith(newBasePath)
+    ? getNewAppURLFacts()
+    : getAppURLFacts();
+  const baseURL = basePath.replace(/\/$/, '');
+  const baseHref = baseDomain + baseURL;
+
   const appPromise = getWebpackCompiledRootComponentForSSR();
 
   let initialNavInfo;

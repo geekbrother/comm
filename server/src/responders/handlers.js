@@ -13,7 +13,10 @@ import {
   createNewAnonymousCookie,
 } from '../session/cookies';
 import type { Viewer } from '../session/viewer';
+import { getNewAppURLFacts } from '../utils/urls';
 import { getMessageForException } from './utils';
+
+const { basePath } = getNewAppURLFacts();
 
 export type JSONResponder = (viewer: Viewer, input: any) => Promise<*>;
 export type DownloadResponder = (
@@ -41,10 +44,22 @@ function jsonHandler(
         return;
       }
       const result = { ...responderResult };
-      addCookieToJSONResponse(viewer, res, result, expectCookieInvalidation);
+      addCookieToJSONResponse(
+        viewer,
+        res,
+        result,
+        expectCookieInvalidation,
+        req.url.startsWith(basePath),
+      );
       res.json({ success: true, ...result });
     } catch (e) {
-      await handleException(e, res, viewer, expectCookieInvalidation);
+      await handleException(
+        e,
+        res,
+        req.url.startsWith(basePath),
+        viewer,
+        expectCookieInvalidation,
+      );
     }
   };
 }
@@ -58,7 +73,7 @@ function httpGetHandler(
       viewer = await fetchViewerForJSONRequest(req);
       await responder(viewer, req, res);
     } catch (e) {
-      await handleException(e, res, viewer);
+      await handleException(e, res, req.url.startsWith(basePath), viewer);
     }
   };
 }
@@ -73,7 +88,7 @@ function downloadHandler(
     } catch (e) {
       // Passing viewer in only makes sense if we want to handle failures as
       // JSON. We don't, and presume all download handlers avoid ServerError.
-      await handleException(e, res);
+      await handleException(e, res, req.url.startsWith(basePath));
     }
   };
 }
@@ -81,6 +96,7 @@ function downloadHandler(
 async function handleException(
   error: Error,
   res: $Response,
+  usingNewAppURL: boolean,
   viewer?: ?Viewer,
   expectCookieInvalidation?: boolean,
 ) {
@@ -110,7 +126,13 @@ async function handleException(
       viewer.cookieInvalidated = true;
     }
     // This can mutate the result object
-    addCookieToJSONResponse(viewer, res, result, !!expectCookieInvalidation);
+    addCookieToJSONResponse(
+      viewer,
+      res,
+      result,
+      !!expectCookieInvalidation,
+      usingNewAppURL,
+    );
   }
   res.json(result);
 }
@@ -121,7 +143,7 @@ function htmlHandler(
   return async (req: $Request, res: $Response) => {
     try {
       const viewer = await fetchViewerForHomeRequest(req);
-      addCookieToHomeResponse(viewer, res);
+      addCookieToHomeResponse(viewer, res, req.url.startsWith(basePath));
       res.type('html');
       await responder(viewer, req, res);
     } catch (e) {
@@ -165,10 +187,16 @@ function uploadHandler(
         return;
       }
       const result = { ...responderResult };
-      addCookieToJSONResponse(viewer, res, result, false);
+      addCookieToJSONResponse(
+        viewer,
+        res,
+        result,
+        false,
+        req.url.startsWith(basePath),
+      );
       res.json({ success: true, ...result });
     } catch (e) {
-      await handleException(e, res, viewer);
+      await handleException(e, res, req.url.startsWith(basePath), viewer);
     }
   };
 }
