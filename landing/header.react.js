@@ -9,7 +9,7 @@ import { NavLink } from 'react-router-dom';
 import css from './header.css';
 
 const iconProps = {
-  size: 'lg',
+  size: 'sm',
   color: '#ebedee',
 };
 
@@ -35,14 +35,20 @@ function Header(): React.Node {
         </NavLink>
       </div>
       <div className={css.social_icons_container}>
-        <a className={css.social_icon} href="https://web.comm.app">
-          <FontAwesomeIcon icon={faExternalLinkAlt} {...iconProps} />
+        <a href="https://web.comm.app">
+          <div className={css.webapp_icon}>
+            <FontAwesomeIcon icon={faExternalLinkAlt} {...iconProps} />
+          </div>
         </a>
-        <a className={css.social_icon} href="https://twitter.com/commdotapp">
-          <FontAwesomeIcon icon={faTwitter} {...iconProps} />
+        <a href="https://twitter.com/commdotapp">
+          <div className={css.twitter_icon}>
+            <FontAwesomeIcon icon={faTwitter} {...iconProps} />
+          </div>
         </a>
-        <a className={css.social_icon} href="https://github.com/CommE2E/comm">
-          <FontAwesomeIcon icon={faGithub} {...iconProps} />
+        <a href="https://github.com/CommE2E/comm">
+          <div className={css.github_icon}>
+            <FontAwesomeIcon icon={faGithub} {...iconProps} />
+          </div>
         </a>
       </div>
     </nav>
