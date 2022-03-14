@@ -24,9 +24,12 @@ div.thread:first-child {
   padding-top: 6px;
 }
 div.activeThread,
-div.thread:hover,
 div.threadListSidebar:hover {
   background: var(--selected-thread-bg);
+}
+
+div.thread:hover {
+  background: var(--thread-hover-bg);
 }
 div.title {
   flex: 1;
