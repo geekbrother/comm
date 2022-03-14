@@ -28,6 +28,10 @@ div.thread:hover,
 div.threadListSidebar:hover {
   background: var(--selected-thread-bg);
 }
+
+div.thread:hover {
+  background: var(--thread-hover-bg);
+}
 div.title {
   flex: 1;
   font-size: var(--m-font-16);
