@@ -9,6 +9,13 @@ namespace comm {
 namespace network {
 namespace database {
 
+/**
+ * Needs userID(pk)-created(sk)-index that projects:
+ *  userID
+ *  backupID
+ *  created
+ *  recoveryData
+ */
 class BackupItem : public Item {
 
   std::string userID;
