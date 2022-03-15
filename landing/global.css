@@ -39,6 +39,14 @@ body,
   height: 100%;
 }
 
+p {
+  font-size: clamp(
+    var(--min-font-size),
+    calc(0.75rem + 1vw),
+    var(--max-font-size)
+  );
+}
+
 a {
   transition: 0.2s;
   text-decoration: none;
