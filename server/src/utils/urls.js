@@ -41,10 +41,25 @@ function getLandingURLFacts(): LandingURLFacts {
   return landingURLFacts;
 }
 
+function generateAllRoutePaths(endpoint: string): Array<string> {
+  const landingBaseRoutePath = landingURLFacts.baseRoutePath;
+  const routePaths = generateBaseAndCommAppRoutePaths(endpoint);
+  routePaths.push(landingBaseRoutePath + endpoint);
+  return routePaths;
+}
+
+function generateBaseAndCommAppRoutePaths(endpoint: string): Array<string> {
+  const { baseRoutePath } = baseURLFacts;
+  const commAppBaseRoutePath = commAppURLFacts.basePath;
+  return [baseRoutePath + endpoint, commAppBaseRoutePath + endpoint];
+}
+
 export {
   getGlobalURLFacts,
   getSquadCalURLFacts,
   getCommAppURLFacts,
   getLandingURLFacts,
   getAppURLFactsFromRequestURL,
+  generateAllRoutePaths,
+  generateBaseAndCommAppRoutePaths,
 };
