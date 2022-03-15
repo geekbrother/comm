@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "EditorConfig.EditorConfig",
+    "flowtype.flow-for-vscode",
+    "eamodio.gitlens",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint"
+  ],
+  "unwantedRecommendations": ["vscode.typescript-language-features"]
+}
