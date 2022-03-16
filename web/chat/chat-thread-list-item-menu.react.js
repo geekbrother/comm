@@ -74,11 +74,14 @@ function ChatThreadListItemMenu(props: Props): React.Node {
   }`;
 
   const menuIconSize = renderStyle === 'chat' ? 24 : 20;
+  const menuCls = classNames(css.menu, {
+    [css.menuSidebar]: renderStyle === 'thread',
+  });
   const btnCls = classNames(css.menuContent, {
     [css.menuContentVisible]: menuVisible,
   });
   return (
-    <div className={css.menu} onMouseLeave={hideMenu}>
+    <div className={menuCls} onMouseLeave={hideMenu}>
       <button onClick={toggleMenu}>
         <SWMansionIcon icon="menu-vertical" size={menuIconSize} />
       </button>
