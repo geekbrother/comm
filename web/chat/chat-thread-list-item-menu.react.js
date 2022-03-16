@@ -73,7 +73,7 @@ function ChatThreadListItemMenu(props: Props): React.Node {
     threadInfo.currentUser.unread ? 'read' : 'unread'
   }`;
 
-  const menuIconSize = renderStyle === 'chat' ? 24 : 16;
+  const menuIconSize = renderStyle === 'chat' ? 24 : 20;
   const btnCls = classNames(css.menuContent, {
     [css.menuContentVisible]: menuVisible,
   });
