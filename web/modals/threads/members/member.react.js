@@ -9,9 +9,15 @@ import classNames from 'classnames';
 import * as React from 'react';
 
 import {
+  removeUsersFromThread,
+  changeThreadMemberRoles,
+} from 'lib/actions/thread-actions';
+import {
   memberIsAdmin,
   memberHasAdminPowers,
   threadHasPermission,
+  removeMemberFromThread,
+  switchMemberAdminRoleInThread,
 } from 'lib/shared/thread-utils';
 import { stringForUser } from 'lib/shared/user-utils';
 import {
@@ -19,6 +25,10 @@ import {
   type ThreadInfo,
   threadPermissions,
 } from 'lib/types/thread-types';
+import {
+  useDispatchActionPromise,
+  useServerCall,
+} from 'lib/utils/action-utils';
 
 import Label from '../../../components/label.react';
 import MenuItem from '../../../components/menu-item.react';
@@ -54,6 +64,41 @@ function ThreadMember(props: Props): React.Node {
     [memberInfo.id, setOpenMenu],
   );
 
+  const dispatchActionPromise = useDispatchActionPromise();
+  const boundRemoveUsersFromThread = useServerCall(removeUsersFromThread);
+
+  const onRemoveUser = React.useCallback(
+    () =>
+      removeMemberFromThread(
+        threadInfo,
+        memberInfo,
+        dispatchActionPromise,
+        boundRemoveUsersFromThread,
+      ),
+    [boundRemoveUsersFromThread, dispatchActionPromise, memberInfo, threadInfo],
+  );
+
+  const isCurrentlyAdmin = memberIsAdmin(memberInfo, threadInfo);
+  const boundChangeThreadMemberRoles = useServerCall(changeThreadMemberRoles);
+
+  const onSwitchAdmin = React.useCallback(
+    () =>
+      switchMemberAdminRoleInThread(
+        threadInfo,
+        memberInfo,
+        isCurrentlyAdmin,
+        dispatchActionPromise,
+        boundChangeThreadMemberRoles,
+      ),
+    [
+      boundChangeThreadMemberRoles,
+      dispatchActionPromise,
+      isCurrentlyAdmin,
+      memberInfo,
+      threadInfo,
+    ],
+  );
+
   const menuItems = React.useMemo(() => {
     const { role } = memberInfo;
     if (!role) {
@@ -78,11 +123,17 @@ function ThreadMember(props: Props): React.Node {
           key="remove_admin"
           text="Remove admin"
           icon={faMinusCircle}
+          onClick={onSwitchAdmin}
         />,
       );
     } else if (canChangeRoles && memberInfo.username) {
       actions.push(
-        <MenuItem key="make_admin" text="Make admin" icon={faPlusCircle} />,
+        <MenuItem
+          key="make_admin"
+          text="Make admin"
+          icon={faPlusCircle}
+          onClick={onSwitchAdmin}
+        />,
       );
     }
 
@@ -96,13 +147,14 @@ function ThreadMember(props: Props): React.Node {
           key="remove_user"
           text="Remove user"
           icon={faSignOutAlt}
+          onClick={onRemoveUser}
           dangerous
         />,
       );
     }
 
     return actions;
-  }, [memberInfo, threadInfo]);
+  }, [memberInfo, onRemoveUser, onSwitchAdmin, threadInfo]);
 
   const userSettingsIcon = React.useMemo(
     () => <SWMansionIcon icon="edit" size={17} />,
