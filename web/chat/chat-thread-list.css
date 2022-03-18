@@ -65,6 +65,7 @@ div.threadArrowExtender {
 .threadButton + div {
   display: flex;
   flex-direction: column;
+  padding-top: 8px;
 }
 .threadButtonSidebar {
   flex: 1;
