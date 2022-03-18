@@ -55,45 +55,6 @@ class PasswordChangeModal extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { inputDisabled } = this.props;
-    const mainContent = (
-      <div>
-        <div className={css['form-title']}>New password</div>
-        <div className={css['form-content']}>
-          <div>
-            <Input
-              type="password"
-              placeholder="New password"
-              value={this.state.newPassword}
-              onChange={this.onChangeNewPassword}
-              ref={this.newPasswordInputRef}
-              disabled={inputDisabled}
-            />
-          </div>
-          <div>
-            <Input
-              type="password"
-              placeholder="Confirm new password"
-              value={this.state.confirmNewPassword}
-              onChange={this.onChangeConfirmNewPassword}
-              disabled={inputDisabled}
-            />
-          </div>
-        </div>
-      </div>
-    );
-
-    const buttons = (
-      <Button
-        type="submit"
-        variant="primary"
-        onClick={this.onSubmit}
-        disabled={inputDisabled}
-      >
-        Update Account
-      </Button>
-    );
-
     let errorMsg;
     if (this.state.errorMessage) {
       errorMsg = (
@@ -101,11 +62,35 @@ class PasswordChangeModal extends React.PureComponent<Props, State> {
       );
     }
 
+    const { inputDisabled } = this.props;
     return (
       <Modal name="Edit account" onClose={this.props.clearModal} size="large">
         <div className={css['modal-body']}>
           <form method="POST">
-            {mainContent}
+            <div>
+              <div className={css['form-title']}>New password</div>
+              <div className={css['form-content']}>
+                <div>
+                  <Input
+                    type="password"
+                    placeholder="New password"
+                    value={this.state.newPassword}
+                    onChange={this.onChangeNewPassword}
+                    ref={this.newPasswordInputRef}
+                    disabled={inputDisabled}
+                  />
+                </div>
+                <div>
+                  <Input
+                    type="password"
+                    placeholder="Confirm new password"
+                    value={this.state.confirmNewPassword}
+                    onChange={this.onChangeConfirmNewPassword}
+                    disabled={inputDisabled}
+                  />
+                </div>
+              </div>
+            </div>
             <div className={css['user-settings-current-password']}>
               <p className={css['confirm-account-password']}>
                 Please enter your current password to confirm your identity
@@ -123,7 +108,14 @@ class PasswordChangeModal extends React.PureComponent<Props, State> {
               </div>
             </div>
             <div className={css['form-footer']}>
-              {buttons}
+              <Button
+                type="submit"
+                variant="primary"
+                onClick={this.onSubmit}
+                disabled={inputDisabled}
+              >
+                Update Account
+              </Button>
               {errorMsg}
             </div>
           </form>
