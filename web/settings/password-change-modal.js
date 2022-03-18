@@ -71,45 +71,35 @@ class PasswordChangeModal extends React.PureComponent<Props, State> {
       >
         <div className={css['modal-body']}>
           <form method="POST">
-            <div>
-              <div className={css['form-title']}>New password</div>
-              <div className={css['form-content']}>
-                <div>
-                  <Input
-                    type="password"
-                    placeholder="New password"
-                    value={this.state.newPassword}
-                    onChange={this.onChangeNewPassword}
-                    ref={this.newPasswordInputRef}
-                    disabled={inputDisabled}
-                  />
-                </div>
-                <div>
-                  <Input
-                    type="password"
-                    placeholder="Confirm new password"
-                    value={this.state.confirmNewPassword}
-                    onChange={this.onChangeConfirmNewPassword}
-                    disabled={inputDisabled}
-                  />
-                </div>
-              </div>
+            <div className={css['form-content']}>
+              <Input
+                type="password"
+                placeholder="New password"
+                value={this.state.newPassword}
+                onChange={this.onChangeNewPassword}
+                ref={this.newPasswordInputRef}
+                disabled={inputDisabled}
+                label="New password"
+              />
+              <Input
+                type="password"
+                placeholder="Confirm new password"
+                value={this.state.confirmNewPassword}
+                onChange={this.onChangeConfirmNewPassword}
+                disabled={inputDisabled}
+              />
             </div>
-            <div className={css['user-settings-current-password']}>
-              <p className={css['confirm-account-password']}>
-                Please enter your current password to confirm your identity
-              </p>
-              <div className={css['form-title']}>Current password</div>
-              <div className={css['form-content']}>
-                <Input
-                  type="password"
-                  placeholder="Current password"
-                  value={this.state.currentPassword}
-                  onChange={this.onChangeCurrentPassword}
-                  disabled={inputDisabled}
-                  ref={this.currentPasswordInputRef}
-                />
-              </div>
+            <p>Please enter your current password to confirm your identity</p>
+            <div className={css['form-content']}>
+              <Input
+                type="password"
+                placeholder="Current password"
+                value={this.state.currentPassword}
+                onChange={this.onChangeCurrentPassword}
+                disabled={inputDisabled}
+                ref={this.currentPasswordInputRef}
+                label="Current password"
+              />
             </div>
             <div className={css['form-footer']}>
               <Button
