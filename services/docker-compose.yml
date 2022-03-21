@@ -35,7 +35,7 @@ services:
       - $HOME/.aws/credentials:/root/.aws/credentials:ro
   blob-server:
     build:
-      dockerfile: services/blob/docker-server/Dockerfile
+      dockerfile: services/blob/Dockerfile
       context: ../
       args:
         - COMM_TEST_SERVICES=${COMM_TEST_SERVICES}

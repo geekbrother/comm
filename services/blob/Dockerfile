@@ -12,9 +12,10 @@ ENV COMM_TEST_SERVICES=${COMM_TEST_SERVICES}
 
 WORKDIR /transferred
 
-COPY services/blob/docker-server/contents .
-COPY native/cpp/CommonCpp/grpc/protos/blob.proto server/protos/blob.proto
+COPY native/cpp/CommonCpp/grpc/protos/blob.proto protos/blob.proto
+COPY services/blob/docker/ scripts/
+COPY services/blob/ .
 
-RUN ./build_server.sh
+RUN scripts/build_server.sh
 
-CMD ./run_server.sh
+CMD scripts/run_server.sh
