@@ -2,8 +2,6 @@
 
 set -e
 
-pushd transferred/server/cmake/build
-
+pushd cmake/build
 make test ARGS="-V"
-
-popd # transferred/server/cmake/build
+popd # cmake/build
