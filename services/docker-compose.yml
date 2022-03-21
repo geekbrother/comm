@@ -21,7 +21,7 @@ services:
     networks:
       - services-net
     build:
-      dockerfile: services/backup/docker-server/Dockerfile
+      dockerfile: services/backup/Dockerfile
       context: ../
       args:
         - COMM_TEST_SERVICES=${COMM_TEST_SERVICES}
