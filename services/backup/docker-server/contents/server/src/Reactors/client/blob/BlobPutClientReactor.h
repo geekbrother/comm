@@ -37,7 +37,7 @@ class BlobPutClientReactor
 
 public:
   BlobPutClientReactor(const std::string &holder, const std::string &hash);
-  void scheduleSendingDataChunk(const std::string &dataChunk);
+  void scheduleSendingDataChunk(std::string &dataChunk);
   std::unique_ptr<grpc::Status> prepareRequest(
       blob::PutRequest &request,
       std::shared_ptr<blob::PutResponse> previousResponse) override;
@@ -52,18 +52,14 @@ BlobPutClientReactor::BlobPutClientReactor(
       dataChunks(folly::MPMCQueue<std::string>(100)) {
 }
 
-void BlobPutClientReactor::scheduleSendingDataChunk(
-    const std::string &dataChunk) {
-  // TODO: we may be copying a big chunk of data, but `write` seems to only
-  // accept `std::move`
+void BlobPutClientReactor::scheduleSendingDataChunk(std::string &dataChunk) {
   std::cout << "[BC] here schedule sending data chunks 1: "
             << std::hash<std::thread::id>{}(std::this_thread::get_id())
             << std::endl;
-  std::string str = std::string(dataChunk);
   // std::cout << "here schedule sending data chunks 1.1" << std::endl;
   // std::unique_ptr<std::string> upt = std::make_unique<std::string>(str);
   // std::cout << "here schedule sending data chunks 1.2" << std::endl;
-  if (!this->dataChunks.write(std::move(str))) {
+  if (!this->dataChunks.write(std::move(dataChunk))) {
     std::cout << "here schedule sending data chunks 2" << std::endl;
     throw std::runtime_error(
         "Error scheduling sending a data chunk to send to the blob service");
