@@ -16,7 +16,7 @@ services:
       - ./tunnelbroker/tunnelbroker.ini:/root/tunnelbroker/tunnelbroker.ini:ro
   backup-server:
     build:
-      dockerfile: services/backup/docker-server/Dockerfile
+      dockerfile: services/backup/Dockerfile
       context: ../
       args:
         - COMM_TEST_SERVICES=${COMM_TEST_SERVICES}
