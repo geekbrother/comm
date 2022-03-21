@@ -14,12 +14,6 @@ services:
       - $HOME/.aws/config:/root/.aws/config:ro
       - $HOME/.aws/credentials:/root/.aws/credentials:ro
       - ./tunnelbroker/tunnelbroker.ini:/root/tunnelbroker/tunnelbroker.ini:ro
-  # backup
-  backup-base:
-    build:
-      dockerfile: services/backup/docker-base/Dockerfile
-      context: ../
-    image: commapp/backup-base:1.2
   backup-server:
     build:
       dockerfile: services/backup/docker-server/Dockerfile
