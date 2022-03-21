@@ -1,7 +1,7 @@
 #include "BackupServiceImpl.h"
 
-#include "BidiReactorBase.h"
-#include "ReadReactorBase.h"
+#include "ServerBidiReactorBase.h"
+#include "ServerReadReactorBase.h"
 
 #include <aws/core/Aws.h>
 
@@ -20,7 +20,7 @@ grpc::ServerBidiReactor<
     backup::CreateNewBackupRequest,
     backup::CreateNewBackupResponse> *
 BackupServiceImpl::CreateNewBackup(grpc::CallbackServerContext *context) {
-  class CreateNewBackupReactor : public BidiReactorBase<
+  class CreateNewBackupReactor : public reactor::ServerBidiReactorBase<
                                      backup::CreateNewBackupRequest,
                                      backup::CreateNewBackupResponse> {
   public:
@@ -39,12 +39,13 @@ BackupServiceImpl::CreateNewBackup(grpc::CallbackServerContext *context) {
 grpc::ServerReadReactor<backup::SendLogRequest> *BackupServiceImpl::SendLog(
     grpc::CallbackServerContext *context,
     google::protobuf::Empty *response) {
-  class SendLogReactor : public ReadReactorBase<
+  class SendLogReactor : public reactor::ServerReadReactorBase<
                              backup::SendLogRequest,
                              google::protobuf::Empty> {
   public:
-    using ReadReactorBase<backup::SendLogRequest, google::protobuf::Empty>::
-        ReadReactorBase;
+    using ServerReadReactorBase<
+        backup::SendLogRequest,
+        google::protobuf::Empty>::ServerReadReactorBase;
     std::unique_ptr<grpc::Status>
     readRequest(backup::SendLogRequest request) override {
       // TODO handle request
@@ -60,7 +61,7 @@ grpc::ServerBidiReactor<
     backup::RecoverBackupKeyRequest,
     backup::RecoverBackupKeyResponse> *
 BackupServiceImpl::RecoverBackupKey(grpc::CallbackServerContext *context) {
-  class RecoverBackupKeyReactor : public BidiReactorBase<
+  class RecoverBackupKeyReactor : public reactor::ServerBidiReactorBase<
                                       backup::RecoverBackupKeyRequest,
                                       backup::RecoverBackupKeyResponse> {
   public:
@@ -78,7 +79,7 @@ BackupServiceImpl::RecoverBackupKey(grpc::CallbackServerContext *context) {
 
 grpc::ServerBidiReactor<backup::PullBackupRequest, backup::PullBackupResponse> *
 BackupServiceImpl::PullBackup(grpc::CallbackServerContext *context) {
-  class PullBackupReactor : public BidiReactorBase<
+  class PullBackupReactor : public reactor::ServerBidiReactorBase<
                                 backup::PullBackupRequest,
                                 backup::PullBackupResponse> {
   public:
