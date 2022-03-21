@@ -1,9 +1,12 @@
-FROM commapp/backup-base:1.2
+FROM commapp/services-base:1.1
+
+RUN apt-get update && \
+  apt-get install -y uuid-dev && \
+  rm -rf /var/lib/apt/lists/*
 
 ARG COMM_TEST_SERVICES
 ARG COMM_SERVICES_DEV_MODE
 
-ENV SHELL=/bin/bash
 ENV COMM_TEST_SERVICES=${COMM_TEST_SERVICES}
 ENV COMM_SERVICES_DEV_MODE=${COMM_SERVICES_DEV_MODE}
 
