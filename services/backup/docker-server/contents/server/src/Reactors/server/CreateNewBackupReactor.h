@@ -84,7 +84,7 @@ std::unique_ptr<grpc::Status> CreateNewBackupReactor::handleRequest(
       std::cout << "[CNR] here enqueueing data chunk" << std::endl;
 
       ServiceBlobClient::getInstance().putReactor->scheduleSendingDataChunk(
-          request.newcompactionchunk());
+          *request.mutable_newcompactionchunk());
 
       return nullptr;
     }
@@ -96,7 +96,9 @@ void CreateNewBackupReactor::doneCallback() {
   std::cout << "[CNR] create new backup done " << this->status.error_code()
             << "/" << this->status.error_message() << std::endl;
   std::cout << "[CNR] enqueueing empty chunk to end blob upload" << std::endl;
-  ServiceBlobClient::getInstance().putReactor->scheduleSendingDataChunk("");
+  std::string emptyString = "";
+  ServiceBlobClient::getInstance().putReactor->scheduleSendingDataChunk(
+      emptyString);
 }
 
 } // namespace reactor
