@@ -9,6 +9,7 @@
 #include <folly/MPMCQueue.h>
 #include <grpcpp/grpcpp.h>
 
+#include <condition_variable>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -34,9 +35,13 @@ class BlobPutClientReactor
   const size_t chunkSize =
       GRPC_CHUNK_SIZE_LIMIT - GRPC_METADATA_SIZE_PER_MESSAGE;
   folly::MPMCQueue<std::string> dataChunks;
+  std::condition_variable *terminationNotifier;
 
 public:
-  BlobPutClientReactor(const std::string &holder, const std::string &hash);
+  BlobPutClientReactor(
+      const std::string &holder,
+      const std::string &hash,
+      std::condition_variable *terminationNotifier);
   void scheduleSendingDataChunk(std::string &dataChunk);
   std::unique_ptr<grpc::Status> prepareRequest(
       blob::PutRequest &request,
@@ -46,25 +51,23 @@ public:
 
 BlobPutClientReactor::BlobPutClientReactor(
     const std::string &holder,
-    const std::string &hash)
+    const std::string &hash,
+    std::condition_variable *terminationNotifier)
     : holder(holder),
       hash(hash),
-      dataChunks(folly::MPMCQueue<std::string>(20)) {
+      dataChunks(folly::MPMCQueue<std::string>(20)),
+      terminationNotifier(terminationNotifier) {
 }
 
 void BlobPutClientReactor::scheduleSendingDataChunk(std::string &dataChunk) {
   std::cout << "[BC] here schedule sending data chunks 1: "
             << std::hash<std::thread::id>{}(std::this_thread::get_id())
             << std::endl;
-  // std::cout << "here schedule sending data chunks 1.1" << std::endl;
-  // std::unique_ptr<std::string> upt = std::make_unique<std::string>(str);
-  // std::cout << "here schedule sending data chunks 1.2" << std::endl;
   if (!this->dataChunks.write(std::move(dataChunk))) {
     std::cout << "here schedule sending data chunks 2" << std::endl;
     throw std::runtime_error(
         "Error scheduling sending a data chunk to send to the blob service");
   }
-  // this->dataChunks.blockingWrite(std::move(str));
   std::cout << "[BC] here schedule sending data chunks 3" << std::endl;
 }
 
@@ -108,6 +111,7 @@ std::unique_ptr<grpc::Status> BlobPutClientReactor::prepareRequest(
 void BlobPutClientReactor::doneCallback() {
   std::cout << "[BC] blob put client done " << this->status.error_code() << "/"
             << this->status.error_message() << std::endl;
+  this->terminationNotifier->notify_one();
 }
 
 } // namespace reactor

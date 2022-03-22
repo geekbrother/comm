@@ -59,7 +59,6 @@ void ClientBidiReactorBase<Request, Response>::terminate(
   std::cout << "DONE [code=" << status.error_code()
             << "][err=" << status.error_message() << "]" << std::endl;
   this->done = true;
-  this->doneCallback();
 }
 
 template <class Request, class Response>
@@ -91,6 +90,7 @@ template <class Request, class Response>
 void ClientBidiReactorBase<Request, Response>::OnDone(
     const grpc::Status &status) {
   this->terminate(status);
+  this->doneCallback();
 }
 
 } // namespace reactor
