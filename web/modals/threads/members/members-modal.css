@@ -1,11 +1,3 @@
-div.membersContainer {
-  overflow: inherit;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  margin: 16px;
-}
-
 div.membersList {
   overflow: scroll;
   padding: 8px 0;
