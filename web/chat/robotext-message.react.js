@@ -84,7 +84,9 @@ class RobotextMessage extends React.PureComponent<Props> {
             css.nonViewerMessageActionLinks,
           )}
         >
-          {messageActionTooltip}
+          <div className={css.messageActionContainer}>
+            {messageActionTooltip}
+          </div>
         </div>
       );
     }
