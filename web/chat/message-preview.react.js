@@ -25,6 +25,7 @@ function MessagePreview(props: Props): React.Node {
   const { messageInfo: messageInfoProps, threadInfo } = props;
   const { unread } = threadInfo.currentUser;
 
+  let usernameText = null;
   const colorStyle = unread ? css.white : css.light;
 
   if (!messageInfoProps) {
@@ -44,30 +45,23 @@ function MessagePreview(props: Props): React.Node {
     threadInfo,
     getDefaultTextMessageRules().simpleMarkdownRules,
   );
-  if (messageInfo.type === messageTypes.TEXT) {
-    let usernameText = null;
-    if (
-      threadIsGroupChat(threadInfo) ||
-      threadInfo.name !== '' ||
-      messageInfo.creator.isViewer
-    ) {
-      const userString = stringForUser(messageInfo.creator);
-      const username = `${userString}: `;
-      usernameText = <span className={colorStyle}>{username}</span>;
-    }
-    return (
-      <div className={classNames(css.lastMessage, colorStyle)}>
-        {usernameText}
-        {messageTitle}
-      </div>
-    );
-  } else {
-    return (
-      <div className={classNames([css.lastMessage, colorStyle])}>
-        {messageTitle}
-      </div>
-    );
+
+  const hasUsername =
+    threadIsGroupChat(threadInfo) ||
+    threadInfo.name !== '' ||
+    messageInfo.creator.isViewer;
+
+  if (messageInfo.type === messageTypes.TEXT && hasUsername) {
+    const userString = stringForUser(messageInfo.creator);
+    usernameText = <span className={colorStyle}>{`${userString}: `}</span>;
   }
+
+  return (
+    <div className={classNames([css.lastMessage, colorStyle])}>
+      {usernameText}
+      {messageTitle}
+    </div>
+  );
 }
 
 export default MessagePreview;
