@@ -9,6 +9,7 @@
 #include <folly/MPMCQueue.h>
 #include <grpcpp/grpcpp.h>
 
+#include <condition_variable>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -33,9 +34,13 @@ class BlobPutClientReactor
   const size_t chunkSize =
       GRPC_CHUNK_SIZE_LIMIT - GRPC_METADATA_SIZE_PER_MESSAGE;
   folly::MPMCQueue<std::string> dataChunks;
+  std::condition_variable *terminationNotifier;
 
 public:
-  BlobPutClientReactor(const std::string &holder, const std::string &hash);
+  BlobPutClientReactor(
+      const std::string &holder,
+      const std::string &hash,
+      std::condition_variable *terminationNotifier);
   void scheduleSendingDataChunk(std::string &dataChunk);
   std::unique_ptr<grpc::Status> prepareRequest(
       blob::PutRequest &request,
@@ -44,10 +49,12 @@ public:
 
 BlobPutClientReactor::BlobPutClientReactor(
     const std::string &holder,
-    const std::string &hash)
+    const std::string &hash,
+    std::condition_variable *terminationNotifier)
     : holder(holder),
       hash(hash),
-      dataChunks(folly::MPMCQueue<std::string>(100)) {
+      dataChunks(folly::MPMCQueue<std::string>(100)),
+      terminationNotifier(terminationNotifier) {
 }
 
 void BlobPutClientReactor::scheduleSendingDataChunk(std::string &dataChunk) {
