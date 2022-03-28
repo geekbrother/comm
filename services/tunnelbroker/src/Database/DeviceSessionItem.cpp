@@ -1,5 +1,8 @@
 #include "DeviceSessionItem.h"
 #include "ConfigManager.h"
+#include "Tools.h"
+
+#include <vector>
 
 namespace comm {
 namespace network {
@@ -38,8 +41,15 @@ DeviceSessionItem::DeviceSessionItem(const AttributeValues &itemFromDB) {
 }
 
 void DeviceSessionItem::validate() const {
-  if (!this->sessionID.size()) {
-    throw std::runtime_error("Error: SessionID is empty.");
+  std::vector<std::string> requiredFields{
+      this->pubKey,
+      this->notifyToken,
+      this->deviceType,
+      this->appVersion,
+      this->deviceOs};
+  if (!checkEmptyStringInList(requiredFields)) {
+    throw std::runtime_error(
+        "Error: One or more required parameters are empty.");
   }
 }
 

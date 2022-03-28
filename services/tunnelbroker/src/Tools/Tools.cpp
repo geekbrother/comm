@@ -67,5 +67,14 @@ bool validateSessionID(std::string sessionID) {
   }
 }
 
+bool checkEmptyStringInList(std::vector<std::string> stringList) {
+  for (std::string stringToCheck : stringList) {
+    if (stringToCheck.empty()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 } // namespace network
 } // namespace comm

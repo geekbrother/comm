@@ -1,5 +1,8 @@
 #include "MessageItem.h"
 #include "ConfigManager.h"
+#include "Tools.h"
+
+#include <vector>
 
 namespace comm {
 namespace network {
@@ -33,14 +36,11 @@ MessageItem::MessageItem(const AttributeValues &itemFromDB) {
 }
 
 void MessageItem::validate() const {
-  if (!this->messageID.size()) {
-    throw std::runtime_error("Error: messageID is empty");
-  }
-  if (!this->fromDeviceID.size()) {
-    throw std::runtime_error("Error: fromDeviceID is empty");
-  }
-  if (!this->toDeviceID.size()) {
-    throw std::runtime_error("Error: toDeviceID is empty");
+  std::vector<std::string> requiredFields{
+      this->messageID, this->fromDeviceID, this->toDeviceID};
+  if (!checkEmptyStringInList(requiredFields)) {
+    throw std::runtime_error(
+        "Error: One or more required parameters are empty.");
   }
   if (!this->expire == 0) {
     throw std::runtime_error("Error: expire field not provided");
