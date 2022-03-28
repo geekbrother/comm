@@ -486,13 +486,13 @@ Your `url.json` file should look like this:
 }
 ```
 
-Next, we’ll create a file for constructing URLs for the main app.
+Next, we’ll create files for constructing URLs for the main app.
 
 ```
-vim server/facts/app_url.json
+vim server/facts/squadcal_url.json
 ```
 
-Your `app_url.json` file should look like this:
+Your `squadcal_url.json` file should look like this:
 
 ```json
 {
@@ -500,6 +500,12 @@ Your `app_url.json` file should look like this:
   "basePath": "/comm/",
   "https": false
 }
+```
+
+Copy the contents of `squadcal_url.json` to a file called `commapp_url.json`.
+
+```
+cp server/facts/squadcal_url.json server/facts/commapp_url.json
 ```
 
 Finally, we’ll create a file for the URLs in the landing page.
