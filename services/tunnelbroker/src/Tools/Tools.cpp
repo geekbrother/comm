@@ -67,5 +67,19 @@ bool validateSessionID(std::string sessionID) {
   }
 }
 
+void checkEmptyField(std::string fieldName, std::string stringToCheck) {
+  if (stringToCheck.empty()) {
+    throw std::runtime_error(
+        "Error: Required text field " + fieldName + " is empty.");
+  }
+}
+
+void checkEmptyField(std::string fieldName, uint64_t numberToCheck) {
+  if (numberToCheck == 0) {
+    throw std::runtime_error(
+        "Error: Required number " + fieldName + " is zero.");
+  }
+}
+
 } // namespace network
 } // namespace comm
