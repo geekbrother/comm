@@ -1,5 +1,6 @@
 #include "DeviceSessionItem.h"
 #include "ConfigManager.h"
+#include "Tools.h"
 
 namespace comm {
 namespace network {
@@ -38,8 +39,11 @@ DeviceSessionItem::DeviceSessionItem(const AttributeValues &itemFromDB) {
 }
 
 void DeviceSessionItem::validate() const {
-  if (!this->sessionID.size()) {
-    throw std::runtime_error("Error: SessionID is empty.");
+  if (!validateSessionID(this->sessionID)) {
+    throw std::runtime_error("Error: SessionID format is wrong.");
+  }
+  if (!validateDeviceID(this->deviceID)) {
+    throw std::runtime_error("Error: DeviceID format is wrong.");
   }
 }
 

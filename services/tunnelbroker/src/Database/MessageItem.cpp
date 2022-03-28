@@ -1,5 +1,6 @@
 #include "MessageItem.h"
 #include "ConfigManager.h"
+#include "Tools.h"
 
 namespace comm {
 namespace network {
@@ -33,17 +34,11 @@ MessageItem::MessageItem(const AttributeValues &itemFromDB) {
 }
 
 void MessageItem::validate() const {
-  if (!this->messageID.size()) {
-    throw std::runtime_error("Error: messageID is empty");
+  if (!validateDeviceID(this->fromDeviceID)) {
+    throw std::runtime_error("Error: fromDeviceID format is wrong");
   }
-  if (!this->fromDeviceID.size()) {
-    throw std::runtime_error("Error: fromDeviceID is empty");
-  }
-  if (!this->toDeviceID.size()) {
-    throw std::runtime_error("Error: toDeviceID is empty");
-  }
-  if (!this->expire == 0) {
-    throw std::runtime_error("Error: expire field not provided");
+  if (!validateDeviceID(this->toDeviceID)) {
+    throw std::runtime_error("Error: toDeviceID format is wrong");
   }
 }
 
