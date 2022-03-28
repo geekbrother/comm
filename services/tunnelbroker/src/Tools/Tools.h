@@ -11,6 +11,8 @@ long long getCurrentTimestamp();
 bool validateDeviceID(std::string deviceID);
 std::string generateUUID();
 bool validateSessionID(std::string sessionID);
+void checkEmptyField(std::string fieldName, std::string stringToCheck);
+void checkEmptyField(std::string fieldName, uint64_t numberToCheck);
 
 } // namespace network
 } // namespace comm
