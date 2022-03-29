@@ -561,6 +561,12 @@ yarn script dist/scripts/generate-olm-config.json
 
 This script will create the `server/secrets/olm_config.json` config file.
 
+## Python
+
+Python 2.7 is needed to run the project locally.
+
+Download [Python 2.7](https://www.python.org/downloads/release/python-2718/) from python.org.
+
 ## Phabricator
 
 The last configuration step is to set up an account on Phabricator, where we handle code review. Start by [logging in to Phabricator](https://phabricator.ashoat.com) using your GitHub account.
