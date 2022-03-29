@@ -561,6 +561,16 @@ yarn script dist/scripts/generate-olm-config.json
 
 This script will create the `server/secrets/olm_config.json` config file.
 
+## Python 2 (Apple silicon Macs)
+
+For Apple silicon Macs, Python 2.7 is a requirement.
+
+We need Python 2.7 because the `sqlite3` NPM package doesn't come with prebuilt ARM64 binaries and requires a native build that depends on Python 2 scripts.
+
+Up until macOS 12.3, Python 2.7 was "included in macOS for compatibility with legacy software." However, if your machine is running macOS 12.3 or later, you'll need to install Python 2.7 manually.
+
+Installing Python 2.x via Homebrew is no longer officially supported. Instead, download and install the Python 2.7.18 64-bit macOS installer from the [Python.org release page](https://www.python.org/downloads/release/python-2718/) and follow the installation steps provided.
+
 ## Phabricator
 
 The last configuration step is to set up an account on Phabricator, where we handle code review. Start by [logging in to Phabricator](https://phabricator.ashoat.com) using your GitHub account.
