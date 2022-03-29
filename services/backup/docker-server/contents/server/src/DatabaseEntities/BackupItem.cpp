@@ -45,9 +45,10 @@ void BackupItem::validate() const {
   if (!this->created) {
     throw std::runtime_error("created not provided");
   }
-  if (!this->recoveryData.size()) {
-    throw std::runtime_error("recoveryData empty");
-  }
+  // TODO restore this
+  // if (!this->recoveryData.size()) {
+  //   throw std::runtime_error("recoveryData empty");
+  // }
 }
 
 void BackupItem::assignItemFromDatabase(const AttributeValues &itemFromDB) {
