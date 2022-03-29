@@ -561,6 +561,12 @@ yarn script dist/scripts/generate-olm-config.json
 
 This script will create the `server/secrets/olm_config.json` config file.
 
+## Python
+
+We use `@redux-devtools/cli` which depends on `sqlite3` (the npm package) which doesn't have prebuilt binaries for ARM-based Macs. The sqlite3 native build process depends on a script written in Python 2.x. Up until macOS 12.3, Python 2.7.x was "included in macOS for compatibility with legacy software.". If your machine is running macOS 12.3 or later, you need to download Python 2.7.x locally.
+
+It's no longer possible to install Python 2.x using Homebrew. For simplicity and as a temporary solution, we recommend downloading [Python 2.7.18](https://www.python.org/downloads/release/python-2718/) 64-bit macOS installer from the Python.org releases page.
+
 ## Phabricator
 
 The last configuration step is to set up an account on Phabricator, where we handle code review. Start by [logging in to Phabricator](https://phabricator.ashoat.com) using your GitHub account.
