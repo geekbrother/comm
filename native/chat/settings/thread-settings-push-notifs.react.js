@@ -2,6 +2,8 @@
 
 import * as React from 'react';
 import { View, Switch } from 'react-native';
+import Alert from 'react-native/Libraries/Alert/Alert';
+import Linking from 'react-native/Libraries/Linking/Linking';
 
 import {
   updateSubscriptionActionTypes,
@@ -19,6 +21,7 @@ import {
 } from 'lib/utils/action-utils';
 
 import { SingleLine } from '../../components/single-line.react';
+import { useSelector } from '../../redux/redux-utils';
 import { useStyles } from '../../themes/colors';
 
 type BaseProps = {
@@ -31,6 +34,7 @@ type Props = {
   // Redux dispatch functions
   +dispatchActionPromise: DispatchActionPromise,
   // async functions that hit server APIs
+  +deviceToken: ?string,
   +updateSubscription: (
     subscriptionUpdate: SubscriptionUpdateRequest,
   ) => Promise<SubscriptionUpdateResult>,
@@ -55,7 +59,7 @@ class ThreadSettingsPushNotifs extends React.PureComponent<Props, State> {
         </SingleLine>
         <View style={this.props.styles.currentValue}>
           <Switch
-            value={this.state.currentValue}
+            value={this.state.currentValue && this.hasPushPermissions()}
             onValueChange={this.onValueChange}
           />
         </View>
@@ -64,17 +68,39 @@ class ThreadSettingsPushNotifs extends React.PureComponent<Props, State> {
   }
 
   onValueChange = (value: boolean) => {
-    this.setState({ currentValue: value });
-    this.props.dispatchActionPromise(
-      updateSubscriptionActionTypes,
-      this.props.updateSubscription({
-        threadID: this.props.threadInfo.id,
-        updatedFields: {
-          pushNotifs: value,
+    if (this.hasPushPermissions()) {
+      this.setState({ currentValue: value });
+      this.props.dispatchActionPromise(
+        updateSubscriptionActionTypes,
+        this.props.updateSubscription({
+          threadID: this.props.threadInfo.id,
+          updatedFields: {
+            pushNotifs: value,
+          },
+        }),
+      );
+      return;
+    }
+    Alert.alert(
+      'Need notifications permissions',
+      'Comm needs notification permissions to show notifications from the thread!' +
+        'Please enable them in Settings App -> Notifications -> Comm.',
+      [
+        {
+          text: 'Go to application settings',
+          onPress: () => Linking.openURL('app-settings:{Comm}'),
         },
-      }),
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+      ],
     );
   };
+
+  hasPushPermissions(): boolean {
+    return this.props.deviceToken !== null;
+  }
 }
 
 const unboundStyles = {
@@ -104,12 +130,14 @@ const ConnectedThreadSettingsPushNotifs: React.ComponentType<BaseProps> = React.
     const styles = useStyles(unboundStyles);
     const dispatchActionPromise = useDispatchActionPromise();
     const callUpdateSubscription = useServerCall(updateSubscription);
+    const deviceToken = useSelector(state => state.deviceToken);
     return (
       <ThreadSettingsPushNotifs
         {...props}
         styles={styles}
         dispatchActionPromise={dispatchActionPromise}
         updateSubscription={callUpdateSubscription}
+        deviceToken={deviceToken}
       />
     );
   },
