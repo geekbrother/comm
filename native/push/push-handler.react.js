@@ -91,7 +91,7 @@ type Props = {
   +dispatch: Dispatch,
   +dispatchActionPromise: DispatchActionPromise,
   // async functions that hit server APIs
-  +setDeviceToken: (deviceToken: string) => Promise<string>,
+  +setDeviceToken: (deviceToken: ?string) => Promise<?string>,
   // withRootContext
   +rootContext: ?RootContextType,
 };
@@ -348,7 +348,7 @@ class PushHandler extends React.PureComponent<Props, State> {
     }
   }
 
-  handleAndroidDeviceToken = async (deviceToken: string) => {
+  handleAndroidDeviceToken = async (deviceToken: ?string) => {
     this.registerPushPermissions(deviceToken);
     await this.handleInitialAndroidNotification();
   };
@@ -366,7 +366,7 @@ class PushHandler extends React.PureComponent<Props, State> {
     }
   }
 
-  registerPushPermissions = (deviceToken: string) => {
+  registerPushPermissions = (deviceToken: ?string) => {
     const deviceType = Platform.OS;
     if (deviceType !== 'android' && deviceType !== 'ios') {
       return;
@@ -379,7 +379,7 @@ class PushHandler extends React.PureComponent<Props, State> {
     }
   };
 
-  setDeviceToken(deviceToken: string) {
+  setDeviceToken(deviceToken: ?string) {
     this.props.dispatchActionPromise(
       setDeviceTokenActionTypes,
       this.props.setDeviceToken(deviceToken),
@@ -387,6 +387,7 @@ class PushHandler extends React.PureComponent<Props, State> {
   }
 
   failedToRegisterPushPermissions = () => {
+    this.setDeviceToken(null);
     if (!this.props.loggedIn) {
       return;
     }
