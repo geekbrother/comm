@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package identity;
+
+service IdentityService {
+  rpc AuthenticateUser(stream AuthenticationRequest) returns (stream AuthenticationResponse) {}
+}
+
+// Helper types
+
+message PakeRegistrationRequestAndUserID {
+  string userID = 1;
+  bytes pakeRegistrationRequest = 2;
+}
+
+message PakeAuthenticationRequestData {
+  oneof data {
+    PakeRegistrationRequestAndUserID pakeRegistrationRequestAndUserID = 1;
+    bytes pakeRegistrationUpload = 2;
+    bytes pakeCredentialRequest = 3;
+    bytes pakeCredentialFinalization = 4;
+    bytes pakeClientMAC = 5;
+  }
+}
+
+message WalletAuthenticationRequestData {
+  string userID = 1;
+  string walletAddress = 2;
+  bytes signedMessage = 3;
+}
+
+message WalletAuthenticationResponseData {
+  bool success = 1;
+}
+
+message PakeAuthenticationResponseData {
+  oneof data {
+    bytes pakeRegistrationResponse = 1;
+    bool pakeRegistrationSuccess = 2;
+    bytes pakeCredentialResponse = 3;
+    bytes pakeServerMAC = 4;
+  }
+}
+
+// AuthenticateUser
+
+message AuthenticationRequest {
+  oneof data {
+    PakeAuthenticationRequestData pakeAuthenticationRequestData = 1;
+    WalletAuthenticationRequestData walletAuthenticationRequestData = 2;
+  }
+}
+
+message AuthenticationResponse {
+  oneof data {
+    PakeAuthenticationResponseData pakeAuthenticationResponseData = 1;
+    WalletAuthenticationResponseData walletAuthenticationResponseData = 2;
+  }
+}
