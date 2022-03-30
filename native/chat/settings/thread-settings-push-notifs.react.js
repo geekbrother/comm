@@ -1,7 +1,10 @@
 // @flow
 
+import { Entypo } from '@expo/vector-icons';
 import * as React from 'react';
-import { View, Switch } from 'react-native';
+import { View, Switch, TouchableOpacity } from 'react-native';
+import Alert from 'react-native/Libraries/Alert/Alert';
+import Linking from 'react-native/Libraries/Linking/Linking';
 
 import {
   updateSubscriptionActionTypes,
@@ -19,6 +22,7 @@ import {
 } from 'lib/utils/action-utils';
 
 import { SingleLine } from '../../components/single-line.react';
+import { useSelector } from '../../redux/redux-utils';
 import { useStyles } from '../../themes/colors';
 
 type BaseProps = {
@@ -31,6 +35,7 @@ type Props = {
   // Redux dispatch functions
   +dispatchActionPromise: DispatchActionPromise,
   // async functions that hit server APIs
+  +deviceToken: ?string,
   +updateSubscription: (
     subscriptionUpdate: SubscriptionUpdateRequest,
   ) => Promise<SubscriptionUpdateResult>,
@@ -48,15 +53,30 @@ class ThreadSettingsPushNotifs extends React.PureComponent<Props, State> {
 
   render() {
     const componentLabel = 'Push notifs';
+    const renderNotificationsSettingsLinkingIcon = () => {
+      if (!this.hasPushPermissions()) {
+        return (
+          <TouchableOpacity
+            onPress={this.onNotificationsSettingsLinkingIconPress}
+          >
+            <View style={this.props.styles.infoIcon}>
+              <Entypo name="info-with-circle" size={25} color="gray" />
+            </View>
+          </TouchableOpacity>
+        );
+      }
+    };
     return (
       <View style={this.props.styles.row}>
         <SingleLine style={this.props.styles.label} adjustsFontSizeToFit={true}>
           {componentLabel}
         </SingleLine>
+        {renderNotificationsSettingsLinkingIcon()}
         <View style={this.props.styles.currentValue}>
           <Switch
             value={this.state.currentValue}
             onValueChange={this.onValueChange}
+            disabled={!this.hasPushPermissions()}
           />
         </View>
       </View>
@@ -75,6 +95,28 @@ class ThreadSettingsPushNotifs extends React.PureComponent<Props, State> {
       }),
     );
   };
+
+  onNotificationsSettingsLinkingIconPress = () => {
+    Alert.alert(
+      'Need notif permissions',
+      'Comm needs notification permissions to keep you in the loop! ' +
+        'Please enable in Settings App -> Notifications -> Comm.',
+      [
+        {
+          text: 'Go to application settings',
+          onPress: () => Linking.openSettings(),
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+      ],
+    );
+  };
+
+  hasPushPermissions(): boolean {
+    return this.props.deviceToken !== null;
+  }
 }
 
 const unboundStyles = {
@@ -97,6 +139,9 @@ const unboundStyles = {
     paddingHorizontal: 24,
     paddingVertical: 3,
   },
+  infoIcon: {
+    paddingRight: 20,
+  },
 };
 
 const ConnectedThreadSettingsPushNotifs: React.ComponentType<BaseProps> = React.memo<BaseProps>(
@@ -104,12 +149,14 @@ const ConnectedThreadSettingsPushNotifs: React.ComponentType<BaseProps> = React.
     const styles = useStyles(unboundStyles);
     const dispatchActionPromise = useDispatchActionPromise();
     const callUpdateSubscription = useServerCall(updateSubscription);
+    const deviceToken = useSelector(state => state.deviceToken);
     return (
       <ThreadSettingsPushNotifs
         {...props}
         styles={styles}
         dispatchActionPromise={dispatchActionPromise}
         updateSubscription={callUpdateSubscription}
+        deviceToken={deviceToken}
       />
     );
   },
