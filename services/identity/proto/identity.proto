@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package identity;
+
+import "google/protobuf/empty.proto";
+
+service IdentityService {
+  rpc AuthenticateUser(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+  rpc VerifyIdentity(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+}
