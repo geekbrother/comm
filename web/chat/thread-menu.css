@@ -19,7 +19,6 @@ div.topBarMenuActionList {
 
 button.topBarMenuAction {
   z-index: 1;
-  background-color: transparent;
   padding: 12px 16px;
   color: var(--thread-menu-color);
   background-color: var(--thread-menu-bg);
