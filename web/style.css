@@ -80,6 +80,7 @@ div.main-header > h1 {
   line-height: var(--line-height-text);
   font-weight: var(--semi-bold);
   font-size: var(--logo-font-22);
+  cursor: pointer;
 }
 
 div.main-content-container {
