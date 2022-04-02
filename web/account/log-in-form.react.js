@@ -19,6 +19,7 @@ import {
 } from 'lib/utils/action-utils';
 
 import Button from '../components/button.react';
+import LoadingIndicator from '../loading-indicator.react';
 import Input from '../modals/input.react';
 import { useModalContext } from '../modals/modal-provider.react';
 import { useSelector } from '../redux/redux-utils';
@@ -143,7 +144,7 @@ function LoginForm(): React.Node {
         </div>
         <div className={css['form-footer']}>
           <Button type="submit" disabled={inputDisabled} onClick={onSubmit}>
-            Log in
+            {inputDisabled ? <LoadingIndicator status="loading" /> : 'Log in'}
           </Button>
           <div className={css['modal-form-error']}>{errorMessage}</div>
         </div>
