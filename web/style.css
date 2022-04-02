@@ -81,6 +81,9 @@ div.main-header > h1 {
   font-weight: var(--semi-bold);
   font-size: var(--logo-font-22);
 }
+div.main-header > h1 > a {
+  color: inherit;
+}
 
 div.main-content-container {
   position: relative;
