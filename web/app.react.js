@@ -161,7 +161,11 @@ class App extends React.PureComponent<Props> {
         <DisconnectedBar />
         <header className={css['header']}>
           <div className={css['main-header']}>
-            <h1>Comm</h1>
+            <h1>
+              <a href="./" title="Comm Home">
+                Comm
+              </a>
+            </h1>
             <div className={css['upper-right']}>
               <LoadingIndicator
                 status={this.props.entriesLoadingStatus}
