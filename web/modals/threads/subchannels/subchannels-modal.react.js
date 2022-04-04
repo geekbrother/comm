@@ -2,10 +2,19 @@
 
 import * as React from 'react';
 
+import {
+  fetchSingleMostRecentMessagesFromThreads,
+  fetchSingleMostRecentMessagesFromThreadsActionTypes,
+} from 'lib/actions/message-actions';
 import { useFilteredChatListData } from 'lib/selectors/chat-selectors';
 import { threadSearchIndex } from 'lib/selectors/nav-selectors';
 import { childThreadInfos } from 'lib/selectors/thread-selectors';
-import { threadIsChannel } from 'lib/shared/thread-utils';
+import { threadIsChannel, threadInChatList } from 'lib/shared/thread-utils';
+import threadWatcher from 'lib/shared/thread-watcher';
+import {
+  useServerCall,
+  useDispatchActionPromise,
+} from 'lib/utils/action-utils';
 
 import { useSelector } from '../../../redux/redux-utils';
 import SearchModal from '../../search-modal.react';
@@ -33,7 +42,7 @@ function SubchannelsModalContent(props: ContentProps): React.Node {
     thread => subchannelsIDs.has(thread?.id),
     [subchannelsIDs],
   );
-  const allSubchannelsChatList = useFilteredChatListData(filterSubchannels);
+  const allSubchannelsList = useFilteredChatListData(filterSubchannels);
 
   const searchIndex = useSelector(threadSearchIndex);
 
@@ -43,14 +52,63 @@ function SubchannelsModalContent(props: ContentProps): React.Node {
   );
 
   const searchTextExists = !!searchText.length;
+
+  const subchannelsIDsNotInChatList = React.useMemo(
+    () =>
+      new Set(
+        allSubchannelsList
+          .filter(item => !threadInChatList(item.threadInfo))
+          .map(item => item.threadInfo.id),
+      ),
+    [allSubchannelsList],
+  );
+
   const filteredSubchannelsChatList = React.useMemo(() => {
     if (!searchTextExists) {
-      return allSubchannelsChatList;
+      return allSubchannelsList;
     }
-    return allSubchannelsChatList.filter(item =>
+    return allSubchannelsList.filter(item =>
       searchResultsIDs.includes(item.threadInfo.id),
     );
-  }, [allSubchannelsChatList, searchResultsIDs, searchTextExists]);
+  }, [allSubchannelsList, searchResultsIDs, searchTextExists]);
+
+  const threadIDsWithNoMessages = React.useMemo(
+    () =>
+      new Set(
+        filteredSubchannelsChatList
+          .filter(item => !item.mostRecentMessageInfo)
+          .map(item => item.threadInfo.id),
+      ),
+    [filteredSubchannelsChatList],
+  );
+  const dispatchActionPromise = useDispatchActionPromise();
+  const fetchSingleMostRecentMessages = useServerCall(
+    fetchSingleMostRecentMessagesFromThreads,
+  );
+
+  React.useEffect(() => {
+    if (!subchannelsIDsNotInChatList.size) {
+      return;
+    }
+    subchannelsIDsNotInChatList.forEach(tID => threadWatcher.watchID(tID));
+
+    return () =>
+      subchannelsIDsNotInChatList.forEach(tID => threadWatcher.removeID(tID));
+  }, [subchannelsIDsNotInChatList]);
+
+  React.useEffect(() => {
+    if (!threadIDsWithNoMessages.size) {
+      return;
+    }
+    dispatchActionPromise(
+      fetchSingleMostRecentMessagesFromThreadsActionTypes,
+      fetchSingleMostRecentMessages(Array.from(threadIDsWithNoMessages)),
+    );
+  }, [
+    threadIDsWithNoMessages,
+    fetchSingleMostRecentMessages,
+    dispatchActionPromise,
+  ]);
 
   const subchannels = React.useMemo(() => {
     if (!filteredSubchannelsChatList.length) {
