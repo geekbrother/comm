@@ -56,7 +56,7 @@ class Modal extends React.PureComponent<Props> {
           <div className={modalClasses}>
             <div className={css['modal-header']}>
               <span className={css['modal-close']} onClick={onClose}>
-                ×
+                <SWMansionIcon size={24} icon="cross" />
               </span>
               <h2>
                 <span>{icon && <SWMansionIcon size={24} icon={icon} />}</span>
