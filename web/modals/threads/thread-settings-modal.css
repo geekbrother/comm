@@ -9,18 +9,10 @@ div.modal_body {
   display: flex;
   flex-direction: column;
 }
-div.resized_modal_body {
-  min-height: 250px;
-}
 div.modal_body p {
   padding: 1px 3px 4px 3px;
   font-size: 14px;
   text-align: center;
-}
-div.modal_body p.form_pre_footer {
-  padding-top: 5px;
-  font-size: 12px;
-  font-style: italic;
 }
 div.modal_body textarea {
   margin: 3px;
@@ -29,9 +21,6 @@ div.modal_body textarea {
   font-size: 14px;
   padding: 1px;
   width: 175px;
-}
-div.large_modal_container div.modal_body textarea {
-  width: 275px;
 }
 div.modal_body p.confirm_account_password {
   margin-bottom: 4px;
@@ -50,9 +39,6 @@ div.modal_body div.form_footer div.modal_form_error {
   padding-left: 6px;
   align-self: center;
 }
-div.modal_body div.form_footer div.modal_form_error ol {
-  padding-left: 20px;
-}
 div.modal_body div.form_title {
   display: inline-block;
   text-align: right;
@@ -64,9 +50,6 @@ div.modal_body div.form_title {
   width: 110px;
   color: var(--fg);
 }
-div.large_modal_container div.modal_body div.form_title {
-  width: 140px;
-}
 div.modal_body div.form_content {
   display: inline-block;
   font-family: var(--font-stack);
@@ -74,42 +57,6 @@ div.modal_body div.form_content {
 }
 div.modal_body div.form_content input {
   margin-bottom: 4px;
-}
-div.modal_body div.form_subtitle {
-  font-size: 12px;
-  padding-left: 4px;
-  font-style: italic;
-}
-
-div.form_text {
-  display: flex;
-  align-items: baseline;
-}
-div.form_text > div.form_title {
-  vertical-align: initial;
-  flex-shrink: 0;
-}
-div.form_text > div.form_content {
-  margin-left: 3px;
-  margin-bottom: 3px;
-  word-break: break-word;
-}
-
-div.form_text > div.form_float_title {
-  float: left;
-  text-align: right;
-  padding-right: 5px;
-  font-size: 14px;
-  font-weight: 600;
-  width: 110px;
-}
-div.form_text > div.form_float_content {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 14px;
-  padding: 1px 20px 3px 4px;
-  margin-top: 5px;
 }
 
 .italic {
@@ -132,14 +79,6 @@ ul.tab_panel > li {
 }
 ul.tab_panel > li > a {
   color: #555555;
-}
-ul.tab_panel > li.delete_tab > a {
-  color: #ff0000 !important;
-}
-
-div.user_settings_current_password {
-  padding-top: 4px;
-  margin-top: 5px;
 }
 
 div.form_textarea_container {
