@@ -59,7 +59,7 @@ span.modal-close:hover {
   cursor: pointer;
 }
 div.modal-header {
-  padding: 32px 40px 0 40px;
+  padding: 32px 40px 16px 40px;
 }
 div.modal-header > h2 {
   font-size: var(--xl-font-20);
