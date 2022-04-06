@@ -2,6 +2,8 @@
 
 Please note that our dev environment currently only works on macOS and Linux.
 
+For quickly setting up a dev environment using Nix, please go to [Nix development environment](./nix_dev_env.md).
+
 For the Linux instructions [head to the Linux configuration steps](linux_dev_environment.md).
 
 <details>
