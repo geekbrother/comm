@@ -2,10 +2,19 @@
 
 import * as React from 'react';
 
+import {
+  fetchSingleMostRecentMessagesFromThreads,
+  fetchSingleMostRecentMessagesFromThreadsActionTypes,
+} from 'lib/actions/message-actions';
 import { useFilteredChatListData } from 'lib/selectors/chat-selectors';
 import { threadSearchIndex } from 'lib/selectors/nav-selectors';
 import { childThreadInfos } from 'lib/selectors/thread-selectors';
-import { threadIsChannel } from 'lib/shared/thread-utils';
+import { threadIsChannel, threadInChatList } from 'lib/shared/thread-utils';
+import threadWatcher from 'lib/shared/thread-watcher';
+import {
+  useServerCall,
+  useDispatchActionPromise,
+} from 'lib/utils/action-utils';
 
 import { useSelector } from '../../../redux/redux-utils';
 import SearchModal from '../../search-modal.react';
@@ -33,7 +42,7 @@ function SubchannelsModalContent(props: ContentProps): React.Node {
     thread => subchannelIDs.has(thread?.id),
     [subchannelIDs],
   );
-  const allSubchannelsChatList = useFilteredChatListData(filterSubchannels);
+  const allSubchannelsList = useFilteredChatListData(filterSubchannels);
 
   const searchIndex = useSelector(threadSearchIndex);
 
@@ -43,14 +52,64 @@ function SubchannelsModalContent(props: ContentProps): React.Node {
   );
 
   const searchTextExists = !!searchText.length;
+
+  const subchannelIDsNotInChatList = React.useMemo(
+    () =>
+      new Set(
+        allSubchannelsList
+          .filter(item => !threadInChatList(item.threadInfo))
+          .map(item => item.threadInfo.id),
+      ),
+    [allSubchannelsList],
+  );
+
+  React.useEffect(() => {
+    if (!subchannelIDsNotInChatList.size) {
+      return;
+    }
+    subchannelIDsNotInChatList.forEach(tID => threadWatcher.watchID(tID));
+
+    return () =>
+      subchannelIDsNotInChatList.forEach(tID => threadWatcher.removeID(tID));
+  }, [subchannelIDsNotInChatList]);
+
   const filteredSubchannelsChatList = React.useMemo(() => {
     if (!searchTextExists) {
-      return allSubchannelsChatList;
+      return allSubchannelsList;
     }
     return allSubchannelsChatList.filter(item =>
       searchResultIDs.includes(item.threadInfo.id),
     );
   }, [allSubchannelsChatList, searchResultIDs, searchTextExists]);
+
+  const threadIDsWithNoMessages = React.useMemo(
+    () =>
+      new Set(
+        filteredSubchannelsChatList
+          .filter(item => !item.mostRecentMessageInfo)
+          .map(item => item.threadInfo.id),
+      ),
+    [filteredSubchannelsChatList],
+  );
+  const dispatchActionPromise = useDispatchActionPromise();
+  const fetchSingleMostRecentMessages = useServerCall(
+    fetchSingleMostRecentMessagesFromThreads,
+  );
+
+  React.useEffect(() => {
+    if (!threadIDsWithNoMessages.size) {
+      return;
+    }
+    dispatchActionPromise(
+      fetchSingleMostRecentMessagesFromThreadsActionTypes,
+      fetchSingleMostRecentMessages(Array.from(threadIDsWithNoMessages)),
+    );
+  }, [
+    threadIDsWithNoMessages,
+    fetchSingleMostRecentMessages,
+    dispatchActionPromise,
+  ]);
+>>>>>>> 8396e61bc ([web] Fetch preview messages from non-watched threads in thread subchannels modal)
 
   const subchannels = React.useMemo(() => {
     if (!filteredSubchannelsChatList.length) {
