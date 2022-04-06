@@ -26,16 +26,16 @@ function Subchannel(props: Props): React.Node {
   } = chatThreadItem;
 
   const timeZone = useSelector(state => state.timeZone);
-  const { clearModal } = useModalContext();
+  const { clearModals } = useModalContext();
 
   const navigateToThread = useOnClickThread(threadInfo);
 
   const onClickThread = React.useCallback(
     event => {
-      clearModal();
+      clearModals();
       navigateToThread(event);
     },
-    [clearModal, navigateToThread],
+    [clearModals, navigateToThread],
   );
 
   const lastActivity = React.useMemo(

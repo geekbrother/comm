@@ -15,7 +15,7 @@ export default function ConcurrentModificationModal(props: Props): React.Node {
   const modalContext = useModalContext();
 
   return (
-    <Modal name="Concurrent modification" onClose={modalContext.clearModal}>
+    <Modal name="Concurrent modification" onClose={modalContext.clearModals}>
       <div className={css['modal-body']}>
         <p>
           It looks like somebody is attempting to modify that field at the same

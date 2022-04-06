@@ -7,12 +7,12 @@ import css from '../../style.css';
 import Modal from '../modal.react';
 
 type Props = {
-  +clearModal: () => void,
+  +clearModals: () => void,
 };
 class InvalidUploadModal extends React.PureComponent<Props> {
   render(): React.Node {
     return (
-      <Modal name="Invalid upload" onClose={this.props.clearModal}>
+      <Modal name="Invalid upload" onClose={this.props.clearModals}>
         <div className={css['modal-body']}>
           <p>We don&apos;t support that file type yet :(</p>
         </div>
@@ -24,7 +24,7 @@ class InvalidUploadModal extends React.PureComponent<Props> {
 function ConnectedInvalidUploadModal(): React.Node {
   const modalContext = useModalContext();
 
-  return <InvalidUploadModal clearModal={modalContext.clearModal} />;
+  return <InvalidUploadModal clearModals={modalContext.clearModals} />;
 }
 
 export default ConnectedInvalidUploadModal;

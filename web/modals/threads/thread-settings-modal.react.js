@@ -572,7 +572,7 @@ const ConnectedThreadSettingsModal: React.ComponentType<BaseProps> = React.memo<
 
     if (!threadInfo) {
       return (
-        <Modal onClose={modalContext.clearModal} name="Invalid thread">
+        <Modal onClose={modalContext.clearModals} name="Invalid thread">
           <div className={css['modal-body']}>
             <p>You no longer have permission to view this thread</p>
           </div>
@@ -590,7 +590,7 @@ const ConnectedThreadSettingsModal: React.ComponentType<BaseProps> = React.memo<
         deleteThread={callDeleteThread}
         changeThreadSettings={callChangeThreadSettings}
         dispatchActionPromise={dispatchActionPromise}
-        onClose={modalContext.clearModal}
+        onClose={modalContext.clearModals}
       />
     );
   },
