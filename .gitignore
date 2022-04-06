@@ -15,3 +15,6 @@ server/facts
 # Nix
 result
 result-*
+
+# Direnv
+.direnv
