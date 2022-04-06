@@ -1,6 +1,7 @@
 { mkShell
 , stdenv
 , lib
+, androidDevEnv
 , arcanist
 , darwin
 , nodejs-16_x
@@ -17,6 +18,9 @@ mkShell rec {
     nodejs-16_x
     protobuf3_15
     yarn
+  ] ++ lib.optionals stdenv.isx86_64 [
+    # aarch64-darwin tarballs are not available
+    androidDevEnv.androidsdk
   ];
 
   # include any libraries or programs in buildInputs
@@ -26,6 +30,11 @@ mkShell rec {
     CoreFoundation
     Security
   ]);
+
+  # if a package exposes many commands, libraries, shellhooks, etc. Add here
+  inputsFrom = [
+    openjdk11
+  ];
 
   # shell commands to be ran upon entering shell
   shellHook = ''

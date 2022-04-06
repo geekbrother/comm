@@ -20,6 +20,7 @@
           localOverlay # this should expose devShell
         ];
         inherit system;
+        config.android_sdk.accept_license = true;
       };
     # https://github.com/numtide/flake-utils#usage for more examples
     in utils.lib.eachSystem [ "x86_64-linux" "x86_64-darwin" "aarch64-darwin" ] (system: rec {
