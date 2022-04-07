@@ -42,6 +42,7 @@ public:
   virtual std::unique_ptr<ServerBidiReactorStatus>
   handleRequest(Request request, Response *response) = 0;
   virtual void initialize(){};
+  virtual void validate(){};
   virtual void doneCallback(){};
   virtual void terminateCallback(){};
 };
@@ -59,12 +60,13 @@ void ServerBidiReactorBase<Request, Response>::OnDone() {
 }
 
 template <class Request, class Response>
-void ServerBidiReactorBase<Request, Response>::terminate(
-    ServerBidiReactorStatus status) {
-  this->terminateCallback();
+void ServerBidiReactorBase<Request, Response>::terminate(grpc::Status status) {
   this->status = status;
-  if (!this->status.status.ok()) {
-    std::cout << "error: " << this->status.status.error_message() << std::endl;
+  this->terminateCallback();
+  try {
+    this->validate();
+  } catch (std::runtime_error &e) {
+    this->status = grpc::Status(grpc::StatusCode::INTERNAL, e.what());
   }
   if (this->status.sendLastResponse) {
     this->StartWriteAndFinish(
@@ -78,8 +80,10 @@ template <class Request, class Response>
 void ServerBidiReactorBase<Request, Response>::OnReadDone(bool ok) {
   if (!ok) {
     this->readingAborted = true;
-    this->terminate(ServerBidiReactorStatus(
-        grpc::Status(grpc::StatusCode::ABORTED, "no more reads")));
+    // Ending a connection on the other side results in the `ok` flag being set
+    // to false. It makes it impossible to detect a failure based just on the
+    // flag. We should manually check if the data we received is valid
+    this->terminate(grpc::Status::OK);
     return;
   }
   try {
