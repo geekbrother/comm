@@ -4,12 +4,14 @@ import * as React from 'react';
 
 import { assetsCacheURLPrefix } from './asset-meta-data';
 import TeamProfile from './team-profile.react.js';
+import css from './team.css';
 
 function Team(): React.Node {
   return (
-    <div>
-      <h2>Team</h2>
-      <section>
+    <div className={css.wrapper}>
+      <h2 className={css.header}>Team</h2>
+
+      <section className={css.teamWrapper}>
         <TeamProfile
           name="Ashoat Tevosyan"
           role="Founder"
@@ -45,6 +47,10 @@ function Team(): React.Node {
           twitterHandle="GeekMaks"
           imageURL={`${assetsCacheURLPrefix}/max.jpeg`}
         />
+      </section>
+
+      <h2 className={css.header}>Team at Software Mansion</h2>
+      <section className={css.teamWrapper}>
         <TeamProfile
           name="Tomasz Pałys"
           role="software engineer"
