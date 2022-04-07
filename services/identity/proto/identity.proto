@@ -1,0 +1,157 @@
+/**
+ * Problem statement: We need a way to authenticate users and let services
+ * verify a user's identity. Rather than have each service manage identities
+ * internally, we decided to create an Identity Service that users and other
+ * services talk to.
+ *
+ * D2950 introduced authentication directly in the Backup Service. We had this
+ * notion of full auth and simple auth in that diff, where full auth meant
+ * signing in with a password or with an eth wallet, and simple auth meant using
+ * the backup ID (secret) to prove a user’s identity to the Backup Service. In
+ * this new design, the Identity Service replaces full auth with three APIs to
+ * register, login, and look up a user. The login API returns a random, unique
+ * token to the user. After 30 days of user inactivity, this token will
+ * expire. The user then presents this token to other services, which can query
+ * the Identity Service to validate it. Once validated, other services can use a
+ * service-specific shared secret to perform a “simple auth” going forward.
+ *
+ * Functional requirements: This service needs to be able to register, login,
+ * and verify users.
+ *
+ * Non-functional requirements: The Identity Service needs to be highly
+ * available, accessible only by authorized devices and services, and highly
+ * secure. If the Identity Service is down, users will not be able to create
+ * backups or recover their backup key, nor will they be able to verify other
+ * users' identities.
+ *
+ * Here is a sequence diagram illustrating a basic use case:
+ * https://www.figma.com/file/GF3xZAMmjpBMXrOIERmzQO/Identity-Service?node-id=13%3A14
+ *
+ * Failure cases:
+ *
+ * - User is not registered or not logged in, tries to create a new backup,
+ *   Backup Service cannot find a valid token when it queries the Identity
+ *   Service so it rejects the request
+ *
+ * Corner cases:
+ *
+ * Open questions:
+ *
+ * - How should we ensure high availability?
+ * - Which auth mechanism(s) should we use at the gRPC level?
+ * - Does this design let us introduce new APIs like "RevokeToken" in the
+ *   future?
+ * - How should token be used? Should user just MAC a message with it when
+ *   communicating with other services (e.g. backup)?
+*/
+
+syntax = "proto3";
+
+package identity;
+
+service IdentityService {
+  // Called by user to register with the Identity Service (PAKE only)
+  rpc RegisterUser(stream RegistrationRequest) returns (stream RegistrationResponse) {}
+  // Called by user to create an active session and get an access token
+  rpc LoginUser(stream LoginRequest) returns (stream LoginResponse) {}
+  // Called by other services to get a user's token
+  rpc VerifyUserToken(VerifyUserTokenRequest) returns (VerifyUserTokenResponse) {}
+}
+
+// Helper types
+
+message PakeRegistrationRequestAndUserID {
+  string userID = 1;
+  string deviceID = 2;
+  bytes pakeRegistrationRequest = 3;
+}
+
+message pakeCredentialRequestAndUserID {
+  string userID = 1;
+  string deviceID = 2;
+  bytes pakeCredentialRequest = 3;
+}
+
+message PakeLoginRequest {
+  oneof data {
+    pakeCredentialRequestAndUserID pakeCredentialRequestAndUserID = 1;
+    bytes pakeCredentialFinalization = 2;
+  }
+}
+
+message PakeLoginResponse {
+  bytes pakeCredentialResponse = 1;
+}
+
+message WalletLoginRequest {
+  string userID = 1;
+  string walletAddress = 2;
+  bytes signedMessage = 3;
+}
+
+message WalletLoginResponse {
+  bytes token = 1;
+}
+
+// RegisterUser
+
+message RegistrationRequest {
+  oneof data {
+    PakeRegistrationRequestAndUserID pakeRegistrationRequestAndUserID = 1;
+    bytes pakeRegistrationUpload = 2;
+  }
+}
+
+message RegistrationResponse {
+  bytes pakeRegistrationResponse = 1;
+}
+
+// LoginUser
+
+message LoginRequest {
+  oneof data {
+    PakeLoginRequest pakeLoginRequest = 1;
+    WalletLoginRequest walletLoginRequest = 2;
+  }
+}
+
+message LoginResponse {
+  oneof data {
+    PakeLoginResponse pakeLoginResponse = 1;
+    WalletLoginResponse walletLoginResponse = 2;
+  }
+}
+
+// VerifyUserToken
+
+message VerifyUserTokenRequest {
+  string userID = 1;
+  bytes token = 2;
+}
+
+message VerifyUserTokenResponse {
+  bool tokenValid = 1;
+}
+
+
+/**
+ * Database - Structure:
+ * token
+ *  userID[PK]            string
+ *  created               timestamp
+ *  token                 bytes
+ *  registrationData      bytes
+ *  valid                 boolean
+ */
+
+/**
+ * Database - Description:
+ *  token - tokens assigned to users along with the data necessary to retrieve
+ *    them
+ *        `created` - when the token was created
+ *        `registrationData` - serialized data described by one of the
+ *           following structures
+ *            { authType: 'password', pakePasswordCiphertext: string }
+ *            { authType: 'wallet', walletAddress: string }
+ *        `valid` - false if the token has been revoked
+ */
