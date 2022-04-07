@@ -2,6 +2,7 @@
 
 #include "Constants.h"
 #include "ServerReadReactorBase.h"
+#include "ServiceBlobClient.h"
 
 #include "../_generated/backup.grpc.pb.h"
 #include "../_generated/backup.pb.h"
@@ -32,13 +33,18 @@ class SendLogReactor : public ServerReadReactorBase<
   PersistenceMethod persistenceMethod = PersistenceMethod::UNKNOWN;
   std::string userID;
   std::string backupID;
+  std::string hash;
   // either the value itself which is a dump of a single operation (if
   // `persistedInBlob` is false) or the holder to blob (if `persistedInBlob` is
   // true)
   std::string value;
+  std::condition_variable waitingForBlobClientCV;
 
+  std::shared_ptr<reactor::BlobPutClientReactor> putReactor;
+  ServiceBlobClient blobClient;
   void storeInDatabase();
   std::string generateLogID();
+  void initializePutReactor();
 
 public:
   using ServerReadReactorBase<backup::SendLogRequest, google::protobuf::Empty>::
@@ -63,6 +69,17 @@ void SendLogReactor::storeInDatabase() {
 std::string SendLogReactor::generateLogID() {
   // TODO replace mock
   return generateRandomString();
+}
+
+void SendLogReactor::initializePutReactor() {
+  if (this->value.empty() || this->hash.empty()) {
+    throw std::runtime_error("not enough data to initialize put reactor");
+  }
+  if (this->putReactor == nullptr) {
+    this->putReactor = std::make_shared<reactor::BlobPutClientReactor>(
+        this->value, this->hash, &this->waitingForBlobClientCV);
+    this->blobClient.put(this->putReactor);
+  }
 }
 
 std::unique_ptr<grpc::Status>
