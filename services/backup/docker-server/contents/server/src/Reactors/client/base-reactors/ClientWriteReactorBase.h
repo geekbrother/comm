@@ -53,14 +53,17 @@ void ClientWriteReactorBase<Request, Response>::OnWriteDone(bool ok) {
 template <class Request, class Response>
 void ClientWriteReactorBase<Request, Response>::terminate(
     const grpc::Status &status) {
+  this->status = status;
   this->terminateCallback();
-  if (this->done) {
-    return;
-  }
   if (!this->status.ok()) {
     std::cout << "error: " << this->status.error_message() << std::endl;
   }
-  this->status = status;
+  if (this->done) {
+    std::cout << "Terminate function was called multiple times, which should "
+                 "never happen. Please investigate!"
+              << std::endl;
+    return;
+  }
   this->done = true;
   this->StartWritesDone();
 }
