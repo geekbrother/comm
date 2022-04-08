@@ -115,7 +115,7 @@ function SidebarListModal(props: Props): React.Node {
   }
 
   return (
-    <Modal name="Sidebars" onClose={clearModals} fixedHeight={false}>
+    <Modal name="Sidebars" onClose={clearModals}>
       <div
         className={classNames(
           globalCSS['modal-body'],

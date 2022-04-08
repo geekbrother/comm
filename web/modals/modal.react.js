@@ -3,19 +3,18 @@
 import classNames from 'classnames';
 import * as React from 'react';
 
+import SWMansionIcon from '../SWMansionIcon.react';
 import css from './modal.css';
-
-export type ModalSize = 'small' | 'large';
+export type ModalSize = 'small' | 'large' | 'fit-content';
 type Props = {
-  +name: string,
+  +name: React.Node,
   +onClose: () => void,
   +children?: React.Node,
   +size?: ModalSize,
-  +fixedHeight?: boolean,
 };
 
 function Modal(props: Props): React.Node {
-  const { size = 'small', children, onClose, fixedHeight = true, name } = props;
+  const { size = 'small', children, onClose, name: title } = props;
   const overlayRef = React.useRef();
 
   const onBackgroundClick = React.useCallback(
@@ -42,45 +41,31 @@ function Modal(props: Props): React.Node {
     }
   }, []);
 
-  const overlayClasses = React.useMemo(
-    () =>
-      classNames(css['modal-overlay'], {
-        [css['resizable-modal-overlay']]: !fixedHeight,
-      }),
-    [fixedHeight],
-  );
   const modalContainerClasses = React.useMemo(
     () =>
-      classNames(css['modal-container'], {
-        [css['large-modal-container']]: size === 'large',
+      classNames(css.modalContainer, {
+        [css.modalContainerLarge]: size === 'large',
+        [css.modalContainerSmall]: size === 'small',
       }),
     [size],
   );
-  const modalClasses = React.useMemo(
-    () =>
-      classNames(css['modal'], {
-        [css['fixed-height-modal']]: fixedHeight,
-      }),
-    [fixedHeight],
-  );
+
   return (
     <div
-      className={overlayClasses}
+      className={css.modalOverlay}
       ref={overlayRef}
       onClick={onBackgroundClick}
       tabIndex={0}
       onKeyDown={onKeyDown}
     >
       <div className={modalContainerClasses}>
-        <div className={modalClasses}>
-          <div className={css['modal-header']}>
-            <span className={css['modal-close']} onClick={onClose}>
-              ×
-            </span>
-            <h2>{name}</h2>
+        <div className={css.modalHeader}>
+          <div className={css.title}>{title}</div>
+          <div className={css.modalClose} onClick={onClose}>
+            <SWMansionIcon icon="cross" size={24} />
           </div>
-          {children}
         </div>
+        {children}
       </div>
     </div>
   );

@@ -138,4 +138,6 @@
   --label-default-color: var(--shades-white-80);
   --subchannels-modal-color: var(--shades-black-60);
   --subchannels-modal-color-hover: var(--shades-white-100);
+  --modal-close-color: var(--shades-black-60);
+  --modal-close-color-hover: var(--shades-white-100);
 }
