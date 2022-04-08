@@ -13,6 +13,7 @@ namespace reactor {
 template <class Request, class Response>
 class ServerReadReactorBase : public grpc::ServerReadReactor<Request> {
   Request request;
+  bool finished = false;
 
   void terminate(grpc::Status status);
 
@@ -39,7 +40,11 @@ void ServerReadReactorBase<Request, Response>::terminate(grpc::Status status) {
   if (!this->status.ok()) {
     std::cout << "error: " << this->status.error_message() << std::endl;
   }
+  if (finished) {
+    return;
+  }
   this->Finish(status);
+  finished = true;
 }
 
 template <class Request, class Response>
