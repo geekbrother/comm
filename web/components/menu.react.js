@@ -58,9 +58,8 @@ function Menu(props: MenuProps): React.Node {
     return () => window.removeEventListener('resize', updatePosition);
   }, [updatePosition]);
 
-  // useLayoutEffect is necessary so that the menu position is immediately
   // updated in the first render of component
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     updatePosition();
   }, [updatePosition]);
 
