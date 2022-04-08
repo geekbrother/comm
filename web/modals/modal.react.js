@@ -1,7 +1,6 @@
 // @flow
 
 import classNames from 'classnames';
-import invariant from 'invariant';
 import * as React from 'react';
 
 import css from './modal.css';
@@ -14,72 +13,77 @@ type Props = {
   +size?: ModalSize,
   +fixedHeight?: boolean,
 };
-class Modal extends React.PureComponent<Props> {
-  static defaultProps: { +size: ModalSize, fixedHeight: boolean } = {
-    size: 'small',
-    fixedHeight: true,
-  };
-  overlay: ?HTMLDivElement;
 
-  componentDidMount() {
-    invariant(this.overlay, 'overlay ref unset');
-    this.overlay.focus();
-  }
+function Modal(props: Props): React.Node {
+  const { size = 'small', children, onClose, fixedHeight = true, name } = props;
+  const overlayRef = React.useRef();
 
-  render(): React.Node {
-    const { size, children, onClose, fixedHeight, name } = this.props;
+  const onBackgroundClick = React.useCallback(
+    event => {
+      if (event.target === overlayRef.current) {
+        onClose();
+      }
+    },
+    [onClose],
+  );
 
-    const overlayClasses = classNames(css['modal-overlay'], {
-      [css['resizable-modal-overlay']]: !fixedHeight,
-    });
-    const modalContainerClasses = classNames(css['modal-container'], {
-      [css['large-modal-container']]: size === 'large',
-    });
-    const modalClasses = classNames(css['modal'], {
-      [css['fixed-height-modal']]: fixedHeight,
-    });
-    return (
-      <div
-        className={overlayClasses}
-        ref={this.overlayRef}
-        onClick={this.onBackgroundClick}
-        tabIndex={0}
-        onKeyDown={this.onKeyDown}
-      >
-        <div className={modalContainerClasses}>
-          <div className={modalClasses}>
-            <div className={css['modal-header']}>
-              <span className={css['modal-close']} onClick={onClose}>
-                ×
-              </span>
-              <h2>{name}</h2>
-            </div>
-            {children}
+  const onKeyDown = React.useCallback(
+    event => {
+      if (event.keyCode === 27) {
+        onClose();
+      }
+    },
+    [onClose],
+  );
+
+  React.useEffect(() => {
+    if (overlayRef.current) {
+      overlayRef.current.focus();
+    }
+  }, []);
+
+  const overlayClasses = React.useMemo(
+    () =>
+      classNames(css['modal-overlay'], {
+        [css['resizable-modal-overlay']]: !fixedHeight,
+      }),
+    [fixedHeight],
+  );
+  const modalContainerClasses = React.useMemo(
+    () =>
+      classNames(css['modal-container'], {
+        [css['large-modal-container']]: size === 'large',
+      }),
+    [size],
+  );
+  const modalClasses = React.useMemo(
+    () =>
+      classNames(css['modal'], {
+        [css['fixed-height-modal']]: fixedHeight,
+      }),
+    [fixedHeight],
+  );
+  return (
+    <div
+      className={overlayClasses}
+      ref={overlayRef}
+      onClick={onBackgroundClick}
+      tabIndex={0}
+      onKeyDown={onKeyDown}
+    >
+      <div className={modalContainerClasses}>
+        <div className={modalClasses}>
+          <div className={css['modal-header']}>
+            <span className={css['modal-close']} onClick={onClose}>
+              ×
+            </span>
+            <h2>{name}</h2>
           </div>
+          {children}
         </div>
       </div>
-    );
-  }
-
-  overlayRef: (overlay: ?HTMLDivElement) => void = overlay => {
-    this.overlay = overlay;
-  };
-
-  onBackgroundClick: (
-    event: SyntheticEvent<HTMLDivElement>,
-  ) => void = event => {
-    if (event.target === this.overlay) {
-      this.props.onClose();
-    }
-  };
-
-  onKeyDown: (
-    event: SyntheticKeyboardEvent<HTMLDivElement>,
-  ) => void = event => {
-    if (event.keyCode === 27) {
-      this.props.onClose();
-    }
-  };
+    </div>
+  );
 }
 
 export default Modal;
