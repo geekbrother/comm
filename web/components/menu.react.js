@@ -3,6 +3,8 @@
 import classnames from 'classnames';
 import * as React from 'react';
 
+import { useIsomorphicLayoutEffect } from 'lib/hooks/isomorphic-layout-effect.react';
+
 import { useRenderMenu } from '../menu-provider.react';
 import css from './menu.css';
 
@@ -60,7 +62,7 @@ function Menu(props: MenuProps): React.Node {
 
   // useLayoutEffect is necessary so that the menu position is immediately
   // updated in the first render of component
-  React.useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     updatePosition();
   }, [updatePosition]);
 
