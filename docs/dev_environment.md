@@ -58,7 +58,7 @@ Installing Python 2.x via Homebrew is no longer officially supported. Instead, d
 [PHP](https://www.php.net) is needed for Arcanist. As of macOS 12 (Monterey), PHP is no longer bundled with the OS and needs to be installed via Homebrew.
 
 ```
-brew install php@7.4; brew upgrade php@7.4
+brew install php@7.4 && brew upgrade php@7.4
 ```
 
 ## Rust
