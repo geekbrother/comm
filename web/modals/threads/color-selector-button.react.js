@@ -7,10 +7,16 @@ import css from './color-selector-button.css';
 
 type ColorSelectorButtonProps = {
   +color: string,
-  +active: boolean,
+  +pendingColorSelection: string,
+  +setPendingColorSelection: string => void,
 };
 function ColorSelectorButton(props: ColorSelectorButtonProps): React.Node {
-  const { color, active } = props;
+  const { color, pendingColorSelection, setPendingColorSelection } = props;
+
+  const active = React.useMemo(() => color === pendingColorSelection, [
+    color,
+    pendingColorSelection,
+  ]);
 
   const containerClassName = classNames(css.container, {
     [css.active]: active,
@@ -23,8 +29,12 @@ function ColorSelectorButton(props: ColorSelectorButtonProps): React.Node {
     [color],
   );
 
+  const onColorSplotchClicked = React.useCallback(() => {
+    setPendingColorSelection(color);
+  }, [setPendingColorSelection, color]);
+
   return (
-    <div className={containerClassName}>
+    <div onClick={onColorSplotchClicked} className={containerClassName}>
       <div className={css.colorSplotch} style={colorSplotchStyle} />
     </div>
   );
