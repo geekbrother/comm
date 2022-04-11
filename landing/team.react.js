@@ -3,7 +3,7 @@
 import * as React from 'react';
 
 import { assetsCacheURLPrefix } from './asset-meta-data';
-import TeamProfile from './team-profile.react.js';
+import TeamProfile from './team-profile.react';
 
 function Team(): React.Node {
   return (
