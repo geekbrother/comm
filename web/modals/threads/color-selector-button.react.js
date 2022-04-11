@@ -13,7 +13,7 @@ type ColorSelectorButtonProps = {
 function ColorSelectorButton(props: ColorSelectorButtonProps): React.Node {
   const { color, currentThreadColor, onColorSelection } = props;
 
-  const active = color === currentThreadColor;
+  const active = color.toLowerCase() === currentThreadColor.toLowerCase();
   const containerClassName = classNames(css.container, {
     [css.active]: active,
   });
