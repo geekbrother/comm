@@ -2,6 +2,7 @@
 
 import classNames from 'classnames';
 import * as React from 'react';
+import tinycolor from 'tinycolor2';
 
 import css from './color-selector-button.css';
 
@@ -13,7 +14,7 @@ type ColorSelectorButtonProps = {
 function ColorSelectorButton(props: ColorSelectorButtonProps): React.Node {
   const { color, currentThreadColor, onColorSelection } = props;
 
-  const active = color.toLowerCase() === currentThreadColor.toLowerCase();
+  const active = tinycolor.equals(color, currentThreadColor);
   const containerClassName = classNames(css.container, {
     [css.active]: active,
   });
