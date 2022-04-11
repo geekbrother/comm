@@ -22,3 +22,26 @@ protected:
     Aws::ShutdownAPI({});
   }
 };
+
+TEST_F(DatabaseManagerTest, TestOperationsOnSessionSignItem) {
+  const database::SessionSignItem item(
+      tools::generateRandomString(SIGNATURE_REQUEST_LENGTH),
+      "mobile:" + tools::generateRandomString(DEVICEID_CHAR_LENGTH));
+  EXPECT_EQ(
+      database::DatabaseManager::getInstance().isTableAvailable(
+          item.getTableName()),
+      true);
+  database::DatabaseManager::getInstance().putSessionSignItem(item);
+  std::shared_ptr<database::SessionSignItem> foundItem =
+      database::DatabaseManager::getInstance().findSessionSignItem(
+          item.getDeviceID());
+  EXPECT_NE(foundItem, nullptr);
+  EXPECT_EQ(
+      memcmp(
+          item.getSign().data(),
+          foundItem->getSign().data(),
+          item.getSign().size()),
+      0);
+  database::DatabaseManager::getInstance().removeSessionSignItem(
+      item.getDeviceID());
+}
