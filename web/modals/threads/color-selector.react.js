@@ -14,60 +14,20 @@ type ColorSelectorProps = {
 function ColorSelector(props: ColorSelectorProps): React.Node {
   const { currentThreadColor, onColorSelection } = props;
 
-  return (
-    <div className={css.container}>
-      <ColorSelectorButton
-        color={selectedThreadColors[0]}
-        currentThreadColor={currentThreadColor}
-        onColorSelection={onColorSelection}
-      />
-      <ColorSelectorButton
-        color={selectedThreadColors[1]}
-        currentThreadColor={currentThreadColor}
-        onColorSelection={onColorSelection}
-      />
-      <ColorSelectorButton
-        color={selectedThreadColors[2]}
-        currentThreadColor={currentThreadColor}
-        onColorSelection={onColorSelection}
-      />
-      <ColorSelectorButton
-        color={selectedThreadColors[3]}
-        currentThreadColor={currentThreadColor}
-        onColorSelection={onColorSelection}
-      />
-      <ColorSelectorButton
-        color={selectedThreadColors[4]}
-        currentThreadColor={currentThreadColor}
-        onColorSelection={onColorSelection}
-      />
-      <ColorSelectorButton
-        color={selectedThreadColors[5]}
-        currentThreadColor={currentThreadColor}
-        onColorSelection={onColorSelection}
-      />
-      <ColorSelectorButton
-        color={selectedThreadColors[6]}
-        currentThreadColor={currentThreadColor}
-        onColorSelection={onColorSelection}
-      />
-      <ColorSelectorButton
-        color={selectedThreadColors[7]}
-        currentThreadColor={currentThreadColor}
-        onColorSelection={onColorSelection}
-      />
-      <ColorSelectorButton
-        color={selectedThreadColors[8]}
-        currentThreadColor={currentThreadColor}
-        onColorSelection={onColorSelection}
-      />
-      <ColorSelectorButton
-        color={selectedThreadColors[9]}
-        currentThreadColor={currentThreadColor}
-        onColorSelection={onColorSelection}
-      />
-    </div>
+  const colorSelectorButtons = React.useMemo(
+    () =>
+      selectedThreadColors.map(color => (
+        <ColorSelectorButton
+          key={color}
+          color={color}
+          currentThreadColor={currentThreadColor}
+          onColorSelection={onColorSelection}
+        />
+      )),
+    [currentThreadColor, onColorSelection],
   );
+
+  return <div className={css.container}>{colorSelectorButtons}</div>;
 }
 
 export default ColorSelector;
