@@ -2,6 +2,8 @@
 
 import * as React from 'react';
 
+import { selectedThreadColors } from 'lib/shared/thread-utils';
+
 import ColorSelectorButton from './color-selector-button.react';
 import css from './color-selector.css';
 
@@ -16,54 +18,54 @@ function ColorSelector(props: ColorSelectorProps): React.Node {
     <div className={css.container}>
       <div className={css.row}>
         <ColorSelectorButton
-          color="4B87AA"
+          color={selectedThreadColors[0]}
           currentThreadColor={currentThreadColor}
           onColorSelection={onColorSelection}
         />
         <ColorSelectorButton
-          color="5C9F5F"
+          color={selectedThreadColors[1]}
           currentThreadColor={currentThreadColor}
           onColorSelection={onColorSelection}
         />
         <ColorSelectorButton
-          color="B8753D"
+          color={selectedThreadColors[2]}
           currentThreadColor={currentThreadColor}
           onColorSelection={onColorSelection}
         />
         <ColorSelectorButton
-          color="AA4B4B"
+          color={selectedThreadColors[3]}
           currentThreadColor={currentThreadColor}
           onColorSelection={onColorSelection}
         />
         <ColorSelectorButton
-          color="6D49AB"
+          color={selectedThreadColors[4]}
           currentThreadColor={currentThreadColor}
           onColorSelection={onColorSelection}
         />
       </div>
       <div className={css.row}>
         <ColorSelectorButton
-          color="C85000"
+          color={selectedThreadColors[5]}
           currentThreadColor={currentThreadColor}
           onColorSelection={onColorSelection}
         />
         <ColorSelectorButton
-          color="008F83"
+          color={selectedThreadColors[6]}
           currentThreadColor={currentThreadColor}
           onColorSelection={onColorSelection}
         />
         <ColorSelectorButton
-          color="648CAA"
+          color={selectedThreadColors[7]}
           currentThreadColor={currentThreadColor}
           onColorSelection={onColorSelection}
         />
         <ColorSelectorButton
-          color="57697F"
+          color={selectedThreadColors[8]}
           currentThreadColor={currentThreadColor}
           onColorSelection={onColorSelection}
         />
         <ColorSelectorButton
-          color="575757"
+          color={selectedThreadColors[9]}
           currentThreadColor={currentThreadColor}
           onColorSelection={onColorSelection}
         />
