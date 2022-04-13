@@ -46,6 +46,7 @@ public:
       blob::PutRequest &request,
       std::shared_ptr<blob::PutResponse> previousResponse) override;
   void doneCallback() override;
+  grpc::Status getStatus() const;
 };
 
 BlobPutClientReactor::BlobPutClientReactor(
@@ -92,7 +93,13 @@ std::unique_ptr<grpc::Status> BlobPutClientReactor::prepareRequest(
 }
 
 void BlobPutClientReactor::doneCallback() {
+  std::cout << "[client] done clb1 " << this->status.error_code() << std::endl;
   this->terminationNotifier->notify_one();
+  std::cout << "[client] done clb2 " << this->status.error_code() << std::endl;
+}
+
+grpc::Status BlobPutClientReactor::getStatus() const {
+  return this->status;
 }
 
 } // namespace reactor
