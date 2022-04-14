@@ -7,7 +7,7 @@ import SWMansionIcon, { type Icon } from '../SWMansionIcon.react';
 import css from './modal.css';
 
 export type ModalSize = 'small' | 'large' | 'fit-content';
-type Props = {
+export type ModalProps = {
   +name: string,
   +icon?: Icon,
   +onClose: () => void,
@@ -15,7 +15,7 @@ type Props = {
   +size?: ModalSize,
 };
 
-function Modal(props: Props): React.Node {
+function Modal(props: ModalProps): React.Node {
   const { size = 'small', children, onClose, name, icon } = props;
   const overlayRef = React.useRef();
 
