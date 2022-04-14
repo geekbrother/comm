@@ -49,3 +49,41 @@ div.noUsers {
   padding-top: 16px;
   text-align: center;
 }
+
+div.addMemberItem {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--add-members-item-color);
+  cursor: pointer;
+  font-size: var(--l-font-18);
+}
+
+div.addMemberItem:hover {
+  color: var(--add-members-item-color-hover);
+}
+
+div.addMemberItemDisabled {
+  color: var(--add-members-item-disabled-color);
+  cursor: not-allowed;
+}
+
+div.addMemberItemDisabled:hover {
+  color: var(--add-members-item-disabled-color-hover);
+}
+
+div.addMemberName {
+  padding: 8px 16px;
+}
+
+div.addMemberAction {
+  padding: 8px 16px;
+}
+
+div.addMemberItem .danger {
+  color: var(--add-members-remove-pending-color);
+}
+div.addMemberItem:hover .danger {
+  color: var(--add-members-remove-pending-color-hover);
+}
