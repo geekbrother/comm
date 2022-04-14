@@ -24,7 +24,7 @@ type BaseProps = {
 };
 type Props = {
   ...BaseProps,
-  +setModal: (modal: ?React.Node) => void,
+  +pushModal: (modal: ?React.Node) => void,
 };
 
 class Multimedia extends React.PureComponent<Props> {
@@ -44,7 +44,7 @@ class Multimedia extends React.PureComponent<Props> {
   render(): React.Node {
     let progressIndicator, errorIndicator, removeButton;
 
-    const { pendingUpload, remove, setModal } = this.props;
+    const { pendingUpload, remove, pushModal } = this.props;
     if (pendingUpload) {
       const { progressPercent, failed } = pendingUpload;
 
@@ -80,7 +80,7 @@ class Multimedia extends React.PureComponent<Props> {
       this.props.multimediaImageCSSClass,
     ];
     let onClick;
-    if (setModal) {
+    if (pushModal) {
       imageContainerClasses.push(css.clickable);
       onClick = this.onClick;
     }
@@ -111,16 +111,16 @@ class Multimedia extends React.PureComponent<Props> {
   onClick: (event: SyntheticEvent<HTMLSpanElement>) => void = event => {
     event.stopPropagation();
 
-    const { setModal, uri } = this.props;
-    invariant(setModal, 'should be set');
-    setModal(<MultimediaModal uri={uri} />);
+    const { pushModal, uri } = this.props;
+    invariant(pushModal, 'should be set');
+    pushModal(<MultimediaModal uri={uri} />);
   };
 }
 
 function ConnectedMultimediaContainer(props: BaseProps): React.Node {
   const modalContext = useModalContext();
 
-  return <Multimedia {...props} setModal={modalContext.setModal} />;
+  return <Multimedia {...props} pushModal={modalContext.pushModal} />;
 }
 
 export default ConnectedMultimediaContainer;
