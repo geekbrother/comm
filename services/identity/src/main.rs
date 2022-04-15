@@ -1,6 +1,7 @@
 use tonic::transport::Server;
 
 mod identity;
+mod opaque;
 use identity::{IdentityServiceServer, MyIdentityService};
 
 const IDENTITY_SERVICE_SOCKET_ADDR: &str = "[::]:50051";
