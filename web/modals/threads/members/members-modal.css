@@ -50,6 +50,14 @@ div.noUsers {
   text-align: center;
 }
 
+div.addMemberItemsGroupHeader {
+  font-size: var(--s-font-14);
+  color: var(--add-members-group-header-color);
+  margin: 16px;
+}
+div.addMemberItemsGroupHeader::first-letter {
+  text-transform: capitalize;
+}
 div.addMemberItem {
   display: flex;
   flex-direction: row;
