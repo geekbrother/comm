@@ -1,6 +1,8 @@
 const path = require('path');
 const AssetsPlugin = require('assets-webpack-plugin');
 
+const test = 'hello';
+
 const babelConfig = require('./babel.config.cjs');
 const {
   createProdBrowserConfig,
