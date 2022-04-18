@@ -26,6 +26,7 @@ import {
 import MenuItem from '../components/menu-item.react';
 import Menu from '../components/menu.react';
 import SidebarListModal from '../modals/chat/sidebar-list-modal.react';
+import SidebarPromoteModal from '../modals/chat/sidebar-promote-modal.react';
 import { useModalContext } from '../modals/modal-provider.react';
 import ConfirmLeaveThreadModal from '../modals/threads/confirm-leave-thread-modal.react';
 import ThreadMembersModal from '../modals/threads/members/members-modal.react';
@@ -94,6 +95,18 @@ function ThreadMenu(props: ThreadMenuProps): React.Node {
   const onClickSidebars = React.useCallback(
     () => setModal(<SidebarListModal threadInfo={threadInfo} />),
     [setModal, threadInfo],
+  );
+
+  const onClickPromoteSidebarToThread = React.useCallback(
+    () =>
+      setModal(
+        <SidebarPromoteModal
+          threadInfo={threadInfo}
+          onClose={clearModal}
+          onConfirm={onPromoteSidebar}
+        />,
+      ),
+    [setModal, threadInfo, clearModal, onPromoteSidebar],
   );
 
   const sidebarItem = React.useMemo(() => {
@@ -202,10 +215,10 @@ function ThreadMenu(props: ThreadMenuProps): React.Node {
         key="promote"
         text="Promote Thread"
         icon="message-square-lines"
-        onClick={onPromoteSidebar}
+        onClick={onClickPromoteSidebarToThread}
       />
     );
-  }, [onPromoteSidebar]);
+  }, [onClickPromoteSidebarToThread]);
 
   const menuItems = React.useMemo(() => {
     const notificationsItem = (
