@@ -98,6 +98,7 @@ type Props = {
   +setTab: (tabType: TabType) => void,
   +onChangeName: (event: SyntheticEvent<HTMLInputElement>) => void,
   +onChangeDescription: (event: SyntheticEvent<HTMLTextAreaElement>) => void,
+  +onChangeColor: (color: string) => void,
 };
 class ThreadSettingsModal extends React.PureComponent<Props> {
   nameInput: ?HTMLInputElement;
@@ -176,7 +177,7 @@ class ThreadSettingsModal extends React.PureComponent<Props> {
           threadDescriptionOnChange={this.props.onChangeDescription}
           threadDescriptionDisabled={inputDisabled}
           threadColorCurrentColor={this.possiblyChangedValue('color')}
-          threadColorOnColorSelection={this.onChangeColor}
+          threadColorOnColorSelection={this.props.onChangeColor}
         />
       );
     } else if (this.props.currentTabType === 'privacy') {
@@ -290,14 +291,6 @@ class ThreadSettingsModal extends React.PureComponent<Props> {
 
   accountPasswordInputRef = (accountPasswordInput: ?HTMLInputElement) => {
     this.accountPasswordInput = accountPasswordInput;
-  };
-
-  onChangeColor = (color: string) => {
-    const newValue = color !== this.props.threadInfo.color ? color : undefined;
-    this.props.setQueuedChanges({
-      ...this.props.queuedChanges,
-      color: newValue,
-    });
   };
 
   onChangeThreadType = (event: SyntheticEvent<HTMLInputElement>) => {
@@ -449,6 +442,17 @@ const ConnectedThreadSettingsModal: React.ComponentType<BaseProps> = React.memo<
       [queuedChanges, threadInfo],
     );
 
+    const onChangeColor = React.useCallback(
+      (color: string) => {
+        invariant(threadInfo, 'threadInfo should exist in onChangeColor');
+        setQueuedChanges({
+          ...queuedChanges,
+          color: color !== threadInfo.color ? color : undefined,
+        });
+      },
+      [queuedChanges, threadInfo],
+    );
+
     if (!threadInfo) {
       return (
         <Modal onClose={modalContext.clearModal} name="Invalid thread">
@@ -483,6 +487,7 @@ const ConnectedThreadSettingsModal: React.ComponentType<BaseProps> = React.memo<
         setTab={setTab}
         onChangeName={onChangeName}
         onChangeDescription={onChangeDescription}
+        onChangeColor={onChangeColor}
       />
     );
   },
