@@ -124,7 +124,7 @@ class ThreadSettingsModal extends React.PureComponent<Props> {
     );
 
     if (!permissionForDeleteTab && prevPermissionForDeleteTab) {
-      this.setTab('general');
+      this.props.setCurrentTabType('general');
     }
   }
 
@@ -223,7 +223,7 @@ class ThreadSettingsModal extends React.PureComponent<Props> {
       <Tab
         name="General"
         tabType="general"
-        onClick={this.setTab}
+        onClick={this.props.setCurrentTabType}
         selected={this.props.currentTabType === 'general'}
         key="general"
       />,
@@ -244,7 +244,7 @@ class ThreadSettingsModal extends React.PureComponent<Props> {
         <Tab
           name="Privacy"
           tabType="privacy"
-          onClick={this.setTab}
+          onClick={this.props.setCurrentTabType}
           selected={this.props.currentTabType === 'privacy'}
           key="privacy"
         />,
@@ -256,7 +256,7 @@ class ThreadSettingsModal extends React.PureComponent<Props> {
         <Tab
           name="Delete"
           tabType="delete"
-          onClick={this.setTab}
+          onClick={this.props.setCurrentTabType}
           selected={this.props.currentTabType === 'delete'}
           key="delete"
         />,
@@ -280,10 +280,6 @@ class ThreadSettingsModal extends React.PureComponent<Props> {
       </Modal>
     );
   }
-
-  setTab = (tabType: TabType) => {
-    this.props.setCurrentTabType(tabType);
-  };
 
   nameInputRef = (nameInput: ?HTMLInputElement) => {
     this.nameInput = nameInput;
