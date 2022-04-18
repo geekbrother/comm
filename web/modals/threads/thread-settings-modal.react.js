@@ -95,6 +95,7 @@ type Props = {
   +setQueuedChanges: SetState<ThreadChanges>,
   +namePlaceholder: string,
   +changeQueued: boolean,
+  +setTab: (tabType: TabType) => void,
 };
 class ThreadSettingsModal extends React.PureComponent<Props> {
   nameInput: ?HTMLInputElement;
@@ -124,7 +125,7 @@ class ThreadSettingsModal extends React.PureComponent<Props> {
     );
 
     if (!permissionForDeleteTab && prevPermissionForDeleteTab) {
-      this.setTab('general');
+      this.props.setTab('general');
     }
   }
 
@@ -223,7 +224,7 @@ class ThreadSettingsModal extends React.PureComponent<Props> {
       <Tab
         name="General"
         tabType="general"
-        onClick={this.setTab}
+        onClick={this.props.setTab}
         selected={this.props.currentTabType === 'general'}
         key="general"
       />,
@@ -244,7 +245,7 @@ class ThreadSettingsModal extends React.PureComponent<Props> {
         <Tab
           name="Privacy"
           tabType="privacy"
-          onClick={this.setTab}
+          onClick={this.props.setTab}
           selected={this.props.currentTabType === 'privacy'}
           key="privacy"
         />,
@@ -256,7 +257,7 @@ class ThreadSettingsModal extends React.PureComponent<Props> {
         <Tab
           name="Delete"
           tabType="delete"
-          onClick={this.setTab}
+          onClick={this.props.setTab}
           selected={this.props.currentTabType === 'delete'}
           key="delete"
         />,
@@ -280,10 +281,6 @@ class ThreadSettingsModal extends React.PureComponent<Props> {
       </Modal>
     );
   }
-
-  setTab = (tabType: TabType) => {
-    this.props.setCurrentTabType(tabType);
-  };
 
   nameInputRef = (nameInput: ?HTMLInputElement) => {
     this.nameInput = nameInput;
@@ -441,6 +438,10 @@ const ConnectedThreadSettingsModal: React.ComponentType<BaseProps> = React.memo<
       [queuedChanges],
     );
 
+    const setTab = React.useCallback((tabType: TabType) => {
+      setCurrentTabType(tabType);
+    }, []);
+
     if (!threadInfo) {
       return (
         <Modal onClose={modalContext.clearModal} name="Invalid thread">
@@ -472,6 +473,7 @@ const ConnectedThreadSettingsModal: React.ComponentType<BaseProps> = React.memo<
         setQueuedChanges={setQueuedChanges}
         namePlaceholder={namePlaceholder}
         changeQueued={changeQueued}
+        setTab={setTab}
       />
     );
   },
