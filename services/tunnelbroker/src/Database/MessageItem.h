@@ -25,6 +25,7 @@ public:
   static const std::string FIELD_PAYLOAD;
   static const std::string FIELD_BLOB_HASHES;
   static const std::string FIELD_EXPIRE;
+  static const std::string INDEX_TO_DEVICE_ID;
 
   std::string getPrimaryKey() const override;
   std::string getTableName() const override;
