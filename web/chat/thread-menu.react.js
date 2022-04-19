@@ -39,13 +39,13 @@ type ThreadMenuProps = {
 };
 
 function ThreadMenu(props: ThreadMenuProps): React.Node {
-  const { setModal, clearModal } = useModalContext();
+  const { pushModal, popModal } = useModalContext();
 
   const { threadInfo } = props;
 
   const onClickSettings = React.useCallback(
-    () => setModal(<ThreadSettingsModal threadID={threadInfo.id} />),
-    [setModal, threadInfo.id],
+    () => pushModal(<ThreadSettingsModal threadID={threadInfo.id} />),
+    [pushModal, threadInfo.id],
   );
 
   const settingsItem = React.useMemo(() => {
@@ -61,10 +61,10 @@ function ThreadMenu(props: ThreadMenuProps): React.Node {
 
   const onClickMembers = React.useCallback(
     () =>
-      setModal(
-        <ThreadMembersModal threadID={threadInfo.id} onClose={clearModal} />,
+      pushModal(
+        <ThreadMembersModal threadID={threadInfo.id} onClose={popModal} />,
       ),
-    [clearModal, setModal, threadInfo.id],
+    [popModal, pushModal, threadInfo.id],
   );
   const membersItem = React.useMemo(() => {
     if (threadInfo.type === threadTypes.PERSONAL) {
@@ -91,8 +91,8 @@ function ThreadMenu(props: ThreadMenuProps): React.Node {
   }, [childThreads]);
 
   const onClickSidebars = React.useCallback(
-    () => setModal(<SidebarListModal threadInfo={threadInfo} />),
-    [setModal, threadInfo],
+    () => pushModal(<SidebarListModal threadInfo={threadInfo} />),
+    [pushModal, threadInfo],
   );
 
   const sidebarItem = React.useMemo(() => {
@@ -120,10 +120,10 @@ function ThreadMenu(props: ThreadMenuProps): React.Node {
 
   const onClickViewSubchannels = React.useCallback(
     () =>
-      setModal(
-        <SubchannelsModal threadID={threadInfo.id} onClose={clearModal} />,
+      pushModal(
+        <SubchannelsModal threadID={threadInfo.id} onClose={popModal} />,
       ),
-    [clearModal, setModal, threadInfo.id],
+    [popModal, pushModal, threadInfo.id],
   );
 
   const viewSubchannelsItem = React.useMemo(() => {
@@ -161,19 +161,19 @@ function ThreadMenu(props: ThreadMenuProps): React.Node {
       leaveThreadActionTypes,
       callLeaveThread(threadInfo.id),
     );
-    clearModal();
-  }, [callLeaveThread, clearModal, dispatchActionPromise, threadInfo.id]);
+    popModal();
+  }, [callLeaveThread, popModal, dispatchActionPromise, threadInfo.id]);
 
   const onClickLeaveThread = React.useCallback(
     () =>
-      setModal(
+      pushModal(
         <ConfirmLeaveThreadModal
           threadInfo={threadInfo}
-          onClose={clearModal}
+          onClose={popModal}
           onConfirm={onConfirmLeaveThread}
         />,
       ),
-    [clearModal, onConfirmLeaveThread, setModal, threadInfo],
+    [popModal, onConfirmLeaveThread, pushModal, threadInfo],
   );
 
   const leaveThreadItem = React.useMemo(() => {
