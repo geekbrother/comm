@@ -115,30 +115,6 @@ class ThreadSettingsModal extends React.PureComponent<Props> {
     super(props);
   }
 
-  componentDidMount() {
-    invariant(this.nameInput, 'nameInput ref unset');
-    this.nameInput.focus();
-  }
-
-  componentDidUpdate(prevProps: Props) {
-    if (this.props.currentTabType !== 'delete') {
-      return;
-    }
-
-    const permissionForDeleteTab = this.props.hasPermissionForTab(
-      this.props.threadInfo,
-      'delete',
-    );
-    const prevPermissionForDeleteTab = this.props.hasPermissionForTab(
-      prevProps.threadInfo,
-      'delete',
-    );
-
-    if (!permissionForDeleteTab && prevPermissionForDeleteTab) {
-      this.props.setTab('general');
-    }
-  }
-
   possiblyChangedValue(key: string) {
     const valueChanged =
       this.props.queuedChanges[key] !== null &&
@@ -477,6 +453,19 @@ const ConnectedThreadSettingsModal: React.ComponentType<BaseProps> = React.memo<
       },
       [changeThreadSettingsAction, dispatchActionPromise],
     );
+
+    React.useEffect(() => {
+      // TODO: nameInput.focus()
+      // (once ref is moved up to functional component)
+
+      if (
+        threadInfo &&
+        currentTabType === 'delete' &&
+        !hasPermissionForTab(threadInfo, 'delete')
+      ) {
+        setCurrentTabType('general');
+      }
+    }, [currentTabType, hasPermissionForTab, threadInfo]);
 
     if (!threadInfo) {
       return (
