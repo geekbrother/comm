@@ -103,6 +103,7 @@ type Props = {
   +onChangeAccountPassword: (event: SyntheticEvent<HTMLInputElement>) => void,
   +hasPermissionForTab: (thread: ThreadInfo, tab: TabType) => boolean,
   +deleteThreadAction: () => Promise<LeaveThreadPayload>,
+  +onDelete: (event: SyntheticEvent<HTMLElement>) => void,
 };
 class ThreadSettingsModal extends React.PureComponent<Props> {
   nameInput: ?HTMLInputElement;
@@ -190,7 +191,7 @@ class ThreadSettingsModal extends React.PureComponent<Props> {
     if (this.props.currentTabType === 'delete') {
       buttons = (
         <Button
-          onClick={this.onDelete}
+          onClick={this.props.onDelete}
           variant="danger"
           disabled={inputDisabled}
         >
@@ -309,14 +310,6 @@ class ThreadSettingsModal extends React.PureComponent<Props> {
       throw e;
     }
   }
-
-  onDelete = (event: SyntheticEvent<HTMLElement>) => {
-    event.preventDefault();
-    this.props.dispatchActionPromise(
-      deleteThreadActionTypes,
-      this.props.deleteThreadAction(),
-    );
-  };
 }
 
 const deleteThreadLoadingStatusSelector = createLoadingStatusSelector(
@@ -468,6 +461,14 @@ const ConnectedThreadSettingsModal: React.ComponentType<BaseProps> = React.memo<
       }
     }, [accountPassword, callDeleteThread, modalContext, threadInfo]);
 
+    const onDelete = React.useCallback(
+      (event: SyntheticEvent<HTMLElement>) => {
+        event.preventDefault();
+        dispatchActionPromise(deleteThreadActionTypes, deleteThreadAction());
+      },
+      [deleteThreadAction, dispatchActionPromise],
+    );
+
     if (!threadInfo) {
       return (
         <Modal onClose={modalContext.clearModal} name="Invalid thread">
@@ -507,6 +508,7 @@ const ConnectedThreadSettingsModal: React.ComponentType<BaseProps> = React.memo<
         onChangeAccountPassword={onChangeAccountPassword}
         hasPermissionForTab={hasPermissionForTab}
         deleteThreadAction={deleteThreadAction}
+        onDelete={onDelete}
       />
     );
   },
