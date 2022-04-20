@@ -14,12 +14,20 @@ find_package(PkgConfig REQUIRED)
 
 # FIND LIBS
 set(protobuf_MODULE_COMPATIBLE TRUE)
-find_package(Protobuf CONFIG REQUIRED)
+# Attempt to find protobuf.pc first
+pkg_check_modules(Protobuf protobuf IMPORTED_TARGET GLOBAL)
+
+if(Protobuf_FOUND)
+  set(_PROTOBUF_LIBPROTOBUF PkgConfig::Protobuf)
+elseif(NOT Protobuf_FOUND)
+  # protobuf.pc wasn't found, check for protobuf.cmake
+  find_package(Protobuf CONFIG REQUIRED)
+  #set(_PROTOBUF_LIBPROTOBUF protobuf::libprotobuf)
+endif()
 message(STATUS "Using protobuf ${Protobuf_VERSION}")
 
-set(_PROTOBUF_LIBPROTOBUF protobuf::libprotobuf)
 set(_REFLECTION gRPC::grpc++_reflection)
-set(_PROTOBUF_PROTOC $<TARGET_FILE:protobuf::protoc>)
+find_program(_PROTOBUF_PROTOC protoc HINTS $<TARGET_FILE:protobuf::protoc>)
 
 # Find gRPC installation
 # Looks for gRPCConfig.cmake file installed by gRPC's cmake installation.
@@ -27,7 +35,7 @@ find_package(gRPC CONFIG REQUIRED)
 message(STATUS "Using gRPC ${gRPC_VERSION}")
 
 set(_GRPC_GRPCPP gRPC::grpc++)
-set(_GRPC_CPP_PLUGIN_EXECUTABLE $<TARGET_FILE:gRPC::grpc_cpp_plugin>)
+find_program(_GRPC_CPP_PLUGIN_EXECUTABLE grpc_cpp_plugin HINTS $<TARGET_FILE:gRPC::grpc_cpp_plugin>)
 
 # Find AMQP-CPP installation
 find_package(amqpcpp CONFIG REQUIRED)
@@ -36,7 +44,7 @@ find_package(amqpcpp CONFIG REQUIRED)
 pkg_check_modules(CRYPTOPP REQUIRED libcryptopp=8.6)
 
 # Find Libuv installation
-pkg_check_modules(LIBUV REQUIRED libuv=1.43.0)
+pkg_check_modules(LIBUV REQUIRED libuv>=1.43.0)
 
 set(BUILD_TESTING OFF CACHE BOOL "Turn off tests" FORCE)
 set(WITH_GFLAGS OFF CACHE BOOL "Turn off gflags" FORCE)
@@ -45,7 +53,12 @@ find_package(AWSSDK REQUIRED COMPONENTS core dynamodb)
 find_package(Boost 1.40 COMPONENTS program_options thread system REQUIRED)
 find_package(OpenSSL REQUIRED)
 
-add_subdirectory(./lib/glog)
+find_package(glog)
+if (NOT glog_FOUND)
+  add_subdirectory(./lib/glog)
+endif()
+
+find_package(folly REQUIRED)
 
 # Generated sources
 get_filename_component(proto "protos/tunnelbroker.proto" ABSOLUTE)
@@ -100,45 +113,6 @@ include_directories(
 set(
   SOURCE_CODE
 
-  # folly
-  ./lib/folly/folly/detail/Futex.cpp
-  ./lib/folly/folly/synchronization/ParkingLot.cpp
-  ./lib/folly/folly/lang/SafeAssert.cpp
-  ./lib/folly/folly/FileUtil.cpp
-  ./lib/folly/folly/Subprocess.cpp
-  ./lib/folly/folly/File.cpp
-  ./lib/folly/folly/Format.cpp
-  ./lib/folly/folly/Conv.cpp
-  ./lib/folly/folly/io/IOBuf.cpp
-  ./lib/folly/folly/memory/detail/MallocImpl.cpp
-  ./lib/folly/folly/ScopeGuard.cpp
-  ./lib/folly/folly/hash/SpookyHashV2.cpp
-  ./lib/folly/folly/io/IOBufQueue.cpp
-  ./lib/folly/folly/lang/Assume.cpp
-  ./lib/folly/folly/String.cpp
-  ./lib/folly/folly/portability/SysUio.cpp
-  ./lib/folly/folly/net/NetOps.cpp
-  ./lib/folly/folly/synchronization/Hazptr.cpp
-  ./lib/folly/folly/detail/ThreadLocalDetail.cpp
-  ./lib/folly/folly/SharedMutex.cpp
-  ./lib/folly/folly/concurrency/CacheLocality.cpp
-  ./lib/folly/folly/detail/StaticSingletonManager.cpp
-  ./lib/folly/folly/executors/ThreadPoolExecutor.cpp
-  ./lib/folly/folly/executors/GlobalThreadPoolList.cpp
-  ./lib/folly/folly/Demangle.cpp
-  ./lib/folly/folly/synchronization/AsymmetricMemoryBarrier.cpp
-  ./lib/folly/folly/io/async/Request.cpp
-  ./lib/folly/folly/detail/MemoryIdler.cpp
-  ./lib/folly/folly/detail/AtFork.cpp
-  ./lib/folly/folly/Executor.cpp
-  ./lib/folly/folly/lang/CString.cpp
-  ./lib/folly/folly/portability/SysMembarrier.cpp
-  ./lib/folly/folly/container/detail/F14Table.cpp
-  ./lib/folly/folly/detail/UniqueInstance.cpp
-  ./lib/folly/folly/executors/QueuedImmediateExecutor.cpp
-  ./lib/folly/folly/memory/MallctlHelper.cpp
-
-  ${DOUBLE_CONVERSION_SOURCES}
   ${GENERATED_CODE}
   ${SOURCE_CODE}
 )
@@ -147,7 +121,8 @@ set(
   LIBS
 
   ${_GRPC_GRPCPP}
-  ${_PROTOBUF_LIBPROTOBUF}
+  #${_PROTOBUF_LIBPROTOBUF}
+  PkgConfig::Protobuf
   ${_REFLECTION}
   ${AWSSDK_LINK_LIBRARIES}
   ${CRYPTOPP_LIBRARIES}

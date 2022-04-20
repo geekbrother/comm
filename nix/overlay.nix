@@ -11,5 +11,9 @@ prev:
 
 {
   # add packages meant for just this repository
+  amqp-cpp = prev.callPackage ./amqp-cpp.nix { };
+
   devShell = final.callPackage ./dev-shell.nix { };
+
+  tunnelbroker = final.callPackage ./tunnelbroker.nix { };
 }
