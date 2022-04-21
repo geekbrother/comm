@@ -9,10 +9,11 @@ type ColorSelectorButtonProps = {
 
 function ColorSelectorButton(props: ColorSelectorButtonProps): React.Node {
   const { color } = props;
-  const buttonBackgroundColor = React.useMemo(() => {
-    return { backgroundColor: color };
-  }, [color]);
-  return <View style={[styles.button, buttonBackgroundColor]} />;
+  const buttonStyle = React.useMemo(
+    () => [styles.button, { backgroundColor: color }],
+    [color],
+  );
+  return <View style={buttonStyle} />;
 }
 
 const styles = StyleSheet.create({
