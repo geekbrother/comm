@@ -2,6 +2,8 @@ use futures_core::Stream;
 use std::pin::Pin;
 use tonic::{Request, Response, Status};
 
+use common::config::Config;
+
 pub use proto::identity_service_server::IdentityServiceServer;
 use proto::{
   identity_service_server::IdentityService, LoginRequest, LoginResponse, RegistrationRequest,
@@ -13,7 +15,9 @@ mod proto {
 }
 
 #[derive(Debug, Default)]
-pub struct MyIdentityService {}
+pub struct MyIdentityService {
+  pub config: Config,
+}
 
 #[tonic::async_trait]
 impl IdentityService for MyIdentityService {

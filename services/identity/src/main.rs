@@ -8,7 +8,11 @@ const IDENTITY_SERVICE_SOCKET_ADDR: &str = "[::]:50051";
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
   let addr = IDENTITY_SERVICE_SOCKET_ADDR.parse()?;
-  let identity_service = MyIdentityService::default();
+  let mut identity_service = MyIdentityService::default();
+  identity_service
+    .config
+    .load()
+    .expect("config successfully loaded");
 
   Server::builder()
     .add_service(IdentityServiceServer::new(identity_service))
