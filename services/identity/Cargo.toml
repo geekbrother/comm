@@ -3,7 +3,17 @@ name = "identity"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "common"
+path = "src/lib.rs"
+
+[[bin]]
+name = "identity"
+path = "src/main.rs"
+
+[[bin]]
+name = "keygen"
+path = "scripts/keygen.rs"
 
 [dependencies]
 tonic = "0.6"
