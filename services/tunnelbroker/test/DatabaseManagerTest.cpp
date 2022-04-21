@@ -21,7 +21,7 @@ protected:
   virtual void TearDown() {
     Aws::ShutdownAPI({});
   }
-};
+}
 
 TEST_F(DatabaseManagerTest, PutAndFoundMessageItemsStaticDataIsSame) {
   const database::MessageItem item(
@@ -52,6 +52,10 @@ TEST_F(DatabaseManagerTest, PutAndFoundMessageItemsStaticDataIsSame) {
   EXPECT_EQ(item.getPayload(), foundItem->getPayload());
   EXPECT_EQ(item.getBlobHashes(), foundItem->getBlobHashes());
   EXPECT_EQ(item.getExpire(), foundItem->getExpire());
+  EXPECT_EQ(
+      foundItem->getCreatedAt() > 1650552264 &&
+          foundItem->getCreatedAt() <= static_cast<size_t>(std::time(0)),
+      true);
   database::DatabaseManager::getInstance().removeMessageItem(
       item.getMessageID());
 }
