@@ -27,7 +27,7 @@ const std::string SERVER_LISTEN_ADDRESS = "0.0.0.0:50051";
 
 // AMQP (RabbitMQ)
 const std::string AMQP_FANOUT_EXCHANGE_NAME = "allBrokers";
-// message TTL
+// queue message TTL
 const size_t AMQP_MESSAGE_TTL = 300 * 1000; // 5 min
 // queue TTL in case of no consumers (tunnelbroker is down)
 const size_t AMQP_QUEUE_TTL = 24 * 3600 * 1000; // 24 hours
@@ -35,8 +35,7 @@ const size_t AMQP_QUEUE_TTL = 24 * 3600 * 1000; // 24 hours
 const std::string AMQP_HEADER_FROM_DEVICEID = "fromDeviceid";
 const std::string AMQP_HEADER_TO_DEVICEID = "toDeviceid";
 
-const int64_t AMQP_SHORTEST_RECONNECTION_ATTEMPT_INTERVAL =
-    1000 * 60; // 1 min
+const int64_t AMQP_SHORTEST_RECONNECTION_ATTEMPT_INTERVAL = 1000 * 60; // 1 min
 
 // DeviceID
 const size_t DEVICEID_CHAR_LENGTH = 64;
@@ -47,6 +46,9 @@ const std::regex DEVICEID_FORMAT_REGEX(
 // Config
 const std::string CONFIG_FILE_PATH =
     std::string(std::getenv("HOME")) + "/tunnelbroker/tunnelbroker.ini";
+
+// Database Messages
+const size_t MESSAGE_RECORD_TTL = 30 * 24 * 3600 * 10; // 300 days
 
 } // namespace network
 } // namespace comm

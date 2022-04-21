@@ -184,7 +184,8 @@ void DatabaseManager::putMessageItem(const MessageItem &item) {
       Aws::DynamoDB::Model::AttributeValue(item.getBlobHashes()));
   request.AddItem(
       MessageItem::FIELD_EXPIRE,
-      Aws::DynamoDB::Model::AttributeValue(std::to_string(item.getExpire())));
+      Aws::DynamoDB::Model::AttributeValue(std::to_string(
+          static_cast<size_t>(std::time(0) + MESSAGE_RECORD_TTL))));
   this->innerPutItem(std::make_shared<MessageItem>(item), request);
 }
 
