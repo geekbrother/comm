@@ -22,7 +22,6 @@ import {
   useServerCall,
   useDispatchActionPromise,
 } from 'lib/utils/action-utils';
-import { isDev } from 'lib/utils/dev-utils';
 
 import MenuItem from '../components/menu-item.react';
 import Menu from '../components/menu.react';
@@ -43,7 +42,7 @@ type ThreadMenuProps = {
 function ThreadMenu(props: ThreadMenuProps): React.Node {
   const { setModal, clearModal } = useModalContext();
   const { threadInfo } = props;
-  const { onPromoteSidebar } = usePromoteSidebar(threadInfo);
+  const { onPromoteSidebar, canPromoteSidebar } = usePromoteSidebar(threadInfo);
 
   const onClickSettings = React.useCallback(
     () => setModal(<ThreadSettingsModal threadID={threadInfo.id} />),
@@ -217,7 +216,6 @@ function ThreadMenu(props: ThreadMenuProps): React.Node {
     // TODO: Enable menu items when the modals are implemented
     const SHOW_NOTIFICATIONS = false;
     const SHOW_CREATE_SUBCHANNELS = false;
-    const SHOW_PROMOTE_SIDEBAR = isDev;
 
     const items = [
       settingsItem,
@@ -227,7 +225,7 @@ function ThreadMenu(props: ThreadMenuProps): React.Node {
       viewSubchannelsItem,
       SHOW_CREATE_SUBCHANNELS && createSubchannelsItem,
       leaveThreadItem && separator,
-      SHOW_PROMOTE_SIDEBAR && promoteSidebar,
+      canPromoteSidebar && promoteSidebar,
       leaveThreadItem,
     ];
     return items.filter(Boolean);
@@ -239,6 +237,7 @@ function ThreadMenu(props: ThreadMenuProps): React.Node {
     promoteSidebar,
     createSubchannelsItem,
     leaveThreadItem,
+    canPromoteSidebar,
   ]);
   const icon = React.useMemo(
     () => <SWMansionIcon icon="menu-vertical" size={20} />,
