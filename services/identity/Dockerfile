@@ -9,9 +9,10 @@ WORKDIR /home/comm/app/identity
 RUN cargo init --bin
 
 COPY services/identity/Cargo.toml services/identity/Cargo.lock ./
+RUN touch src/lib.rs
 
 # Cache build dependencies in a new layer
-RUN cargo build --release
+RUN cargo build --release --bin identity
 RUN rm src/*.rs
 
 COPY services/identity .
