@@ -137,7 +137,6 @@ class ThreadSettingsModal extends React.PureComponent<Props> {
           threadNamePlaceholder={this.props.namePlaceholder}
           threadNameOnChange={this.props.onChangeName}
           threadNameDisabled={inputDisabled}
-          threadNameInputRef={this.nameInputRef}
           threadDescriptionValue={this.possiblyChangedValue('description')}
           threadDescriptionOnChange={this.props.onChangeDescription}
           threadDescriptionDisabled={inputDisabled}
@@ -159,7 +158,6 @@ class ThreadSettingsModal extends React.PureComponent<Props> {
           accountPassword={this.props.accountPassword}
           onChangeAccountPassword={this.props.onChangeAccountPassword}
           inputDisabled={inputDisabled}
-          accountPasswordInputRef={this.accountPasswordInputRef}
         />
       );
     }
@@ -252,14 +250,6 @@ class ThreadSettingsModal extends React.PureComponent<Props> {
       </Modal>
     );
   }
-
-  nameInputRef = (nameInput: ?HTMLInputElement) => {
-    this.nameInput = nameInput;
-  };
-
-  accountPasswordInputRef = (accountPasswordInput: ?HTMLInputElement) => {
-    this.accountPasswordInput = accountPasswordInput;
-  };
 }
 
 const deleteThreadLoadingStatusSelector = createLoadingStatusSelector(
