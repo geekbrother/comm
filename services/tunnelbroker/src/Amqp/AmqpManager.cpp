@@ -37,8 +37,8 @@ void AmqpManager::connectInternal() {
   });
 
   AMQP::Table arguments;
-  arguments["x-message-ttl"] = AMQP_MESSAGE_TTL;
-  arguments["x-expires"] = AMQP_QUEUE_TTL;
+  arguments["x-message-ttl"] = std::to_string(AMQP_MESSAGE_TTL);
+  arguments["x-expires"] = std::to_string(AMQP_QUEUE_TTL);
   this->amqpChannel->declareExchange(fanoutExchangeName, AMQP::fanout);
   this->amqpChannel->declareQueue(tunnelbrokerID, AMQP::durable, arguments)
       .onSuccess([this, tunnelbrokerID, fanoutExchangeName](
@@ -61,10 +61,12 @@ void AmqpManager::connectInternal() {
               try {
                 AMQP::Table headers = message.headers();
                 const std::string payload(message.body());
-                const std::string messageID(headers[AMQP_HEADER_MESSAGEID]);
-                const std::string toDeviceID(headers[AMQP_HEADER_TO_DEVICEID]);
+                const std::string messageID(
+                    headers[AMQP_HEADER_MESSAGEID].get());
+                const std::string toDeviceID(
+                    headers[AMQP_HEADER_TO_DEVICEID].get());
                 const std::string fromDeviceID(
-                    headers[AMQP_HEADER_FROM_DEVICEID]);
+                    headers[AMQP_HEADER_FROM_DEVICEID].get());
                 std::cout << "AMQP: Message consumed for deviceID: "
                           << toDeviceID << std::endl;
                 DeliveryBroker::getInstance().push(
