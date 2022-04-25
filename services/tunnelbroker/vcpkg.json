@@ -1,0 +1,23 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+  "name": "testapp",
+  "version": "0.0.1",
+  "dependencies": [
+      "folly",
+      "amqpcpp",
+      "cryptopp",
+      "libuv",
+      "glog",
+      "protobuf",
+      "grpc",
+      "gtest",
+      "openssl",
+      "double-conversion",
+      "boost-program-options",
+      "boost-uuid",
+      {
+          "name":"aws-sdk-cpp",
+          "features": ["s3", "dynamodb"]
+      }
+  ]
+}

@@ -10,77 +10,15 @@ endif(COMMAND cmake_policy)
 
 set(CMAKE_CXX_STANDARD 17)
 
-find_package(PkgConfig REQUIRED)
-
-# FIND LIBS
-set(protobuf_MODULE_COMPATIBLE TRUE)
-find_package(Protobuf CONFIG REQUIRED)
-message(STATUS "Using protobuf ${Protobuf_VERSION}")
-
-set(_PROTOBUF_LIBPROTOBUF protobuf::libprotobuf)
-set(_REFLECTION gRPC::grpc++_reflection)
-set(_PROTOBUF_PROTOC $<TARGET_FILE:protobuf::protoc>)
-
-# Find gRPC installation
-# Looks for gRPCConfig.cmake file installed by gRPC's cmake installation.
-find_package(gRPC CONFIG REQUIRED)
-message(STATUS "Using gRPC ${gRPC_VERSION}")
-
-set(_GRPC_GRPCPP gRPC::grpc++)
-set(_GRPC_CPP_PLUGIN_EXECUTABLE $<TARGET_FILE:gRPC::grpc_cpp_plugin>)
-
-# Find AMQP-CPP installation
-find_package(amqpcpp CONFIG REQUIRED)
-
-# Find Cryptopp installation
-pkg_check_modules(CRYPTOPP REQUIRED libcryptopp=8.6)
-
-# Find Libuv installation
-pkg_check_modules(LIBUV REQUIRED libuv=1.43.0)
+if(DEFINED ENV{VCPKG_ROOT})
+  set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+      CACHE STRING "")
+endif()
 
 set(BUILD_TESTING OFF CACHE BOOL "Turn off tests" FORCE)
 set(WITH_GFLAGS OFF CACHE BOOL "Turn off gflags" FORCE)
 
-find_package(AWSSDK REQUIRED COMPONENTS core dynamodb)
-find_package(Boost 1.40 COMPONENTS program_options thread system REQUIRED)
-find_package(OpenSSL REQUIRED)
-
-add_subdirectory(./lib/glog)
-
-# Generated sources
-get_filename_component(proto "protos/tunnelbroker.proto" ABSOLUTE)
-get_filename_component(proto_path "${proto}" PATH)
-
-set(GENERATED_BASE_DIR "${CMAKE_CURRENT_BINARY_DIR}/gen")
-set(GENERATED_CODE_DIR "${GENERATED_BASE_DIR}/_generated")
-file(MAKE_DIRECTORY ${GENERATED_CODE_DIR})
-
-set(proto_srcs "${GENERATED_CODE_DIR}/tunnelbroker.pb.cc")
-set(proto_hdrs "${GENERATED_CODE_DIR}/tunnelbroker.pb.h")
-set(grpc_srcs "${GENERATED_CODE_DIR}/tunnelbroker.grpc.pb.cc")
-set(grpc_hdrs "${GENERATED_CODE_DIR}/tunnelbroker.grpc.pb.h")
-add_custom_command(
-  OUTPUT "${proto_srcs}" "${proto_hdrs}" "${grpc_srcs}" "${grpc_hdrs}"
-  COMMAND ${_PROTOBUF_PROTOC}
-  ARGS --grpc_out "${GENERATED_CODE_DIR}"
-  --cpp_out "${GENERATED_CODE_DIR}"
-  -I "${proto_path}"
-  --plugin=protoc-gen-grpc="${_GRPC_CPP_PLUGIN_EXECUTABLE}"
-  "${proto}"
-  DEPENDS "${proto}"
-)
-
 file(GLOB SOURCE_CODE "./src/*.cpp" "./src/**/*.cpp")
-set(GENERATED_CODE ${proto_srcs} ${proto_hdrs} ${grpc_srcs} ${grpc_hdrs})
-file(GLOB DOUBLE_CONVERSION_SOURCES "./lib/double-conversion/double-conversion/*.cc")
-
-add_definitions(
-  -DFOLLY_NO_CONFIG=1
-  -DFOLLY_HAVE_CLOCK_GETTIME=1
-  -DFOLLY_HAVE_MEMRCHR=1
-  -DFOLLY_USE_LIBCPP=0
-  -DFOLLY_MOBILE=0
-)
 
 include_directories(
   ./src
@@ -89,88 +27,56 @@ include_directories(
   ./src/Service
   ./src/Tools
   ./src/Amqp
-  ${GENERATED_BASE_DIR}
-  ./lib/folly
-  ./lib/double-conversion
-  ${Boost_INCLUDE_DIR}
-  ${CRYPTOPP_INCLUDE_DIRS}
-  ${LIBUV_INCLUDE_DIRS}
 )
 
 set(
   SOURCE_CODE
-
-  # folly
-  ./lib/folly/folly/detail/Futex.cpp
-  ./lib/folly/folly/synchronization/ParkingLot.cpp
-  ./lib/folly/folly/lang/SafeAssert.cpp
-  ./lib/folly/folly/FileUtil.cpp
-  ./lib/folly/folly/Subprocess.cpp
-  ./lib/folly/folly/File.cpp
-  ./lib/folly/folly/Format.cpp
-  ./lib/folly/folly/Conv.cpp
-  ./lib/folly/folly/io/IOBuf.cpp
-  ./lib/folly/folly/memory/detail/MallocImpl.cpp
-  ./lib/folly/folly/ScopeGuard.cpp
-  ./lib/folly/folly/hash/SpookyHashV2.cpp
-  ./lib/folly/folly/io/IOBufQueue.cpp
-  ./lib/folly/folly/lang/Assume.cpp
-  ./lib/folly/folly/String.cpp
-  ./lib/folly/folly/portability/SysUio.cpp
-  ./lib/folly/folly/net/NetOps.cpp
-  ./lib/folly/folly/synchronization/Hazptr.cpp
-  ./lib/folly/folly/detail/ThreadLocalDetail.cpp
-  ./lib/folly/folly/SharedMutex.cpp
-  ./lib/folly/folly/concurrency/CacheLocality.cpp
-  ./lib/folly/folly/detail/StaticSingletonManager.cpp
-  ./lib/folly/folly/executors/ThreadPoolExecutor.cpp
-  ./lib/folly/folly/executors/GlobalThreadPoolList.cpp
-  ./lib/folly/folly/Demangle.cpp
-  ./lib/folly/folly/synchronization/AsymmetricMemoryBarrier.cpp
-  ./lib/folly/folly/io/async/Request.cpp
-  ./lib/folly/folly/detail/MemoryIdler.cpp
-  ./lib/folly/folly/detail/AtFork.cpp
-  ./lib/folly/folly/Executor.cpp
-  ./lib/folly/folly/lang/CString.cpp
-  ./lib/folly/folly/portability/SysMembarrier.cpp
-  ./lib/folly/folly/container/detail/F14Table.cpp
-  ./lib/folly/folly/detail/UniqueInstance.cpp
-  ./lib/folly/folly/executors/QueuedImmediateExecutor.cpp
-  ./lib/folly/folly/memory/MallctlHelper.cpp
-
-  ${DOUBLE_CONVERSION_SOURCES}
-  ${GENERATED_CODE}
   ${SOURCE_CODE}
-)
-
-set(
-  LIBS
-
-  ${_GRPC_GRPCPP}
-  ${_PROTOBUF_LIBPROTOBUF}
-  ${_REFLECTION}
-  ${AWSSDK_LINK_LIBRARIES}
-  ${CRYPTOPP_LIBRARIES}
-  ${LIBUV_LIBRARIES}
-  ${Boost_LIBRARIES}
-  amqpcpp
-  OpenSSL::SSL
-  glog::glog
 )
 
 #SERVER
 add_executable(
   tunnelbroker
-
-  ${GENERATED_CODE}
   ${SOURCE_CODE}
 )
 
-target_link_libraries(
-  tunnelbroker
+find_package(folly CONFIG REQUIRED)
+find_package(amqpcpp CONFIG REQUIRED)
+find_package(cryptopp CONFIG REQUIRED)
+find_package(unofficial-libuv CONFIG REQUIRED)
+find_package(glog CONFIG REQUIRED)
 
-  ${LIBS}
-)
+target_link_libraries(tunnelbroker PRIVATE Folly::folly Folly::folly_deps Folly::follybenchmark Folly::folly_test_util)
+target_link_libraries(tunnelbroker PRIVATE amqpcpp cryptopp-static unofficial::libuv::libuv glog::glog)
+
+find_package(double-conversion CONFIG REQUIRED)
+target_link_libraries(tunnelbroker PRIVATE double-conversion::double-conversion)
+
+find_package(Protobuf CONFIG REQUIRED)
+target_link_libraries(tunnelbroker PRIVATE ${Protobuf_LIBRARIES})
+
+find_package(gRPC CONFIG REQUIRED)
+target_link_libraries(tunnelbroker PRIVATE gRPC::grpc++ gRPC::grpc++_reflection)
+
+target_link_libraries(tunnelbroker PRIVATE re2::re2 c-ares::cares)
+
+find_package(OpenSSL REQUIRED)
+target_link_libraries(tunnelbroker PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+
+find_package(aws-cpp-sdk-core REQUIRED)
+target_include_directories(tunnelbroker PRIVATE aws-cpp-sdk-core)
+target_link_libraries(tunnelbroker PRIVATE aws-cpp-sdk-core)
+
+find_package(aws-cpp-sdk-s3 REQUIRED)
+target_include_directories(tunnelbroker PRIVATE aws-cpp-sdk-s3)
+target_link_libraries(tunnelbroker PRIVATE aws-cpp-sdk-s3)
+
+find_package(aws-cpp-sdk-dynamodb REQUIRED)
+target_include_directories(tunnelbroker PRIVATE aws-cpp-sdk-dynamodb)
+target_link_libraries(tunnelbroker PRIVATE aws-cpp-sdk-dynamodb)
+
+find_package(GTest CONFIG REQUIRED)
+target_link_libraries(tunnelbroker PRIVATE GTest::gmock GTest::gtest GTest::gmock_main GTest::gtest_main)
 
 install(
   TARGETS tunnelbroker
