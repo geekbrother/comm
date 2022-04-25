@@ -53,4 +53,5 @@
     "import/ignore": ["react-native"],
     "import/internal-regex": "^(lib|native|keyserver|web)/"
   }
+  // "ignorePatterns": ["**/webpack.config.cjs"]
 }
