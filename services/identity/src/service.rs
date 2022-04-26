@@ -3,6 +3,7 @@ use std::pin::Pin;
 use tonic::{Request, Response, Status};
 
 use common::config::Config;
+use common::database::DatabaseClient;
 
 pub use proto::identity_service_server::IdentityServiceServer;
 use proto::{
@@ -14,9 +15,10 @@ mod proto {
   tonic::include_proto!("identity");
 }
 
-#[derive(Debug, Default)]
+#[derive(Default)]
 pub struct MyIdentityService {
   pub config: Config,
+  pub client: DatabaseClient,
 }
 
 #[tonic::async_trait]
@@ -24,6 +26,7 @@ impl IdentityService for MyIdentityService {
   type RegisterUserStream =
     Pin<Box<dyn Stream<Item = Result<RegistrationResponse, Status>> + Send + 'static>>;
 
+  #[tracing::instrument(skip(self))]
   async fn register_user(
     &self,
     request: Request<tonic::Streaming<RegistrationRequest>>,
@@ -35,6 +38,7 @@ impl IdentityService for MyIdentityService {
   type LoginUserStream =
     Pin<Box<dyn Stream<Item = Result<LoginResponse, Status>> + Send + 'static>>;
 
+  #[tracing::instrument(skip(self))]
   async fn login_user(
     &self,
     request: Request<tonic::Streaming<LoginRequest>>,
@@ -43,6 +47,7 @@ impl IdentityService for MyIdentityService {
     unimplemented!()
   }
 
+  #[tracing::instrument(skip(self))]
   async fn verify_user_token(
     &self,
     request: Request<VerifyUserTokenRequest>,
