@@ -75,8 +75,15 @@ public:
     if (!this->status.status.ok()) {
       return;
     }
-    if (this->uploader == nullptr && !this->dataExists) {
-      throw std::runtime_error("uploader not initialized as expected");
+    const database::ReverseIndexItem reverseIndexItem(
+        this->holder, this->blobHash);
+    if (this->uploader == nullptr) {
+      if (!this->dataExists) {
+        throw std::runtime_error("uploader not initialized as expected");
+      }
+      database::DatabaseManager::getInstance().putReverseIndexItem(
+          reverseIndexItem);
+      return;
     }
     if (this->uploader == nullptr) {
       return;
@@ -89,7 +96,6 @@ public:
     }
     this->uploader->finishUpload();
     database::DatabaseManager::getInstance().putBlobItem(*this->blobItem);
-    const database::ReverseIndexItem reverseIndexItem(holder, this->blobHash);
     database::DatabaseManager::getInstance().putReverseIndexItem(
         reverseIndexItem);
   }
