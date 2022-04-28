@@ -1,12 +1,14 @@
 #include "Tools.h"
 
 #include "AwsTools.h"
+#include "Constants.h"
 #include "DatabaseEntitiesTools.h"
 #include "DatabaseManager.h"
 
 #include <openssl/sha.h>
 
 #include <chrono>
+#include <cstdlib>
 #include <iomanip>
 #include <string>
 
@@ -70,6 +72,15 @@ uint64_t getCurrentTimestamp() {
   using namespace std::chrono;
   return duration_cast<milliseconds>(system_clock::now().time_since_epoch())
       .count();
+}
+
+std::string decorateTableName(const std::string &baseName) {
+  if (std::string(
+          std::getenv("COMM_TEST_SERVICES") ? std::getenv("COMM_TEST_SERVICES")
+                                            : "") == "1") {
+    return baseName + "-test";
+  }
+  return baseName;
 }
 
 } // namespace network
