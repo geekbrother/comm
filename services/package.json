@@ -4,23 +4,10 @@
   "private": true,
   "license": "BSD-3-Clause",
   "scripts": {
-    "build-all": "./scripts/build_base_image.sh && docker-compose build",
-    "build-base-image": "./scripts/build_base_image.sh",
-    "run-tunnelbroker-service": "./scripts/run_server_image.sh tunnelbroker",
-    "test-tunnelbroker-service": "./scripts/test_service.sh tunnelbroker",
-    "build-backup-base": "./scripts/build_base_image.sh && docker-compose build backup-base",
-    "run-backup-service": "./scripts/run_server_image.sh backup",
-    "test-backup-service": "./scripts/test_service.sh backup",
-    "run-backup-service-dev-mode": "export COMM_SERVICES_DEV_MODE=1 && ./scripts/run_server_image.sh backup",
-    "test-backup-service-dev-mode": "export COMM_SERVICES_DEV_MODE=1 && ./scripts/test_service.sh backup",
-    "build-blob-base": "./scripts/build_base_image.sh && docker-compose build blob-base",
-    "run-blob-service": "./scripts/run_server_image.sh blob",
-    "test-blob-service": "./scripts/test_service.sh blob",
-    "run-blob-service-dev-mode": "export COMM_SERVICES_DEV_MODE=1 && ./scripts/run_server_image.sh blob",
-    "test-blob-service-dev-mode": "export COMM_SERVICES_DEV_MODE=1 && ./scripts/test_service.sh blob",
-    "run-all-services": "./scripts/run_all_services.sh",
-    "test-all-services": "./scripts/test_all_services.sh",
-    "test-all-services-dev-mode": "export COMM_SERVICES_DEV_MODE=1 && ./scripts/test_all_services.sh",
-    "run-all-services-dev-mode": "export COMM_SERVICES_DEV_MODE=1 && ./scripts/run_all_services.sh"
+    "build-tunnelbroker-server": "docker compose build tunnelbroker-server",
+    "build-tunnelbroker-server-dev": "docker compose build tunnelbroker-server-dev",
+    "tunnelbroker-server": "docker compose up tunnelbroker-server",
+    "tunnelbroker-server-dev": "docker compose up tunnelbroker-server-dev",
+    "dev-services-only": "docker compose -f 'docker-compose-dev-only.yml' up"
   }
 }
