@@ -1,0 +1,10 @@
+{
+  "registries": [
+    {
+      "kind": "git",
+      "repository": "https://github.com/geekbrother/vcpkg-registry",
+      "baseline":"ec19b090857f7e61e2e57f5b46aadc725a21ffe0",
+      "packages": ["amqpcpp"]
+    }
+  ]
+}
