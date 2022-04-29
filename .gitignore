@@ -14,3 +14,7 @@ services/identity/target
 .eslintcache
 .vscode
 !.vscode/extensions.json
+services/tunnelbroker/build
+services/tunnelbroker/bin
+build
+bin
