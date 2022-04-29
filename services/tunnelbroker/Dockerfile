@@ -1,29 +1,49 @@
-FROM commapp/services-base:1.1
+FROM ubuntu:22.04
 
-ARG MAKE_JOBS=4
-ENV MAKEFLAGS="-j${MAKE_JOBS}"
+# BUILD_TYPE available options:
+# Release - Optimized and exclude debug, removing the build environment after built.
+#           Produces slim production image.
+# Debug - Optimization disabled, debug information included, and build environment. 
+#         Can be used as an attached container for development purposes.
+ARG BUILD_TYPE="Release"
 
-WORKDIR /transferred/scripts
+ENV SERVICE_NAME="tunnelbroker"
+ENV INSTALL_DIR="/opt/${SERVICE_NAME}"
+ENV VCPKG_ROOT="/opt/vcpkg"
+ENV TZ="US/Eastern"
+RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone
 
-# Install SDKs
-COPY services/tunnelbroker/docker/install_amqp_cpp.sh .
-RUN ./install_amqp_cpp.sh
+ENV APT_PACKAGES_LIST="build-essential gcc cmake git curl git \
+  unzip tar zip libssl-dev ninja-build pkg-config python3"
+RUN apt update && DEBIAN_FRONTEND=noninteractive apt -y install ${APT_PACKAGES_LIST}
 
-COPY services/tunnelbroker/docker/install_cryptopp.sh .
-RUN ./install_cryptopp.sh
+# Vcpkg installation
+RUN git clone https://github.com/Microsoft/vcpkg.git ${VCPKG_ROOT}
+WORKDIR ${VCPKG_ROOT}
+ENV VCPKG_FORCE_SYSTEM_BINARIES 1
+RUN ./bootstrap-vcpkg.sh
+RUN ./vcpkg integrate install
+RUN ./vcpkg integrate bash && echo "export PATH=\$PATH:${VCPKG_ROOT}" >>~/.bashrc
 
-COPY services/tunnelbroker/docker/install_libuv.sh .
-RUN ./install_libuv.sh
+# Vcpkg pre-install packages
+ENV VCPKG_PACKAGES_LIST="folly cryptopp libuv glog protobuf grpc gtest \ 
+  double-conversion boost-program-options boost-uuid aws-sdk-cpp"
+RUN ./vcpkg install ${VCPKG_PACKAGES_LIST} --recurse
 
-ARG COMM_TEST_SERVICES
-ENV COMM_TEST_SERVICES=${COMM_TEST_SERVICES}
+# Server building
+RUN mkdir ${INSTALL_DIR}
+WORKDIR ${INSTALL_DIR}
+COPY ./tunnelbroker ./
+RUN ./clean
+RUN cmake -B build -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -G Ninja
+RUN ninja -C build
 
-WORKDIR /transferred
+# Remove the build environment in Release mode
+WORKDIR ${INSTALL_DIR}
+RUN if [ "${BUILD_TYPE}" = "Release" ]; then \
+  echo "Cleaning up the build environment on release mode..." && \
+  ${VCPKG_ROOT}/vcpkg integrate remove && \
+  rm -dfr "build" "/root/.cache" "/root/.vcpkg" ${VCPKG_ROOT}; \
+  fi
 
-COPY native/cpp/CommonCpp/grpc/protos/tunnelbroker.proto protos/tunnelbroker.proto
-COPY services/tunnelbroker/docker/ scripts/
-COPY services/tunnelbroker/ .
-
-RUN scripts/build_server.sh
-
-CMD if [ "$COMM_TEST_SERVICES" -eq 1 ]; then scripts/run_tests.sh; else scripts/run_server.sh; fi
+CMD ["${INSTALL_DIR}/bin/${SERVICE_NAME}"]
